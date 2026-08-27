@@ -1,0 +1,6 @@
+System,Ligand,Crystal_total,Redocked_total,Crystal_hbond,Redocked_hbond,Crystal_hydrophobic,Redocked_hydrophobic,Crystal_pistack,Redocked_pistack,Crystal_waterbridge,Redocked_waterbridge,Crystal_residues,Redocked_residues
+3QEL,QEL,9,13,2,5,5,7,1,1,1,0,"['ALA107', 'GLN110', 'GLU236', 'ILE111', 'LEU135', 'PHE114', 'PHE176', 'TYR109', 'TYR175']","['ALA422', 'GLN425', 'GLU551', 'ILE426', 'LEU108', 'PHE429', 'PHE491', 'PHE86', 'THR489', 'TYR490', 'TYR82']"
+3QEM,QEM,14,18,4,5,9,12,1,1,0,0,"['ALA107', 'GLN110', 'ILE111', 'ILE133', 'LEU135', 'PHE114', 'PRO177', 'PRO78', 'THR174', 'TYR109', 'TYR175']","['ALA425', 'GLN428', 'GLU554', 'ILE106', 'ILE429', 'LEU108', 'PHE432', 'PHE86', 'PRO396', 'PRO495', 'TYR493', 'TYR82']"
+5EWM,5SM,6,6,0,0,5,5,1,1,0,0,"['GLN110', 'ILE111', 'PRO177', 'TYR109']","['GLN430', 'ILE431', 'PRO497', 'TYR82']"
+6E7R,HYS,13,13,4,6,7,7,0,0,2,0,"['ARG115', 'GLN110', 'LEU135', 'MET207', 'PHE114', 'PHE176', 'THR174', 'TYR109', 'TYR175']","['GLN437', 'GLU563', 'ILE108', 'LEU110', 'MET534', 'PHE441', 'THR501', 'TYR502', 'TYR84']"
+6E7U,HX7,12,12,4,4,5,8,1,0,2,0,"['ARG115', 'GLN110', 'ILE133', 'MET207', 'PHE114', 'PHE176', 'SER208', 'THR174', 'TYR109', 'TYR175']","['ASP460', 'GLU560', 'ILE107', 'LEU109', 'MET531', 'PHE438', 'PHE500', 'THR498', 'TYR499', 'TYR83']"

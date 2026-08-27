@@ -1,0 +1,4 @@
+Model,best_score_cv_kappa,NN__activation,NN__alpha,NN__hidden_layer_sizes,NN__learning_rate_init,xgb__colsample_bytree,xgb__gamma,xgb__learning_rate,xgb__max_depth,xgb__max_leaves,xgb__min_child_weight,xgb__n_estimators,xgb__reg_alpha,xgb__reg_lambda,xgb__subsample,svm__C,svm__gamma,svm__kernel
+MLP,0.8261283679219789,tanh,1.0005069643949672e-05,7.0,7.656010912714263e-07,,,,,,,,,,,,,
+XGBoost,0.8921577109262326,,,,,0.4,0.0,0.2,6.0,100.0,0.1,55.0,0.004735893375157792,0.007809462089649638,0.6,,,
+SVM,0.844024296415739,,,,,,,,,,,,,,,0.7185240725598854,0.05072306207798868,rbf

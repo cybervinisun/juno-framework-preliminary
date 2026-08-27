@@ -1,0 +1,2 @@
+Model,search_best_kappa,repeated_cv_mean_kappa,repeated_cv_sd_kappa,train_kappa,test_accuracy,test_precision,test_sensitivity,test_f1,test_kappa,test_auc,test_brier,TP,TN,FP,FN,best_params
+LogisticRegression (baseline),0.8201278219874304,0.8178729115775814,0.07078228739631484,0.9101796407185628,0.8958333333333334,0.9558823529411765,0.9027777777777778,0.9285714285714286,0.736842105263158,0.9398148148148149,0.08445126835774526,65,21,3,7,"{'LGR__C': 0.4126121236470449, 'LGR__penalty': 'l2', 'LGR__solver': 'lbfgs'}"

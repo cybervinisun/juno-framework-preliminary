@@ -1,0 +1,321 @@
+IDX,Partition,Activity,MW,bpKa_ordinal,SMILES,Source,Source_norm,Source_flag,PubChem_CID,CID_display
+1,train,Ativo,280.43,3,c3ccc(CCC[NH2+]C2CCc1ccccc1CC2)cc3,"GAWASKAR et al., 2017 (publicado)","Gawaskar et al., 2017",c,15061905.0,15061905
+3,train,Ativo,238.35,3,c3ccc(C[NH2+]C2CCc1ccccc1C2)cc3,"TEMME et al., 2020","Temme et al., 2020",,13472341.0,13472341
+4,train,Ativo,252.37,3,c3ccc(CC[NH2+]C2CCc1ccccc1C2)cc3,"TEMME et al., 2020","Temme et al., 2020",,435861.0,435861
+5,train,Ativo,266.4,3,c3ccc(CCC[NH2+]C2CCc1ccccc1C2)cc3,"TEMME et al., 2020","Temme et al., 2020",,15061906.0,15061906
+6,train,Ativo,280.43,3,c3ccc(CCCC[NH2+]C2CCc1ccccc1C2)cc3,"TEMME et al., 2020","Temme et al., 2020",,114333318.0,114333318
+7,train,Ativo,238.35,3,c3ccc(CC[NH2+]C2Cc1ccccc1C2)cc3,"TEMME et al., 2020","Temme et al., 2020",,21648335.0,21648335
+10,train,Ativo,278.41,3,c4ccc(C3CC[NH+](C2Cc1ccccc1C2)CC3)cc4,"TEMME et al., 2020","Temme et al., 2020",,22273743.0,22273743
+11,train,Ativo,292.44,3,c4ccc(CC3CC[NH+](C2Cc1ccccc1C2)CC3)cc4,"TEMME et al., 2020","Temme et al., 2020",,162658229.0,162658229
+12,train,Ativo,296.43,3,Oc3ccc2CC[NH+](CCCCc1ccccc1)CCc2c3,"RITTER et al., 2021","Ritter et al., 2021",,144077746.0,144077746
+13,train,Ativo,280.43,3,c3ccc(CCCC[NH+]2CCc1ccccc1CC2)cc3,"RITTER et al., 2021","Ritter et al., 2021",,145971584.0,145971584
+16,train,Ativo,312.43,3,Oc1ccc3c(c1)CC[NH+](CCCCc2ccccc2)C[C@@H]3O,"BORGEL et al., 2018 (publicado)","B\""orgel et al., 2018",v,145267329.0,145267329
+17,train,Ativo,312.43,3,Oc1ccc3c(c1)CC[NH+](CCCCc2ccccc2)C[C@H]3O,"BORGEL et al., 2018 (publicado)","B\""orgel et al., 2018",v,,R2
+19,train,Ativo,326.45,3,COc1ccc3c(c1)CC[NH+](CCCCc2ccccc2)C[C@H]3O,"BORGEL et al., 2018 (publicado)","B\""orgel et al., 2018",v,,R2
+20,train,Ativo,252.37,3,c3ccc(C[NH2+]C2CCc1ccccc1CC2)cc3,"GAWASKAR et al., 2014 (publicado)","Gawaskar et al., 2014",c,22499189.0,22499189
+23,train,Ativo,306.46,3,c4ccc(C3CC[NH+](C2CCc1ccccc1CC2)CC3)cc4,"GAWASKAR et al., 2014 (publicado)","Gawaskar et al., 2014",c,22273748.0,22273748
+24,train,Ativo,307.45,3,c4ccc(N3CC[NH+](C2CCc1ccccc1CC2)CC3)cc4,"GAWASKAR et al., 2014 (publicado)","Gawaskar et al., 2014",c,101884139.0,101884139
+25,train,Ativo,320.49,3,c4ccc(CC3CC[NH+](C2CCc1ccccc1CC2)CC3)cc4,"GAWASKAR et al., 2014 (publicado)","Gawaskar et al., 2014",c,101884140.0,101884140
+26,train,Ativo,320.49,3,c4ccc([C@@H]3CC[C@H]([NH2+]C2CCc1ccccc1CC2)CC3)cc4,"GAWASKAR et al., 2014 (publicado)","Gawaskar et al., 2014",c,,R6
+27,train,Ativo,320.49,3,c4ccc([C@@H]3CC[C@@H]([NH2+]C2CCc1ccccc1CC2)CC3)cc4,"GAWASKAR et al., 2014 (publicado)","Gawaskar et al., 2014",c,,R6
+28,train,Ativo,326.45,3,C[C@@H]2[C@H](O)c1ccc(O)cc1CC[NH+]2CCCCc3ccccc3,"DEY et al., 2018 (publicado)","Dey et al., 2018",c,68626770.0,68626770
+29,train,Ativo,310.45,3,C[C@@H]2[C@H](O)c1ccccc1CC[NH+]2CCCCc3ccccc3,"DEY et al., 2018 (publicado)","Dey et al., 2018",c,145978275.0,145978275
+30,train,Ativo,324.48,3,C[C@@H]2[C@H](O)c1ccccc1CC[NH+]2CCCCCc3ccccc3,"DEY et al., 2018 (publicado)","Dey et al., 2018",c,145970297.0,145970297
+31,train,Ativo,344.47,3,C[C@@H]2[C@H](O)c1ccccc1CC[NH+]2Cc4ccc(c3ccccc3)cc4,"DEY et al., 2018 (publicado)","Dey et al., 2018",c,,R7
+32,train,Ativo,312.44,3,FC(CCc1ccccc1)C[NH2+]C3CCc2ccccc2CC3,"THUM et al., 2019","Thum et al., 2019",,145991874.0,145991874
+33,train,Ativo,312.44,3,FC(CC[NH2+]C2CCc1ccccc1CC2)Cc3ccccc3,"THUM et al., 2019","Thum et al., 2019",,,R3
+34,train,Ativo,325.46,3,CN(CC(F)CCc1ccccc1)C3CCc2ccccc2CC3,"THUM et al., 2019","Thum et al., 2019",,,R3
+36,train,Ativo,308.48,3,C[NH+](CCCCc1ccccc1)C3CCc2ccccc2CC3,"THUM et al., 2019","Thum et al., 2019",,,R3
+37,train,Ativo,322.51,3,CC[NH+](CCCCc1ccccc1)C3CCc2ccccc2CC3,"THUM et al., 2019","Thum et al., 2019",,,R3
+39,train,Ativo,326.45,3,C[C@H]([C@@H](O)c1ccc(O)cc1)[NH+]3CCC(Cc2ccccc2)CC3,"BECHTHOLD et al., 2021 (publicado)","Bechthold et al., 2021",c,11198145.0,11198145
+40,train,Ativo,326.45,3,C[C@H]([C@H](O)c1ccc(O)cc1)[NH+]3CCC(Cc2ccccc2)CC3,"BECHTHOLD et al., 2021 (publicado)","Bechthold et al., 2021",c,12613159.0,12613159
+41,train,Ativo,326.45,3,C[C@@H]([C@@H](O)c1ccc(O)cc1)[NH+]3CCC(Cc2ccccc2)CC3,"BECHTHOLD et al., 2021 (publicado)","Bechthold et al., 2021",c,11771731.0,11771731
+42,train,Ativo,300.35,2,c4ccc(Oc3ccc(Cc2nc1ccccc1[nH]2)cc3)cc4,"McCauley et al, 2004","McCauley et al., 2004",,9817808.0,9817808
+43,train,Ativo,345.35,1,O=N(=O)c4ccc3nc(Cc2ccc(Oc1ccccc1)cc2)[nH]c3c4,"McCauley et al, 2004","McCauley et al., 2004",,9950054.0,9950054
+44,train,Ativo,330.38,2,COc4ccc3nc(Cc2ccc(Oc1ccccc1)cc2)[nH]c3c4,"McCauley et al, 2004","McCauley et al., 2004",,9797585.0,9797585
+45,train,Ativo,325.36,1,N#Cc4ccc3nc(Cc2ccc(Oc1ccccc1)cc2)[nH]c3c4,"McCauley et al, 2004","McCauley et al., 2004",,11244256.0,11244256
+46,train,Ativo,316.35,1,Oc3cccc4nc(Cc2ccc(Oc1ccccc1)cc2)[nH]c34,"McCauley et al, 2004","McCauley et al., 2004",,9796984.0,9796984
+47,train,Ativo,316.35,2,Oc4ccc3nc(Cc2ccc(Oc1ccccc1)cc2)[nH]c3c4,"McCauley et al, 2004","McCauley et al., 2004",,9839919.0,9839919
+48,train,Ativo,315.37,2,Nc4ccc3nc(Cc2ccc(Oc1ccccc1)cc2)[nH]c3c4,"McCauley et al, 2004","McCauley et al., 2004",,9883372.0,9883372
+52,train,Ativo,421.51,2,CC(C)S(=O)(=O)Nc4ccc3nc(Cc2ccc(Oc1ccccc1)cc2)[nH]c3c4,"McCauley et al, 2004","McCauley et al., 2004",,11247204.0,11247204
+54,train,Ativo,421.47,1,CC(=O)S(=O)(=O)Nc4ccc3nc(Cc2ccc(Oc1ccccc1)cc2)[nH]c3c4,"McCauley et al, 2004","McCauley et al., 2004",,,R8
+56,train,Ativo,305.42,2,c4ccc(CC3CCN(Cc2nc1ccccc1[nH]2)CC3)cc4,"McCauley et al, 2004","McCauley et al., 2004",,667674.0,667674
+57,train,Ativo,322.42,3,Oc4ccc3nc(C[NH+]2CCC(Cc1ccccc1)CC2)[nH]c3c4,"McCauley et al, 2004","McCauley et al., 2004",,9883600.0,9883600
+61,train,Ativo,340.41,3,Oc4ccc3nc(C[NH+]2CCC(Cc1cccc(F)c1)CC2)[nH]c3c4,"McCauley et al, 2004","McCauley et al., 2004",,10042818.0,10042818
+62,train,Ativo,340.41,3,Oc4ccc3nc(C[NH+]2CCC(Cc1ccc(F)cc1)CC2)[nH]c3c4,"McCauley et al, 2004","McCauley et al., 2004",,10337265.0,10337265
+63,train,Ativo,358.4,3,Oc4ccc3nc(C[NH+]2CCC(Cc1c(F)cccc1F)CC2)[nH]c3c4,"McCauley et al, 2004","McCauley et al., 2004",,10316274.0,10316274
+65,train,Ativo,308.33,0,N#Cc3cccc4c(=O)c2cc(c1ccccc1)cnc2ccc34,"Charles J. et al., 2009","Charles et al., 2009",,10357913.0,10357913
+66,train,Ativo,294.35,1,N#Cc3cccc4Cc2cc(c1ccccc1)cnc2C=Cc34,"Charles J. et al., 2010","Charles et al., 2010",,10266457.0,10266457
+67,train,Ativo,296.37,1,N#Cc3cccc4Cc2cc(c1ccccc1)cnc2CCc34,"Charles J. et al., 2011","Charles et al., 2011",,10063163.0,10063163
+68,train,Ativo,237.32,3,[NH2+]=C(/C=C/c1ccccc1)NCc2ccccc2,"Curtis et al., 2003","Curtis et al., 2003",,9878031.0,9878031
+69,train,Ativo,271.76,3,[NH2+]=C(/C=C/c1ccccc1)NCc2ccccc2Cl,"Curtis et al., 2003","Curtis et al., 2003",,9900121.0,9900121
+70,train,Ativo,271.76,3,[NH2+]=C(/C=C/c1ccccc1)NCc2cccc(Cl)c2,"Curtis et al., 2003","Curtis et al., 2003",,9943369.0,9943369
+71,train,Ativo,271.76,3,[NH2+]=C(/C=C/c1ccccc1)NCc2ccc(Cl)cc2,"Curtis et al., 2003","Curtis et al., 2003",,9921582.0,9921582
+74,train,Ativo,305.32,3,[NH2+]=C(/C=C/c1ccccc1)NCc2ccc(C(F)(F)F)cc2,"Curtis et al., 2003","Curtis et al., 2003",,9814954.0,9814954
+76,train,Ativo,267.35,3,COc2cccc(CNC(=[NH2+])/C=C/c1ccccc1)c2,"Curtis et al., 2003","Curtis et al., 2003",,9943264.0,9943264
+77,train,Ativo,281.37,3,CCOc1ccccc1CNC(=[NH2+])/C=C/c2ccccc2,"Curtis et al., 2003","Curtis et al., 2003",,9921785.0,9921785
+78,train,Ativo,321.32,3,[NH2+]=C(/C=C/c1ccccc1)NCc2ccccc2OC(F)(F)F,"Curtis et al., 2003","Curtis et al., 2003",,9901619.0,9901619
+79,train,Ativo,306.21,3,[NH2+]=C(/C=C/c1ccccc1)NCc2cccc(Cl)c2Cl,"Curtis et al., 2003","Curtis et al., 2003",,9814985.0,9814985
+80,train,Ativo,306.21,3,[NH2+]=C(/C=C/c1ccccc1)NCc2cc(Cl)ccc2Cl,"Curtis et al., 2003","Curtis et al., 2003",,9966254.0,9966254
+82,train,Ativo,271.76,3,[NH2+]=C(/C=C/c1ccccc1Cl)NCc2ccccc2,"Curtis et al., 2003","Curtis et al., 2003",,9814060.0,9814060
+83,train,Ativo,271.76,3,[NH2+]=C(/C=C/c1cccc(Cl)c1)NCc2ccccc2,"Curtis et al., 2003","Curtis et al., 2003",,9878575.0,9878575
+85,train,Ativo,255.31,3,[NH2+]=C(/C=C/c1ccc(F)cc1)NCc2ccccc2,"Curtis et al., 2003","Curtis et al., 2003",,9921317.0,9921317
+86,train,Ativo,273.3,3,[NH2+]=C(/C=C/c1ccc(F)c(F)c1)NCc2ccccc2,"Curtis et al., 2003","Curtis et al., 2003",,9943403.0,9943403
+87,train,Ativo,251.35,3,[NH2+]=C(/C=C/c1ccccc1)NCCc2ccccc2,"Curtis et al., 2003","Curtis et al., 2003",,9856325.0,9856325
+92,train,Ativo,225.31,3,[NH2+]=C(NCCc1ccccc1)c2ccccc2,"Curtis et al., 2003","Curtis et al., 2003",,12511926.0,12511926
+95,train,Ativo,295.79,3,[NH2+]=C(NCc1ccccc1Cl)c3ccc2ccccc2c3,"Curtis et al., 2003","Curtis et al., 2003",,20706437.0,20706437
+96,train,Ativo,295.79,3,[NH2+]=C(NCc1cccc(Cl)c1)c3ccc2ccccc2c3,"Curtis et al., 2003","Curtis et al., 2003",,20706466.0,20706466
+97,train,Ativo,245.73,3,[NH2+]=C(NCc1cccc(Cl)c1)c2ccccc2,"Claiborne et al., 2003","Claiborne et al., 2003",,20706464.0,20706464
+98,train,Ativo,263.72,3,[NH2+]=C(NCc1cccc(Cl)c1)c2cccc(F)c2,"Claiborne et al., 2003","Claiborne et al., 2003",,20706457.0,20706457
+99,train,Ativo,263.72,3,[NH2+]=C(NCc1cccc(Cl)c1)c2ccc(F)cc2,"Claiborne et al., 2003","Claiborne et al., 2003",,20706461.0,20706461
+100,train,Ativo,280.17,3,[NH2+]=C(NCc1cccc(Cl)c1)c2ccccc2Cl,"Claiborne et al., 2003","Claiborne et al., 2003",,44374973.0,44374973
+102,train,Ativo,280.17,3,[NH2+]=C(NCc1cccc(Cl)c1)c2ccc(Cl)cc2,"Claiborne et al., 2003","Claiborne et al., 2003",,20706433.0,20706433
+103,train,Ativo,287.38,3,[NH2+]=C(NCc1ccccc1)c3ccc(c2ccccc2)cc3,"Claiborne et al., 2003","Claiborne et al., 2003",,20706471.0,20706471
+106,train,Ativo,279.28,3,[NH2+]=C(NCc1ccccc1)c2ccc(C(F)(F)F)cc2,"Claiborne et al., 2003","Claiborne et al., 2003",,44374892.0,44374892
+107,train,Ativo,289.37,3,CS(=O)(=O)c2ccc(C(=[NH2+])NCc1ccccc1)cc2,"Claiborne et al., 2003","Claiborne et al., 2003",,44374891.0,44374891
+110,train,Ativo,325.31,3,COc2ccc(CNC(=[NH2+])c1ccc(OC(F)(F)F)cc1)cc2,"Claiborne et al., 2003","Claiborne et al., 2003",,44374667.0,44374667
+111,train,Ativo,313.73,3,[NH2+]=C(NCc1ccccc1Cl)c2ccc(C(F)(F)F)cc2,"Claiborne et al., 2003","Claiborne et al., 2003",,44374660.0,44374660
+113,train,Ativo,347.28,3,[NH2+]=C(NCc1cccc(C(F)(F)F)c1)c2ccc(C(F)(F)F)cc2,"Claiborne et al., 2003","Claiborne et al., 2003",,44374617.0,44374617
+114,train,Ativo,307.33,3,Cc2cc(C)cc(CNC(=[NH2+])c1ccc(C(F)(F)F)cc1)c2,"Claiborne et al., 2003","Claiborne et al., 2003",,44374616.0,44374616
+115,train,Ativo,363.28,3,[NH2+]=C(NCc1ccccc1C(F)(F)F)c2ccc(OC(F)(F)F)cc2,"Claiborne et al., 2003","Claiborne et al., 2003",,9863769.0,9863769
+116,train,Ativo,314.62,3,[NH2+]=C(NCc1cccc(Cl)c1)c2ccc(Cl)c(Cl)c2,"Claiborne et al., 2003","Claiborne et al., 2003",,20706422.0,20706422
+117,train,Ativo,364.17,3,[NH2+]=C(NCc1ccccc1OC(F)(F)F)c2ccc(Cl)c(Cl)c2,"Claiborne et al., 2003","Claiborne et al., 2003",,9799094.0,9799094
+119,train,Ativo,364.17,3,[NH2+]=C(NCc1cc(Cl)cc(Cl)c1)c2ccc(OC(F)(F)F)cc2,"Claiborne et al., 2003","Claiborne et al., 2003",,9928952.0,9928952
+120,train,Ativo,206.26,3,CNC1=[NH+]CCN1OCc2ccccc2,"Alaine et al., 2003","Alanine et al., 2003",,44337156.0,44337156
+121,train,Ativo,234.32,3,CC(C)NC1=[NH+]CCN1OCc2ccccc2,"Alaine et al., 2003","Alanine et al., 2003",,44337228.0,44337228
+122,train,Ativo,236.29,3,OCCNC1=[NH+]CCN1OCc2ccccc2,"Alaine et al., 2003","Alanine et al., 2003",,44337227.0,44337227
+124,train,Ativo,234.32,3,CCCNC1=[NH+]CCN1OCc2ccccc2,"Alaine et al., 2003","Alanine et al., 2003",,44336951.0,44336951
+125,train,Ativo,248.34,3,CCCCNC1=[NH+]CCN1OCc2ccccc2,"Alaine et al., 2003","Alanine et al., 2003",,44336952.0,44336952
+126,train,Ativo,262.37,3,CCCCCNC1=[NH+]CCN1OCc2ccccc2,"Alaine et al., 2003","Alanine et al., 2003",,10038305.0,10038305
+127,train,Ativo,276.4,3,CCCCCCNC1=[NH+]CCN1OCc2ccccc2,"Alaine et al., 2003","Alanine et al., 2003",,44336953.0,44336953
+129,train,Ativo,232.3,3,c3ccc(CON1CC[NH+]=C1NC2CC2)cc3,"Alaine et al., 2003","Alanine et al., 2003",,44337183.0,44337183
+130,train,Inativo,274.38,3,c3ccc(CON1CC[NH+]=C1NC2CCCCC2)cc3,"Alaine et al., 2003","Alanine et al., 2003",,44337182.0,44337182
+131,train,Ativo,282.36,3,c3ccc(CNC1=[NH+]CCN1OCc2ccccc2)cc3,"Alaine et al., 2003","Alanine et al., 2003",,44337196.0,44337196
+132,train,Ativo,283.35,3,c3ccc(CON1CC[NH+]=C1NCc2ccccn2)cc3,"Alaine et al., 2003","Alanine et al., 2003",,,R5
+136,train,Ativo,324.44,3,c3ccc(CCCCNC1=[NH+]CCN1OCc2ccccc2)cc3,"Alaine et al., 2003","Alanine et al., 2003",,44337352.0,44337352
+137,train,Ativo,326.41,3,c3ccc(COCCNC1=[NH+]CCN1OCc2ccccc2)cc3,"Alaine et al., 2003","Alanine et al., 2003",,44337522.0,44337522
+139,train,Ativo,296.82,3,CCCCCNC1=[NH+]CCN1OCc2ccccc2Cl,"Alaine et al., 2003","Alanine et al., 2003",,44337463.0,44337463
+140,train,Ativo,276.4,3,CCCCCNC1=[NH+]CCN1OCc2ccccc2C,"Alaine et al., 2003","Alanine et al., 2003",,44337448.0,44337448
+141,train,Ativo,292.4,3,CCCCCNC1=[NH+]CCN1OCc2ccccc2OC,"Alaine et al., 2003","Alanine et al., 2003",,44337447.0,44337447
+142,train,Ativo,280.36,3,CCCCCNC1=[NH+]CCN1OCc2cccc(F)c2,"Alaine et al., 2003","Alanine et al., 2003",,44337192.0,44337192
+143,train,Ativo,276.4,3,CCCCCNC1=[NH+]CCN1OCc2cccc(C)c2,"Alaine et al., 2003","Alanine et al., 2003",,44337176.0,44337176
+144,train,Ativo,292.4,3,CCCCCNC1=[NH+]CCN1OCc2cccc(OC)c2,"Alaine et al., 2003","Alanine et al., 2003",,44337175.0,44337175
+145,train,Ativo,277.39,3,CCCCCNC1=[NH+]CCN1OCc2cccc(N)c2,"Alaine et al., 2003","Alanine et al., 2003",,,R5
+146,train,Ativo,280.36,3,CCCCCNC1=[NH+]CCN1OCc2ccc(F)cc2,"Alaine et al., 2003","Alanine et al., 2003",,44336971.0,44336971
+147,train,Ativo,296.82,3,CCCCCNC1=[NH+]CCN1OCc2ccc(Cl)cc2,"Alaine et al., 2003","Alanine et al., 2003",,44336970.0,44336970
+148,train,Ativo,276.4,3,CCCCCNC1=[NH+]CCN1OCc2ccc(C)cc2,"Alaine et al., 2003","Alanine et al., 2003",,44336963.0,44336963
+149,train,Ativo,292.4,3,CCCCCNC1=[NH+]CCN1OCc2ccc(OC)cc2,"Alaine et al., 2003","Alanine et al., 2003",,44337082.0,44337082
+150,train,Ativo,307.37,3,CCCCCNC1=[NH+]CCN1OCc2ccc(N(=O)=O)cc2,"Alaine et al., 2003","Alanine et al., 2003",,44337105.0,44337105
+151,train,Ativo,338.47,3,CCCCCNC1=[NH+]CCN1OCc3ccc(c2ccccc2)cc3,"Alaine et al., 2003","Alanine et al., 2003",,44337104.0,44337104
+152,train,Ativo,268.4,3,CCCCCNC1=[NH+]CCN1OCc2cccs2,"Alaine et al., 2003","Alanine et al., 2003",,44337081.0,44337081
+154,train,Ativo,279.42,2,CCCCCSC1=[NH+]CCN1OCc2ccccc2,"Alaine et al., 2003","Alanine et al., 2003",,44337535.0,44337535
+155,train,Inativo,308.44,2,CCCCCNc2[nH+]c1ccccc1n2CCc3ccccc3,"Alaine et al., 2003","Alanine et al., 2003",,44337534.0,44337534
+157,train,Ativo,260.4,3,CCCCCNC1=[NH+]CCN1CCc2ccccc2,"Alaine et al., 2003","Alanine et al., 2003",,44337515.0,44337515
+158,train,Ativo,276.4,3,CCCCCNC1=[NH+]CCN1OCCc2ccccc2,"Alaine et al., 2003","Alanine et al., 2003",,9860374.0,9860374
+159,train,Ativo,290.42,3,CCCCCNC1=[NH+]CCN1OCCCc2ccccc2,"Alaine et al., 2003","Alanine et al., 2003",,44337523.0,44337523
+160,train,Ativo,221.28,3,Nc2cc(c1ccccc1)[nH+]c3ccccc23,"Pinard et al,. 2002","Pinard et al., 2002",v,453077.0,453077
+161,train,Ativo,263.36,3,CCCNc2cc(c1ccccc1)[nH+]c3ccccc23,"Pinard et al,. 2003","Pinard et al., 2002",v,44321857.0,44321857
+163,train,Ativo,279.36,3,C[C@@H](O)CNc2cc(c1ccccc1)[nH+]c3ccccc23,"Pinard et al,. 2005","Pinard et al., 2002",v,44322193.0,44322193
+164,train,Ativo,279.36,3,C[C@H](O)CNc2cc(c1ccccc1)[nH+]c3ccccc23,"Pinard et al,. 2006","Pinard et al., 2002",v,44321830.0,44321830
+166,train,Ativo,279.36,3,COCCNc2cc(c1ccccc1)[nH+]c3ccccc23,"Pinard et al,. 2008","Pinard et al., 2002",v,2728420.0,2728420
+167,train,Ativo,277.34,3,CC(=O)CNc2cc(c1ccccc1)[nH+]c3ccccc23,"Pinard et al,. 2009","Pinard et al., 2002",v,44321847.0,44321847
+169,train,Ativo,327.83,3,Cc3ccc(c2cc(NC[C@@H](C)O)c1ccccc1[nH+]2)cc3Cl,"Pinard et al,. 2011","Pinard et al., 2002",v,,R9
+170,train,Ativo,323.41,3,COc3ccc(c2cc(NC[C@@H](C)O)c1ccccc1[nH+]2)cc3C,"Pinard et al,. 2012","Pinard et al., 2002",v,,R9
+172,train,Ativo,328.43,3,C[C@@H]([C@@H](O)c1ccc(O)cc1)[NH+]3CC[C@@](O)(c2ccccc2)CC3,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,219101.0,219101
+173,train,Ativo,340.48,3,C[C@@H](C[NH+]2CCC(Cc1ccccc1)CC2)[C@@H](O)c3ccc(O)cc3,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,6604887.0,6604887
+176,train,Ativo,224.3,3,Cc3ccc(N2CCc1ccccc1C2)nc3,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,11218368.0,11218368
+178,train,Ativo,210.27,2,c3ccc(N2CCc1ccccc1C2)nc3,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,44380878.0,44380878
+179,train,Ativo,224.3,3,Cc3ccnc(N2CCc1ccccc1C2)c3,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,22605919.0,22605919
+181,train,Ativo,225.29,2,Nc3cccc(N2CCc1ccccc1C2)n3,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,22605923.0,22605923
+182,train,Ativo,239.32,2,Cc3cc(N)nc(N2CCc1ccccc1C2)c3,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,22605921.0,22605921
+183,train,Ativo,266.36,3,Nc3cc(N2CCc1ccccc1C2)[nH+]c4CCCc34,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,44380820.0,44380820
+184,train,Ativo,240.32,3,Cc3cc(N)cc(N2CCc1ccccc1C2)[nH+]3,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,9878065.0,9878065
+186,train,Ativo,240.32,3,Cc3c[nH+]c(N2CCc1ccccc1C2)cc3N,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,9964754.0,9964754
+187,train,Ativo,226.3,3,Nc3cc[nH+]c(N2CCc1ccccc1C2)c3,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,9855978.0,9855978
+188,train,Ativo,254.35,3,CCc3cc(N)cc(N2CCc1ccccc1C2)[nH+]3,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,9921302.0,9921302
+189,train,Ativo,297.35,2,CCOC(=O)Nc3ccnc(N2CCc1ccccc1C2)c3,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,44380479.0,44380479
+190,train,Ativo,267.33,2,CC(=O)Nc3ccnc(N2CCc1ccccc1C2)c3,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,22605927.0,22605927
+191,train,Ativo,316.42,3,c4ccc(CNc3cc[nH+]c(N2CCc1ccccc1C2)c3)cc4,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,22605938.0,22605938
+192,train,Ativo,254.35,3,CN(C)c3cc[nH+]c(N2CCc1ccccc1C2)c3,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,9921303.0,9921303
+196,train,Ativo,211.28,3,c3ccc2CN(c1cc[nH+]cc1)CCc2c3,"Büttelmann et al., 2003 (B)","B\""uttelmann et al., 2003b",c,9877750.0,9877750
+198,train,Ativo,245.73,3,Clc3ccc2CN(c1cc[nH+]cc1)CCc2c3,"Büttelmann et al., 2003 (B)","B\""uttelmann et al., 2003b",c,22605928.0,22605928
+199,train,Ativo,245.73,3,Clc3ccc2CCN(c1cc[nH+]cc1)Cc2c3,"Büttelmann et al., 2003 (B)","B\""uttelmann et al., 2003b",c,10467020.0,10467020
+201,train,Inativo,271.33,3,COc3cc2CCN(c1cc[nH+]cc1)Cc2cc3OC,"Büttelmann et al., 2003 (B)","B\""uttelmann et al., 2003b",c,44294334.0,44294334
+202,train,Ativo,261.34,3,c4ccc3CN(c1cc[nH+]c2ccccc12)CCc3c4,"Büttelmann et al., 2003 (B)","B\""uttelmann et al., 2003b",c,18326767.0,18326767
+203,train,Ativo,275.37,3,Cc4cc(N2CCc1ccccc1C2)c3ccccc3[nH+]4,"Büttelmann et al., 2003 (B)","B\""uttelmann et al., 2003b",c,18326776.0,18326776
+206,train,Ativo,284.38,3,Cc3cc(N2CCc1ccccc1C2)cc(NCCO)[nH+]3,"Büttelmann et al., 2003 (B)","B\""uttelmann et al., 2003b",c,9835485.0,9835485
+207,train,Ativo,225.31,3,Cc3cc(N2CCc1ccccc1C2)cc[nH+]3,"Büttelmann et al., 2003 (B)","B\""uttelmann et al., 2003b",c,9813296.0,9813296
+208,train,Ativo,226.3,3,Nc3cc(N2CCc1ccccc1C2)cc[nH+]3,"Büttelmann et al., 2003 (B)","B\""uttelmann et al., 2003b",c,22605911.0,22605911
+212,train,Ativo,288.34,3,COc1cc(F)ccc1c3cncc(C[NH2+]CC2CC2)n3,"Brown et al., 2011","Brown et al., 2011",,54581861.0,54581861
+213,train,Ativo,288.34,3,COc1cc(F)ccc1c3cncc(C[NH2+]C2CCC2)n3,"Brown et al., 2011","Brown et al., 2011",,54582797.0,54582797
+214,train,Ativo,302.37,3,COc1cc(F)ccc1c3cncc(C[NH2+]C2CCCC2)n3,"Brown et al., 2011","Brown et al., 2011",,54582798.0,54582798
+215,train,Ativo,292.33,2,COCC[NH2+]Cc2cncc(c1ccc(F)cc1OC)n2,"Brown et al., 2011","Brown et al., 2011",,54584775.0,54584775
+218,train,Ativo,274.31,2,COc1cc(F)ccc1c3cncc(C[NH2+]C2CC2)n3,"Brown et al., 2011","Brown et al., 2011",,54584794.0,54584794
+220,train,Ativo,325.36,2,COc1cc(F)ccc1c3cncc(C[NH2+]Cc2ccccn2)n3,"Brown et al., 2011","Brown et al., 2011",,54587756.0,54587756
+222,train,Ativo,276.3,3,Fc3cccc(c2cncc(C[NH2+]CC1CC1)n2)c3F,"Brown et al., 2011","Brown et al., 2011",,54580844.0,54580844
+223,train,Ativo,262.28,2,Fc3cccc(c2cncc(C[NH2+]C1CC1)n2)c3F,"Brown et al., 2011","Brown et al., 2011",,54584796.0,54584796
+225,train,Ativo,274.31,2,COc3cccc(c2cncc(C[NH2+]C1CC1)n2)c3F,"Brown et al., 2011","Brown et al., 2011",,54586717.0,54586717
+227,train,Ativo,279.36,3,N#Cc3ccc(c2cncc(C[NH2+]C1CCCC1)n2)cc3,"Brown et al., 2011","Brown et al., 2011",,54587758.0,54587758
+228,train,Ativo,314.4,3,COc3ccc(c2cncc(C[NH2+]C1CCCC1)n2)c(OC)c3,"Brown et al., 2011","Brown et al., 2011",,54586718.0,54586718
+229,train,Ativo,311.4,3,CC(=O)Nc3cccc(c2cncc(C[NH2+]C1CCCC1)n2)c3,"Brown et al., 2011","Brown et al., 2011",,54583832.0,54583832
+230,train,Ativo,301.38,3,COc1cc(F)ccc1c3cncc(C[NH2+]C2CCCC2)c3,"Brown et al., 2011","Brown et al., 2011",,53248849.0,53248849
+232,train,Ativo,301.38,3,COc1cc(F)ccc1c3cccc(C[NH2+]C2CCCC2)n3,"Brown et al., 2011","Brown et al., 2011",,54581904.0,54581904
+233,train,Ativo,301.38,3,COc1cc(F)ccc1c3cc(C[NH2+]C2CCCC2)ccn3,"Brown et al., 2011","Brown et al., 2011",,54584797.0,54584797
+234,train,Ativo,315.41,3,COc1cc(F)ccc1c3cncc(C[NH2+]C2CCCCC2)c3,"Brown et al., 2011","Brown et al., 2011",,54586720.0,54586720
+236,train,Ativo,308.35,2,COc1cc(F)ccc1c3cncc(NCc2ccccc2)c3,"Brown et al., 2011","Brown et al., 2011",,54583834.0,54583834
+237,train,Ativo,324.31,1,COc1cc(F)ccc1c3cncc(NC(=O)c2cnccn2)c3,"Brown et al., 2011","Brown et al., 2011",,,R1
+239,train,Ativo,322.33,1,COc1cc(F)ccc1c3cncc(NC(=O)c2ccccc2)c3,"Brown et al., 2011","Brown et al., 2011",,,R1
+240,train,Ativo,315.34,1,COc1cc(F)ccc1c3cncc(NC(=O)N2CCCC2)c3,"Brown et al., 2011","Brown et al., 2011",,,R1
+241,train,Ativo,300.33,1,COc1cc(F)ccc1c3cncc(NC(=O)C2CCC2)c3,"Brown et al., 2011","Brown et al., 2011",,,R1
+243,train,Ativo,288.32,1,CCCC(=O)Nc2cncc(c1ccc(F)cc1OC)c2,"Brown et al., 2011","Brown et al., 2011",,,R1
+244,train,Ativo,286.3,1,COc1cc(F)ccc1c3cncc(NC(=O)C2CC2)c3,"Brown et al., 2011","Brown et al., 2011",,,R1
+247,train,Inativo,224.71,2,[NH3+][C@]2(c1ccccc1Cl)CCCCC2=O,"MORRIS et al., 2017 (publicado)","Morris et al., 2017",u,11775775.0,11775775
+249,train,Inativo,222.69,2,[NH3+][C@]2(c1ccccc1Cl)CCC=CC2=O,"MORRIS et al., 2017 (publicado)","Morris et al., 2017",u,89504261.0,89504261
+252,train,Inativo,240.71,2,[NH3+][C@@]2(c1ccccc1Cl)CCC[C@@H](O)C2=O,"MORRIS et al., 2017 (publicado)","Morris et al., 2017",u,89504167.0,89504167
+253,train,Inativo,240.71,2,[NH3+][C@]2(c1ccccc1Cl)CCC[C@H](O)C2=O,"MORRIS et al., 2017 (publicado)","Morris et al., 2017",u,71519584.0,71519584
+254,train,Inativo,240.71,2,[NH3+][C@@]2(c1ccccc1Cl)CC[C@@H](O)CC2=O,"MORRIS et al., 2017 (publicado)","Morris et al., 2017",u,132208902.0,132208902
+256,train,Inativo,240.71,2,[NH3+][C@@]2(c1ccccc1Cl)CC[C@H](O)CC2=O,"MORRIS et al., 2017 (publicado)","Morris et al., 2017",u,132208900.0,132208900
+257,train,Inativo,240.71,2,[NH3+][C@]2(c1ccccc1Cl)CC[C@@H](O)CC2=O,"MORRIS et al., 2017 (publicado)","Morris et al., 2017",u,102053358.0,102053358
+258,train,Inativo,240.71,2,[NH3+][C@@]2(c1ccccc1Cl)C[C@@H](O)CCC2=O,"MORRIS et al., 2017 (publicado)","Morris et al., 2017",u,132208972.0,132208972
+259,train,Inativo,240.71,2,[NH3+][C@]2(c1ccccc1Cl)C[C@H](O)CCC2=O,"MORRIS et al., 2017 (publicado)","Morris et al., 2017",u,102053360.0,102053360
+260,train,Inativo,240.71,2,[NH3+][C@@]2(c1ccccc1Cl)C[C@H](O)CCC2=O,"MORRIS et al., 2017 (publicado)","Morris et al., 2017",u,132208973.0,132208973
+261,train,Inativo,240.71,2,[NH3+][C@]2(c1ccccc1Cl)C[C@@H](O)CCC2=O,"MORRIS et al., 2017 (publicado)","Morris et al., 2017",u,102053359.0,102053359
+263,train,Inativo,432.47,0,Cc2nc(NS(=O)(=O)c1ccc(N(=O)=O)cc1)sc2C(=O)NCc3ccccc3,"RAJAN et al., 2020 (manuscrito aceito)","Rajan et al., 2020",c,162646311.0,162646311
+264,train,Inativo,412.49,0,Cc2nc(NS(=O)(=O)c1ccc(C#N)cc1)sc2C(=O)NCc3ccccc3,"RAJAN et al., 2020 (manuscrito aceito)","Rajan et al., 2020",c,162659227.0,162659227
+265,train,Inativo,401.5,0,Cc2nc(NS(=O)(=O)Cc1ccccc1)sc2C(=O)NCc3ccccc3,"RAJAN et al., 2020 (manuscrito aceito)","Rajan et al., 2020",c,162646916.0,162646916
+266,train,Inativo,509.4,2,Cc2nc(CNS(=O)(=O)c1cccc(Br)c1)sc2C(=O)NNC(=O)c3ccccc3,"RAJAN et al., 2020 (manuscrito aceito)","Rajan et al., 2020",c,162643381.0,162643381
+267,train,Inativo,482.94,2,Cc2nc(CNS(=O)(=O)c1ccc(F)c(Cl)c1)sc2C(=O)NNC(=O)c3ccccc3,"RAJAN et al., 2020 (manuscrito aceito)","Rajan et al., 2020",c,162649789.0,162649789
+268,train,Inativo,444.53,2,Cc3ccc(S(=O)(=O)NCc2nc(C)c(C(=O)NNC(=O)c1ccccc1)s2)cc3,"RAJAN et al., 2020 (manuscrito aceito)","Rajan et al., 2020",c,162651935.0,162651935
+269,train,Inativo,541.46,2,Cc2nc(CNS(=O)(=O)c1cccc(Br)c1)sc2C(=O)NNC(=O)c3ccccc3S,"RAJAN et al., 2020 (manuscrito aceito)","Rajan et al., 2020",c,,R4
+273,train,Inativo,466.87,2,Cc2nc(CNS(=O)(=O)c1ccc(F)c(Cl)c1)oc2C(=O)NNC(=O)c3ccccc3,"RAJAN et al., 2020 (manuscrito aceito)","Rajan et al., 2020",c,162658583.0,162658583
+274,train,Inativo,525.4,2,Cc2nc(CNS(=O)(=O)c1cccc(Br)c1)oc2C(=O)NNC(=O)c3ccccc3S,"RAJAN et al., 2020 (manuscrito aceito)","Rajan et al., 2020",c,,R4
+275,train,Inativo,498.94,2,Cc2nc(CNS(=O)(=O)c1ccc(F)c(Cl)c1)oc2C(=O)NNC(=O)c3ccccc3S,"RAJAN et al., 2020 (manuscrito aceito)","Rajan et al., 2020",c,,R4
+277,train,Inativo,479.3,2,O=C(NNC(=O)c2cc(CNS(=O)(=O)c1cccc(Br)c1)on2)c3ccccc3,"RAJAN et al., 2020 (manuscrito aceito)","Rajan et al., 2020",c,162660212.0,162660212
+282,train,Inativo,322.29,1,CN1C(=CC=N1)NCC2=CN(N=N2)C3=CC(=C(C=C3)F)C(F)F,"Standard cellbased calcium flux assay from US Patent US10617676, PubChem, 2023","US Patent US10617676 (standard cell-based calcium-flux assay), PubChem BioAssay, 2023",v,130302249.0,130302249
+283,train,Inativo,267.29,0,CC1=CC=CC=C1N2C=C(N=N2)COC3=NC=CC=N3,"Standard cellbased calcium flux assay from US Patent US10617676, PubChem, 2023","US Patent US10617676 (standard cell-based calcium-flux assay), PubChem BioAssay, 2023",v,130309562.0,130309562
+284,train,Inativo,285.28,0,CC1=CC=CC=C1N2C=C(N=N2)COC3=NC=C(C=N3)F,"Standard cellbased calcium flux assay from US Patent US10617676, PubChem, 2023","US Patent US10617676 (standard cell-based calcium-flux assay), PubChem BioAssay, 2023",v,130309563.0,130309563
+285,train,Inativo,355.25,0,C1=CC(=CC=C1N2C=C(N=N2)COC3=NC=C(C=N3)F)OC(F)(F)F,"Standard cellbased calcium flux assay from US Patent US10617676, PubChem, 2023","US Patent US10617676 (standard cell-based calcium-flux assay), PubChem BioAssay, 2023",v,130309651.0,130309651
+286,train,Inativo,367.28,0,COC1=CN=C(N=C1)OCC2=CN(N=N2)C3=CC=C(C=C3)OC(F)(F)F,"Standard cellbased calcium flux assay from US Patent US10617676, PubChem, 2023","US Patent US10617676 (standard cell-based calcium-flux assay), PubChem BioAssay, 2023",v,130309658.0,130309658
+288,train,Inativo,303.27,0,CC1=C(C=CC(=C1)F)N2C=C(N=N2)COC3=NC=C(C=N3)F,"Standard cellbased calcium flux assay from US Patent US10617676, PubChem, 2023","US Patent US10617676 (standard cell-based calcium-flux assay), PubChem BioAssay, 2023",v,130309759.0,130309759
+290,train,Inativo,347.32,0,CC(C)(C1=CN=C(N=C1)OCC2=CN(N=N2)C3=C(C=CC(=C3)F)F)O,"Standard cellbased calcium flux assay from US Patent US10617676, PubChem, 2023","US Patent US10617676 (standard cell-based calcium-flux assay), PubChem BioAssay, 2023",v,130309870.0,130309870
+291,train,Inativo,307.23,0,C1=CC(=C(C(=C1)F)F)N2C=C(N=N2)COC3=NC=C(C=N3)F,"Standard cellbased calcium flux assay from US Patent US10617676, PubChem, 2023","US Patent US10617676 (standard cell-based calcium-flux assay), PubChem BioAssay, 2023",v,130309872.0,130309872
+292,train,Inativo,347.32,0,CC(C)(C1=CN=C(N=C1)OCC2=CN(N=N2)C3=C(C(=CC=C3)F)F)O,"Standard cellbased calcium flux assay from US Patent US10617676, PubChem, 2023","US Patent US10617676 (standard cell-based calcium-flux assay), PubChem BioAssay, 2023",v,130309874.0,130309874
+293,train,Inativo,321.26,0,CC1=NC(=NC=C1F)OCC2=CN(N=N2)C3=C(C(=CC=C3)F)F,"Standard cellbased calcium flux assay from US Patent US10617676, PubChem, 2023","US Patent US10617676 (standard cell-based calcium-flux assay), PubChem BioAssay, 2023",v,130309875.0,130309875
+295,train,Inativo,334.35,2,CN1C2=C(C=C(C=N2)C3=CC(=CC=C3)F)N(C1=O)CC4=CN=CC=C4,"Standard cellbased calcium flux assay from US Patent US10617676, PubChem, 2023","US Patent US10617676 (standard cell-based calcium-flux assay), PubChem BioAssay, 2023",v,134489950.0,134489950
+297,train,Inativo,351.28,0,CN1C2=C(C=C(C=N2)C3=CC(=CC=C3)C(F)(F)F)N(C1=O)CC(=O)O,"NR2B standard assay from US Patent US10071988 Substituted 1-2-3-triazoles as NR2B-selective NMDA modulators, PubChem, 2023","US Patent US10071988 (substituted 1,2,3-triazoles as NR2B-selective NMDA modulators; standard NR2B assay), PubChem BioAssay, 2023",v,134490020.0,134490020
+300,train,Inativo,352.34,1,CC1=C(N=CC=C1)CN2C3=C(NC2=O)N=CC(=C3)C4=CC(=C(C=C4)F)F,"NR2B standard assay from US Patent US10071988 Substituted 1-2-3-triazoles as NR2B-selective NMDA modulators, PubChem, 2023","US Patent US10071988 (substituted 1,2,3-triazoles as NR2B-selective NMDA modulators; standard NR2B assay), PubChem BioAssay, 2023",v,134493615.0,134493615
+301,train,Inativo,403.38,0,C1=CC(=CC(=C1)C(F)(F)F)C2=CC3=C(NC(=O)N3CC(=O)C4=CC=CS4)N=C2,"NR2B standard assay from US Patent US10071988 Substituted 1-2-3-triazoles as NR2B-selective NMDA modulators, PubChem, 2023","US Patent US10071988 (substituted 1,2,3-triazoles as NR2B-selective NMDA modulators; standard NR2B assay), PubChem BioAssay, 2023",v,134493714.0,134493714
+302,train,Inativo,334.35,1,CC1=C(N=CC=C1)CN2C3=C(NC2=O)N=CC(=C3)C4=CC(=CC=C4)F,"NR2B standard assay from US Patent US10071988 Substituted 1-2-3-triazoles as NR2B-selective NMDA modulators, PubChem, 2023","US Patent US10071988 (substituted 1,2,3-triazoles as NR2B-selective NMDA modulators; standard NR2B assay), PubChem BioAssay, 2023",v,134493732.0,134493732
+303,train,Inativo,337.44,3,CC1=C(C(=CC=C1)C)C2=CC3=C(NC(=O)N3CC[NH+]4CCCC4)N=C2,"NR2B standard assay from US Patent US10071988 Substituted 1-2-3-triazoles as NR2B-selective NMDA modulators, PubChem, 2023","US Patent US10071988 (substituted 1,2,3-triazoles as NR2B-selective NMDA modulators; standard NR2B assay), PubChem BioAssay, 2023",v,134493734.0,134493734
+304,train,Inativo,406.31,1,C1=CC(=CC(=C1)C(F)(F)F)C2=CC3=C(NC(=O)N3C(C4=CN=CC=C4)(F)F)N=C2,"NR2B standard assay from US Patent US10071988 Substituted 1-2-3-triazoles as NR2B-selective NMDA modulators, PubChem, 2023","US Patent US10071988 (substituted 1,2,3-triazoles as NR2B-selective NMDA modulators; standard NR2B assay), PubChem BioAssay, 2023",v,134493737.0,134493737
+305,train,Inativo,384.35,1,CC1=C(N=CC=C1)CN2C3=C(NC2=O)N=CC(=C3)C4=CC(=CC=C4)C(F)(F)F,"NR2B standard assay from US Patent US10071988 Substituted 1-2-3-triazoles as NR2B-selective NMDA modulators, PubChem, 2023","US Patent US10071988 (substituted 1,2,3-triazoles as NR2B-selective NMDA modulators; standard NR2B assay), PubChem BioAssay, 2023",v,134493757.0,134493757
+306,train,Inativo,437.34,0,C1=CC(=CC(=C1)C(F)(F)F)C2=CC3=C(NC(=O)N3CC4=CC=C(C=C4)C(F)(F)F)N=C2,"NR2B standard assay from US Patent US10071988 Substituted 1-2-3-triazoles as NR2B-selective NMDA modulators, PubChem, 2023","US Patent US10071988 (substituted 1,2,3-triazoles as NR2B-selective NMDA modulators; standard NR2B assay), PubChem BioAssay, 2023",v,134493773.0,134493773
+307,train,Inativo,327.34,1,COCCNC(=O)CN1C2=C(NC1=O)N=CC(=C2)C3=CN=CC=C3,"NR2B standard assay from US Patent US10071988 Substituted 1-2-3-triazoles as NR2B-selective NMDA modulators, PubChem, 2023","US Patent US10071988 (substituted 1,2,3-triazoles as NR2B-selective NMDA modulators; standard NR2B assay), PubChem BioAssay, 2023",v,134493818.0,134493818
+308,train,Inativo,325.36,1,COC1=CC(=C(C=C1)C2=CC3=C(NC(=O)N3CC4CC4)N=C2)OC,"NR2B standard assay from US Patent US10071988 Substituted 1-2-3-triazoles as NR2B-selective NMDA modulators, PubChem, 2023","US Patent US10071988 (substituted 1,2,3-triazoles as NR2B-selective NMDA modulators; standard NR2B assay), PubChem BioAssay, 2023",v,134493840.0,134493840
+309,train,Inativo,327.35,1,CCOC1=C(C=C(C=C1)F)C2=CC3=C(NC(=O)N3CC4CC4)N=C2,"NR2B standard assay from US Patent US10071988 Substituted 1-2-3-triazoles as NR2B-selective NMDA modulators, PubChem, 2023","US Patent US10071988 (substituted 1,2,3-triazoles as NR2B-selective NMDA modulators; standard NR2B assay), PubChem BioAssay, 2023",v,134493632.0,134493632
+310,train,Inativo,352.34,1,CC1=C(N=CC=C1)CN2C3=C(NC2=O)N=CC(=C3)C4=C(C(=CC=C4)F)F,"NR2B standard assay from US Patent US10071988 Substituted 1-2-3-triazoles as NR2B-selective NMDA modulators, PubChem, 2023","US Patent US10071988 (substituted 1,2,3-triazoles as NR2B-selective NMDA modulators; standard NR2B assay), PubChem BioAssay, 2023",v,134493858.0,134493858
+311,train,Inativo,401.34,0,COC1=NN=C(C=C1)CN2C3=C(NC2=O)N=CC(=C3)C4=CC(=CC=C4)C(F)(F)F,"HTS cellbased calcium flux assay from US Patent US10617676 and their use as GluN2B receptor modulators, PubChem, 2023","US Patent US10617676 (HTS cell-based calcium-flux assay; GluN2B receptor modulators), PubChem BioAssay, 2023",v,134493893.0,134493893
+312,train,Inativo,429.39,0,COC1=CC(=CC(=C1)CN2C3=C(NC2=O)N=CC(=C3)C4=CC(=CC=C4)C(F)(F)F)OC,"HTS cellbased calcium flux assay from US Patent US10617676 and their use as GluN2B receptor modulators, PubChem, 2023","US Patent US10617676 (HTS cell-based calcium-flux assay; GluN2B receptor modulators), PubChem BioAssay, 2023",v,134493907.0,134493907
+313,train,Inativo,377.87,0,CC(C)C1=CC=C(C=C1)CN2C3=C(NC2=O)N=CC(=C3)C4=CC=C(C=C4)Cl,"HTS cellbased calcium flux assay from US Patent US10617676 and their use as GluN2B receptor modulators, PubChem, 2023","US Patent US10617676 (HTS cell-based calcium-flux assay; GluN2B receptor modulators), PubChem BioAssay, 2023",v,134493913.0,134493913
+314,train,Inativo,418.49,2,CC(C)(C)C1=CC=C(C=C1)C2=CC3=C(NC(=O)N3CC4=NC=CC(=C4OC)OC)N=C2,"HTS cellbased calcium flux assay from US Patent US10617676 and their use as GluN2B receptor modulators, PubChem, 2023","US Patent US10617676 (HTS cell-based calcium-flux assay; GluN2B receptor modulators), PubChem BioAssay, 2023",v,134493843.0,134493843
+315,train,Inativo,345.35,0,CC1=C(C(=NO1)C)CN2C3=C(NC2=O)N=CC(=C3)C4=CC=CC(=C4)C#N,"HTS cellbased calcium flux assay from US Patent US10617676 and their use as GluN2B receptor modulators, PubChem, 2023","US Patent US10617676 (HTS cell-based calcium-flux assay; GluN2B receptor modulators), PubChem BioAssay, 2023",v,134493862.0,134493862
+316,train,Inativo,382.39,0,CCOC1=C(C=C(C=C1)F)C2=CC3=C(NC(=O)N3CC4=C(ON=C4C)C)N=C2,"HTS cellbased calcium flux assay from US Patent US10617676 and their use as GluN2B receptor modulators, PubChem, 2023","US Patent US10617676 (HTS cell-based calcium-flux assay; GluN2B receptor modulators), PubChem BioAssay, 2023",v,134493638.0,134493638
+318,train,Inativo,400.35,1,COC1=C(C=CC=N1)CN2C3=C(NC2=O)N=CC(=C3)C4=CC(=CC=C4)C(F)(F)F,"HTS cellbased calcium flux assay from US Patent US10617676 and their use as GluN2B receptor modulators, PubChem, 2023","US Patent US10617676 (HTS cell-based calcium-flux assay; GluN2B receptor modulators), PubChem BioAssay, 2023",v,134493956.0,134493956
+319,train,Inativo,352.34,1,CC1=C(N=CC=C1)CN2C3=C(NC2=O)N=CC(=C3)C4=CC(=CC(=C4)F)F,"HTS cellbased calcium flux assay from US Patent US10617676 and their use as GluN2B receptor modulators, PubChem, 2023","US Patent US10617676 (HTS cell-based calcium-flux assay; GluN2B receptor modulators), PubChem BioAssay, 2023",v,134494057.0,134494057
+320,train,Inativo,308.38,1,CN(C)C1=CC=CC(=C1)C2=CC3=C(NC(=O)N3CC4CC4)N=C2,"HTS cellbased calcium flux assay from US Patent US10617676 and their use as GluN2B receptor modulators, PubChem, 2023","US Patent US10617676 (HTS cell-based calcium-flux assay; GluN2B receptor modulators), PubChem BioAssay, 2023",v,134494095.0,134494095
+2,test,Ativo,294.45,3,c3ccc(CCCC[NH+]2CCCc1ccccc1CC2)cc3,"TEMME et al., 2020","Temme et al., 2020",,142819228.0,142819228
+8,test,Ativo,252.37,3,c3ccc(CCC[NH2+]C2Cc1ccccc1C2)cc3,"TEMME et al., 2020","Temme et al., 2020",,15061890.0,15061890
+9,test,Ativo,266.4,3,c3ccc(CCCC[NH2+]C2Cc1ccccc1C2)cc3,"TEMME et al., 2020","Temme et al., 2020",,103776446.0,103776446
+14,test,Ativo,402.55,3,O[C@H]4C[NH+](CCCCc1ccccc1)CCc3cc(OCc2ccccc2)ccc34,"BORGEL et al., 2018 (publicado)","B\""orgel et al., 2018",v,,R2
+15,test,Ativo,402.55,3,O[C@@H]4C[NH+](CCCCc1ccccc1)CCc3cc(OCc2ccccc2)ccc34,"BORGEL et al., 2018 (publicado)","B\""orgel et al., 2018",v,,R2
+18,test,Ativo,326.45,3,COc1ccc3c(c1)CC[NH+](CCCCc2ccccc2)C[C@@H]3O,"BORGEL et al., 2018 (publicado)","B\""orgel et al., 2018",v,,R2
+21,test,Ativo,266.4,3,c3ccc(CC[NH2+]C2CCc1ccccc1CC2)cc3,"GAWASKAR et al., 2014 (publicado)","Gawaskar et al., 2014",c,101884136.0,101884136
+22,test,Ativo,294.45,3,c3ccc(CCCC[NH2+]C2CCc1ccccc1CC2)cc3,"GAWASKAR et al., 2014 (publicado)","Gawaskar et al., 2014",c,101884137.0,101884137
+35,test,Ativo,326.47,3,C[NH+](CCC(F)Cc1ccccc1)C3CCc2ccccc2CC3,"THUM et al., 2019","Thum et al., 2019",,,R3
+38,test,Ativo,326.45,3,C[C@@H]([C@H](O)c1ccc(O)cc1)[NH+]3CCC(Cc2ccccc2)CC3,"BECHTHOLD et al., 2021 (publicado)","Bechthold et al., 2021",c,6604117.0,6604117
+49,test,Ativo,393.46,2,CS(=O)(=O)Nc4ccc3nc(Cc2ccc(Oc1ccccc1)cc2)[nH]c3c4,"McCauley et al, 2004","McCauley et al., 2004",,9865365.0,9865365
+50,test,Ativo,407.49,2,CCS(=O)(=O)Nc4ccc3nc(Cc2ccc(Oc1ccccc1)cc2)[nH]c3c4,"McCauley et al, 2004","McCauley et al., 2004",,9849584.0,9849584
+51,test,Ativo,421.51,2,CCCS(=O)(=O)Nc4ccc3nc(Cc2ccc(Oc1ccccc1)cc2)[nH]c3c4,"McCauley et al, 2004","McCauley et al., 2004",,9828572.0,9828572
+53,test,Ativo,455.53,2,O=S(=O)(Nc4ccc3nc(Cc2ccc(Oc1ccccc1)cc2)[nH]c3c4)c5ccccc5,"McCauley et al, 2004","McCauley et al., 2004",,9825245.0,9825245
+55,test,Ativo,407.49,2,CN(c4ccc3nc(Cc2ccc(Oc1ccccc1)cc2)[nH]c3c4)S(C)(=O)=O,"McCauley et al, 2004","McCauley et al., 2004",,11373160.0,11373160
+58,test,Ativo,399.53,3,CS(=O)(=O)Nc4ccc3nc(C[NH+]2CCC(Cc1ccccc1)CC2)[nH]c3c4,"McCauley et al, 2004","McCauley et al., 2004",,9822219.0,9822219
+59,test,Ativo,427.58,3,CC(C)S(=O)(=O)Nc4ccc3nc(C[NH+]2CCC(Cc1ccccc1)CC2)[nH]c3c4,"McCauley et al, 2004","McCauley et al., 2004",,11418899.0,11418899
+60,test,Ativo,340.41,3,Oc4ccc3nc(C[NH+]2CCC(Cc1ccccc1F)CC2)[nH]c3c4,"McCauley et al, 2004","McCauley et al., 2004",,9840849.0,9840849
+64,test,Ativo,336.45,3,Cc4ccc(CC3CC[NH+](Cc2nc1ccc(O)cc1[nH]2)CC3)cc4,"McCauley et al, 2004","McCauley et al., 2004",,10472142.0,10472142
+72,test,Ativo,305.32,3,[NH2+]=C(/C=C/c1ccccc1)NCc2ccccc2C(F)(F)F,"Curtis et al., 2003","Curtis et al., 2003",,9901060.0,9901060
+73,test,Ativo,305.32,3,[NH2+]=C(/C=C/c1ccccc1)NCc2cccc(C(F)(F)F)c2,"Curtis et al., 2003","Curtis et al., 2003",,9922486.0,9922486
+75,test,Ativo,267.35,3,COc1ccccc1CNC(=[NH2+])/C=C/c2ccccc2,"Curtis et al., 2003","Curtis et al., 2003",,9900027.0,9900027
+81,test,Ativo,306.21,3,[NH2+]=C(/C=C/c1ccccc1)NCc2cc(Cl)cc(Cl)c2,"Curtis et al., 2003","Curtis et al., 2003",,9814984.0,9814984
+84,test,Ativo,271.76,3,[NH2+]=C(/C=C/c1ccc(Cl)cc1)NCc2ccccc2,"Curtis et al., 2003","Curtis et al., 2003",,9921583.0,9921583
+88,test,Ativo,265.37,3,[NH2+]=C(/C=C/c1ccccc1)NCCCc2ccccc2,"Curtis et al., 2003","Curtis et al., 2003",,9899984.0,9899984
+89,test,Ativo,243.37,3,[NH2+]=C(/C=C/C1CCCCC1)NCc2ccccc2,"Curtis et al., 2003","Curtis et al., 2003",,9899581.0,9899581
+90,test,Ativo,239.34,3,[NH2+]=C(CCc1ccccc1)NCc2ccccc2,"Curtis et al., 2003","Curtis et al., 2003",,44374420.0,44374420
+91,test,Inativo,211.28,3,[NH2+]=C(NCc1ccccc1)c2ccccc2,"Curtis et al., 2003","Curtis et al., 2003",,200369.0,200369
+93,test,Ativo,261.34,3,[NH2+]=C(NCc1ccccc1)c3ccc2ccccc2c3,"Curtis et al., 2003","Curtis et al., 2003",,20706473.0,20706473
+94,test,Ativo,291.37,3,COc1ccccc1CNC(=[NH2+])c3ccc2ccccc2c3,"Curtis et al., 2003","Curtis et al., 2003",,20706441.0,20706441
+101,test,Ativo,280.17,3,[NH2+]=C(NCc1cccc(Cl)c1)c2cccc(Cl)c2,"Claiborne et al., 2003","Claiborne et al., 2003",,20706430.0,20706430
+104,test,Ativo,295.28,3,[NH2+]=C(NCc1ccccc1)c2ccc(OC(F)(F)F)cc2,"Claiborne et al., 2003","Claiborne et al., 2003",,9904185.0,9904185
+105,test,Ativo,245.73,3,[NH2+]=C(NCc1ccccc1)c2ccc(Cl)cc2,"Claiborne et al., 2003","Claiborne et al., 2003",,2806914.0,2806914
+108,test,Ativo,325.31,3,COc1ccccc1CNC(=[NH2+])c2ccc(OC(F)(F)F)cc2,"Claiborne et al., 2003","Claiborne et al., 2003",,9797323.0,9797323
+109,test,Ativo,325.31,3,COc2cccc(CNC(=[NH2+])c1ccc(OC(F)(F)F)cc1)c2,"Claiborne et al., 2003","Claiborne et al., 2003",,9862028.0,9862028
+112,test,Ativo,313.73,3,[NH2+]=C(NCc1cccc(Cl)c1)c2ccc(C(F)(F)F)cc2,"Claiborne et al., 2003","Claiborne et al., 2003",,44374627.0,44374627
+118,test,Ativo,323.33,3,Cc2cc(C)cc(CNC(=[NH2+])c1ccc(OC(F)(F)F)cc1)c2,"Claiborne et al., 2003","Claiborne et al., 2003",,9927159.0,9927159
+123,test,Ativo,232.3,3,C=CCNC1=[NH+]CCN1OCc2ccccc2,"Alaine et al., 2003","Alanine et al., 2003",,44337115.0,44337115
+128,test,Inativo,278.39,3,CCC[NH2+]CCNC1=[NH+]CCN1OCc2ccccc2,"Alaine et al., 2003","Alanine et al., 2003",,44337184.0,44337184
+133,test,Ativo,312.39,3,Oc3ccc(CCNC1=[NH+]CCN1OCc2ccccc2)cc3,"Alaine et al., 2003","Alanine et al., 2003",,44337254.0,44337254
+134,test,Ativo,296.39,3,c3ccc(CCNC1=[NH+]CCN1OCc2ccccc2)cc3,"Alaine et al., 2003","Alanine et al., 2003",,44337253.0,44337253
+135,test,Ativo,310.41,3,c3ccc(CCCNC1=[NH+]CCN1OCc2ccccc2)cc3,"Alaine et al., 2003","Alanine et al., 2003",,44337234.0,44337234
+138,test,Ativo,280.36,3,CCCCCNC1=[NH+]CCN1OCc2ccccc2F,"Alaine et al., 2003","Alanine et al., 2003",,44337464.0,44337464
+153,test,Ativo,262.37,3,CCCCNC1=[NH+]CCCN1OCc2ccccc2,"Alaine et al., 2003","Alanine et al., 2003",,44337536.0,44337536
+156,test,Ativo,259.41,3,CCCCC/[NH+]=C/1CCCN1CCc2ccccc2,"Alaine et al., 2003","Alanine et al., 2003",,,R5
+162,test,Ativo,279.36,3,OCCCNc2cc(c1ccccc1)[nH+]c3ccccc23,"Pinard et al,. 2004","Pinard et al., 2002",v,44321831.0,44321831
+165,test,Ativo,265.33,3,OCCNc2cc(c1ccccc1)[nH+]c3ccccc23,"Pinard et al,. 2007","Pinard et al., 2002",v,18432993.0,18432993
+168,test,Ativo,320.41,3,OCCNc3cc(N2CCc1ccccc1C2)[nH+]c4ccccc34,"Pinard et al,. 2010","Pinard et al., 2002",v,9905123.0,9905123
+171,test,Ativo,295.36,3,COc3ccc(c2cc(NCCO)c1ccccc1[nH+]2)cc3,"Pinard et al,. 2013","Pinard et al., 2002",v,9971682.0,9971682
+174,test,Inativo,289.17,1,Brc3cccc(N2CCc1ccccc1C2)n3,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,44380593.0,44380593
+175,test,Ativo,289.17,1,Brc3ccc(N2CCc1ccccc1C2)nc3,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,44380594.0,44380594
+177,test,Ativo,225.29,2,Nc3ccc(N2CCc1ccccc1C2)nc3,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,16784177.0,16784177
+180,test,Ativo,225.29,3,Nc1cccnc1N3CCc2ccccc2C3,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,16783390.0,16783390
+185,test,Ativo,256.32,3,Nc3cc(CO)[nH+]c(N2CCc1ccccc1C2)c3,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,9856417.0,9856417
+193,test,Ativo,284.38,3,Cc3c[nH+]c(N2CCc1ccccc1C2)cc3NCCO,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,9943680.0,9943680
+194,test,Ativo,284.38,3,Cc3cc(NCCO)cc(N2CCc1ccccc1C2)[nH+]3,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,9921863.0,9921863
+195,test,Ativo,270.35,3,OCCNc3cc[nH+]c(N2CCc1ccccc1C2)c3,"Büttelmann et al., 2003 (A)","B\""uttelmann et al., 2003a",c,9816863.0,9816863
+197,test,Ativo,245.73,3,Clc2cccc3CN(c1cc[nH+]cc1)CCc23,"Büttelmann et al., 2003 (B)","B\""uttelmann et al., 2003b",c,22605935.0,22605935
+200,test,Ativo,245.73,3,Clc2cccc3CCN(c1cc[nH+]cc1)Cc23,"Büttelmann et al., 2003 (B)","B\""uttelmann et al., 2003b",c,22605922.0,22605922
+204,test,Ativo,276.36,3,Nc4cc(N2CCc1ccccc1C2)c3ccccc3[nH+]4,"Büttelmann et al., 2003 (B)","B\""uttelmann et al., 2003b",c,18326759.0,18326759
+205,test,Ativo,320.41,3,OCCNc4cc(N2CCc1ccccc1C2)c3ccccc3[nH+]4,"Büttelmann et al., 2003 (B)","B\""uttelmann et al., 2003b",c,15895262.0,15895262
+209,test,Ativo,240.32,3,Cc3cc(N2CCc1ccccc1C2)cc(N)[nH+]3,"Büttelmann et al., 2003 (B)","B\""uttelmann et al., 2003b",c,17955480.0,17955480
+210,test,Ativo,339.39,3,CCOC(=O)C(=O)Nc3cc(N2CCc1ccccc1C2)cc(C)n3,"Büttelmann et al., 2003 (B)","B\""uttelmann et al., 2003b",c,10131987.0,10131987
+211,test,Ativo,297.35,2,Cc3cc(N2CCc1ccccc1C2)cc(NC(=O)CO)n3,"Büttelmann et al., 2003 (B)","B\""uttelmann et al., 2003b",c,22605936.0,22605936
+216,test,Ativo,290.36,3,COc1cc(F)ccc1c2cncc(C[NH2+]CC(C)C)n2,"Brown et al., 2011","Brown et al., 2011",,54585715.0,54585715
+217,test,Ativo,262.3,3,CC[NH2+]Cc2cncc(c1ccc(F)cc1OC)n2,"Brown et al., 2011","Brown et al., 2011",,54582799.0,54582799
+219,test,Ativo,318.37,3,COc1cc(F)ccc1c3cncc(C[NH2+]C[C@@H]2CCCO2)n3,"Brown et al., 2011","Brown et al., 2011",,54582822.0,54582822
+221,test,Ativo,276.3,3,Fc3cccc(c2cncc(C[NH2+]C1CCC1)n2)c3F,"Brown et al., 2011","Brown et al., 2011",,54584795.0,54584795
+224,test,Ativo,288.34,3,COc3cccc(c2cncc(C[NH2+]CC1CC1)n2)c3F,"Brown et al., 2011","Brown et al., 2011",,54585736.0,54585736
+226,test,Ativo,279.36,3,N#Cc3cccc(c2cncc(C[NH2+]C1CCCC1)n2)c3,"Brown et al., 2011","Brown et al., 2011",,54587757.0,54587757
+231,test,Ativo,300.39,3,COc1cc(F)ccc1c3cccc(C[NH2+]C2CCCC2)c3,"Brown et al., 2011","Brown et al., 2011",,54586719.0,54586719
+235,test,Ativo,275.34,3,COc1cc(F)ccc1c2cncc(C[NH2+]C(C)C)c2,"Brown et al., 2011","Brown et al., 2011",,54583833.0,54583833
+238,test,Ativo,323.32,1,COc1cc(F)ccc1c3cncc(NC(=O)c2ccccn2)c3,"Brown et al., 2011","Brown et al., 2011",,,R1
+242,test,Ativo,289.3,1,COc1cc(F)ccc1c2cncc(NC(=O)N(C)C)c2,"Brown et al., 2011","Brown et al., 2011",,,R1
+245,test,Ativo,318.3,1,CCOC(=O)C(=O)Nc2cncc(c1ccc(F)cc1OC)c2,"Brown et al., 2011","Brown et al., 2011",,,R1
+246,test,Inativo,224.71,2,[NH3+][C@@]2(c1ccccc1Cl)CCCCC2=O,"MORRIS et al., 2017 (publicado)","Morris et al., 2017",u,10105008.0,10105008
+248,test,Inativo,222.69,2,[NH3+][C@@]2(c1ccccc1Cl)CCC=CC2=O,"MORRIS et al., 2017 (publicado)","Morris et al., 2017",u,93981507.0,93981507
+250,test,Inativo,240.71,2,[NH3+][C@@]2(c1ccccc1Cl)CCC[C@H](O)C2=O,"MORRIS et al., 2017 (publicado)","Morris et al., 2017",u,89504077.0,89504077
+251,test,Inativo,240.71,2,[NH3+][C@]2(c1ccccc1Cl)CCC[C@@H](O)C2=O,"MORRIS et al., 2017 (publicado)","Morris et al., 2017",u,89504351.0,89504351
+255,test,Inativo,240.71,2,[NH3+][C@]2(c1ccccc1Cl)CC[C@H](O)CC2=O,"MORRIS et al., 2017 (publicado)","Morris et al., 2017",u,102053357.0,102053357
+262,test,Inativo,432.47,0,Cc2nc(NS(=O)(=O)c1ccccc1N(=O)=O)sc2C(=O)NCc3ccccc3,"RAJAN et al., 2020 (manuscrito aceito)","Rajan et al., 2020",c,162655715.0,162655715
+270,test,Inativo,515.0,2,Cc2nc(CNS(=O)(=O)c1ccc(F)c(Cl)c1)sc2C(=O)NNC(=O)c3ccccc3S,"RAJAN et al., 2020 (manuscrito aceito)","Rajan et al., 2020",c,,R4
+271,test,Inativo,476.59,2,Cc3ccc(S(=O)(=O)NCc2nc(C)c(C(=O)NNC(=O)c1ccccc1S)s2)cc3,"RAJAN et al., 2020 (manuscrito aceito)","Rajan et al., 2020",c,,R4
+272,test,Inativo,493.33,2,Cc2nc(CNS(=O)(=O)c1cccc(Br)c1)oc2C(=O)NNC(=O)c3ccccc3,"RAJAN et al., 2020 (manuscrito aceito)","Rajan et al., 2020",c,162664506.0,162664506
+276,test,Inativo,464.33,1,Cc2nc(CNS(=O)(=O)c1cccc(Br)c1)oc2C(=O)NCc3ccccc3,"RAJAN et al., 2020 (manuscrito aceito)","Rajan et al., 2020",c,162661444.0,162661444
+278,test,Inativo,452.84,2,O=C(NNC(=O)c2cc(CNS(=O)(=O)c1ccc(F)c(Cl)c1)on2)c3ccccc3,"RAJAN et al., 2020 (manuscrito aceito)","Rajan et al., 2020",c,162674699.0,162674699
+279,test,Inativo,414.44,2,Cc3ccc(S(=O)(=O)NCc2cc(C(=O)NNC(=O)c1ccccc1)no2)cc3,"RAJAN et al., 2020 (manuscrito aceito)","Rajan et al., 2020",c,162673686.0,162673686
+280,test,Inativo,302.28,1,C1=CC(=CC(=C1)N2C=C(N=N2)CNC3=NC=CC=N3)C(F)F,"Standard cellbased calcium flux assay from US Patent US10617676, PubChem, 2023","US Patent US10617676 (standard cell-based calcium-flux assay), PubChem BioAssay, 2023",v,130302187.0,130302187
+281,test,Inativo,338.29,1,CN1C(=CC=N1)NCC2=CN(N=N2)C3=CC(=C(C=C3)F)OC(F)F,"Standard cellbased calcium flux assay from US Patent US10617676, PubChem, 2023","US Patent US10617676 (standard cell-based calcium-flux assay), PubChem BioAssay, 2023",v,130302229.0,130302229
+287,test,Inativo,419.38,0,C1=CSC(=C1)C2=CN=C(C=N2)OCC3=CN(N=N3)C4=CC(=C(C=C4)F)OC(F)F,"Standard cellbased calcium flux assay from US Patent US10617676, PubChem, 2023","US Patent US10617676 (standard cell-based calcium-flux assay), PubChem BioAssay, 2023",v,130309693.0,130309693
+289,test,Inativo,303.27,0,CC1=CN=C(N=C1)OCC2=CN(N=N2)C3=C(C=CC(=C3)F)F,"Standard cellbased calcium flux assay from US Patent US10617676, PubChem, 2023","US Patent US10617676 (standard cell-based calcium-flux assay), PubChem BioAssay, 2023",v,130309869.0,130309869
+294,test,Inativo,305.69,0,C1=CC(=C(C(=C1)Cl)F)N2C=C(N=N2)COC3=NC=CC=N3,"Standard cellbased calcium flux assay from US Patent US10617676, PubChem, 2023","US Patent US10617676 (standard cell-based calcium-flux assay), PubChem BioAssay, 2023",v,130309877.0,130309877
+296,test,Inativo,331.39,0,CC1=NC=C(S1)C2=CC3=C(N=C2)N(C(=O)N3CC(=O)N(C)C)C,"NR2B standard assay from US Patent US10071988 Substituted 1-2-3-triazoles as NR2B-selective NMDA modulators, PubChem, 2023","US Patent US10071988 (substituted 1,2,3-triazoles as NR2B-selective NMDA modulators; standard NR2B assay), PubChem BioAssay, 2023",v,134490013.0,134490013
+298,test,Inativo,311.34,1,CN1C2=C(C=C(C=N2)C3=CN=CC=C3)N(C1=O)CC(=O)N(C)C,"NR2B standard assay from US Patent US10071988 Substituted 1-2-3-triazoles as NR2B-selective NMDA modulators, PubChem, 2023","US Patent US10071988 (substituted 1,2,3-triazoles as NR2B-selective NMDA modulators; standard NR2B assay), PubChem BioAssay, 2023",v,134490134.0,134490134
+299,test,Inativo,413.35,1,C1=CC=NC(=C1)NC(=O)CN2C3=C(NC2=O)N=CC(=C3)C4=CC(=CC=C4)C(F)(F)F,"NR2B standard assay from US Patent US10071988 Substituted 1-2-3-triazoles as NR2B-selective NMDA modulators, PubChem, 2023","US Patent US10071988 (substituted 1,2,3-triazoles as NR2B-selective NMDA modulators; standard NR2B assay), PubChem BioAssay, 2023",v,134493600.0,134493600
+317,test,Inativo,332.36,1,COC1=CC=CC(=C1)CN2C3=C(NC2=O)N=CC(=C3)C4=CN=CC=C4,"HTS cellbased calcium flux assay from US Patent US10617676 and their use as GluN2B receptor modulators, PubChem, 2023","US Patent US10617676 (HTS cell-based calcium-flux assay; GluN2B receptor modulators), PubChem BioAssay, 2023",v,134493935.0,134493935

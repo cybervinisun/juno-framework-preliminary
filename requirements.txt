@@ -1,0 +1,25 @@
+# Core scientific stack
+numpy>=1.26
+pandas>=2.0
+scipy>=1.11
+scikit-learn>=1.5
+xgboost>=2.0
+imbalanced-learn>=0.12
+scikit-optimize>=0.10
+joblib>=1.3
+
+# Cheminformatics (Tanimoto/MCS structural-error analysis)
+rdkit>=2023.9
+
+# Plotting
+matplotlib>=3.7
+
+# Excel I/O (data/*.xlsx)
+openpyxl>=3.1
+
+# Note: the champion models in models/ were pickled with a scikit-learn
+# version that may not exactly match whatever you install from this file.
+# Loading them with a different minor version may print a harmless
+# sklearn "InconsistentVersionWarning" -- predictions are unaffected.
+# environment.yml pins the exact versions this repository's scripts were
+# last verified against.

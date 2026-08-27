@@ -3,7 +3,6 @@
 # Still PLACEHOLDER -- fill in once available:
 #   - doi, date-released, and version -- once the article is accepted /
 #     a Zenodo DOI has been minted for this repo
-#   - repository-code -- once the GitHub repository is created
 cff-version: 1.2.0
 message: "If you use this code, data, or trained models, please cite the article below."
 title: "A multifaceted CADD architecture integrating molecular docking, pharmacophore interaction fingerprints, and machine learning to classify negative allosteric modulators of the GluN1--GluN2B NMDA receptor site"
@@ -20,7 +19,7 @@ authors:
 version: "1.0.0"
 date-released: "PLACEHOLDER-YYYY-MM-DD"
 doi: "PLACEHOLDER (Zenodo DOI once archived, see README)"
-repository-code: "PLACEHOLDER: https://github.com/<owner>/juno-framework-preliminary (fill in once created)"
+repository-code: "https://github.com/cybervinisun/juno-framework-preliminary"
 license: "Apache-2.0 (code) / CC-BY-4.0 (data) -- see LICENSE and LICENSE-DATA"
 preferred-citation:
   type: article

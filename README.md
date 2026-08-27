@@ -215,6 +215,8 @@ with the open-source stack in `requirements.txt`/`environment.yml`.
 ## Citation
 
 See `CITATION.cff` (author list confirmed: Vinícius Nunes da Rocha,
-corresponding author; Carlos Maurício Rabello de Sant'Anna). **Note:** DOI,
-release date, and the GitHub URL in that file remain placeholders until the
-article is accepted and this repository is archived on Zenodo.
+corresponding author; Carlos Maurício Rabello de Sant'Anna). **Note:** DOI
+and release date in that file remain placeholders until the article is
+accepted and this repository is archived on Zenodo.
+
+Repository: https://github.com/cybervinisun/juno-framework-preliminary

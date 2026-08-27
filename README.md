@@ -1,5 +1,7 @@
 # A multifaceted CADD architecture for GluN1–GluN2B NMDA receptor modulators
 
+[![Smoke test](https://github.com/cybervinisun/juno-framework-preliminary/actions/workflows/smoke-test.yml/badge.svg)](https://github.com/cybervinisun/juno-framework-preliminary/actions/workflows/smoke-test.yml)
+
 Companion data/code repository for:
 
 > Nunes da Rocha, V. & Rabello de Sant'Anna, C. M. "A multifaceted CADD

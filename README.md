@@ -131,10 +131,11 @@ tables (`tab3_training_partition_metrics_G.csv`,
 per-algorithm source files (no single prior script output covered all four
 algorithms with the correct, final $n_{\mathrm{iter}}=5$ numbers in one
 file) — every value in them was cross-checked against `main.tex` and
-matches exactly. That file also documents two known, intentionally
-unreproduced gaps (a stale XGBoost ROC curve and an incomplete pairwise
-Tanimoto comparison — both superseded by the champion switch to
-$n_{\mathrm{iter}}=5$ and never regenerated).
+matches exactly. `results/NOTES.md` also documents two gaps found in the
+source material during curation (a stale XGBoost ROC curve and an
+incomplete pairwise Tanimoto comparison, both superseded by the champion
+switch to $n_{\mathrm{iter}}=5$) and how they were closed by regenerating
+directly against the published models in this repository.
 
 Redocking validation (Table 1, Fig. G18) and native-contact-preservation
 data live under `data/raw/` instead, since the corresponding scripts treat

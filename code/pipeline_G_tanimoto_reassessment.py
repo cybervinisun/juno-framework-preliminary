@@ -32,8 +32,11 @@ X_PATH = DATA_DIR / "X_320ligands_57descriptors.xlsx"
 Y_PATH = DATA_DIR / "y_320ligands_labels.xlsx"
 SMILES_PATH = DATA_DIR / "smiles_320ligands_reference.xlsx"
 
-OUT_DIR = Path(__file__).parent / "versao_G_outputs"
+MODEL_DIR = Path(os.environ.get("MODEL_DIR", REPO_ROOT / "models"))
+OUT_DIR = Path(os.environ.get("OUT_DIR", REPO_ROOT / "results" / "regenerated"))
 FIG_DIR = OUT_DIR / "figuras_ingles_G"
+OUT_DIR.mkdir(parents=True, exist_ok=True)
+FIG_DIR.mkdir(parents=True, exist_ok=True)
 
 # ====================================================================
 # 1. Reconstruir o split exato (random_state=42), preservando o indice
@@ -59,7 +62,7 @@ descritores_ja_normalizados = ["corrScore"]
 col_binarias = [c for c in X_train.columns if set(X_train[c].dropna().unique()) <= {0, 1}]
 col_continuas = [c for c in X_train.columns if c not in col_binarias and c not in descritores_ja_normalizados]
 
-scaler = joblib.load(OUT_DIR / "scaler_minmax_treino_G.pkl")
+scaler = joblib.load(MODEL_DIR / "scaler_minmax_treino_G.pkl")
 X_test_scaled = X_test.copy()
 X_test_scaled[col_continuas] = scaler.transform(X_test[col_continuas])
 
@@ -76,7 +79,7 @@ print("=" * 70)
 
 erros_por_modelo = {}
 for label in ["MLP", "SVM", "XGBoost"]:
-    champion = joblib.load(OUT_DIR / f"modelo_final_{label}_G.pkl")
+    champion = joblib.load(MODEL_DIR / f"modelo_final_{label}_G.pkl")
     y_pred = champion.predict(X_test_scaled)
     y_pred_series = pd.Series(y_pred, index=X_test_scaled.index)
 

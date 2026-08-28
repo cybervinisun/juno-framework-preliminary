@@ -1,6 +1,7 @@
 # A multifaceted CADD architecture for GluN1–GluN2B NMDA receptor modulators
 
 [![Smoke test](https://github.com/cybervinisun/juno-framework-preliminary/actions/workflows/smoke-test.yml/badge.svg)](https://github.com/cybervinisun/juno-framework-preliminary/actions/workflows/smoke-test.yml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22149634.svg)](https://doi.org/10.5281/zenodo.22149634)
 
 Companion data/code repository for:
 
@@ -8,7 +9,11 @@ Companion data/code repository for:
 > architecture integrating molecular docking, pharmacophore interaction
 > fingerprints, and machine learning to classify negative allosteric
 > modulators of the GluN1–GluN2B NMDA receptor site." *Journal of
-> Cheminformatics* (2026, submitted). DOI: TBD.
+> Cheminformatics* (2026, submitted). Article DOI: assigned by the journal
+> on acceptance/publication (not yet available).
+
+This exact code/data release is permanently archived on Zenodo:
+**[10.5281/zenodo.22149634](https://doi.org/10.5281/zenodo.22149634)**.
 
 This repository accompanies the article's data/code availability statement.
 It contains the curated training dataset, the published version-G modeling
@@ -204,9 +209,10 @@ with the open-source stack in `requirements.txt`/`environment.yml`.
 
 - The exact commit corresponding to the published article is tagged
   `v1.0-published`.
-- This repository is intended to be archived on Zenodo on publication to
-  mint a citable DOI (to be added to `CITATION.cff` and this README once
-  available).
+- This repository is permanently archived on Zenodo:
+  **[10.5281/zenodo.22149634](https://doi.org/10.5281/zenodo.22149634)**
+  — cite this DOI for the code/data, not the GitHub URL, since GitHub
+  content can change but the Zenodo archive cannot.
 
 ## License
 
@@ -217,9 +223,10 @@ with the open-source stack in `requirements.txt`/`environment.yml`.
 
 ## Citation
 
-See `CITATION.cff` (author list confirmed: Vinícius Nunes da Rocha,
-corresponding author; Carlos Maurício Rabello de Sant'Anna). **Note:** DOI
-and release date in that file remain placeholders until the article is
-accepted and this repository is archived on Zenodo.
+See `CITATION.cff` (author list: Vinícius Nunes da Rocha, corresponding
+author; Carlos Maurício Rabello de Sant'Anna). Cite this repository via
+its Zenodo DOI: **10.5281/zenodo.22149634**. The article's own DOI is a
+separate identifier, assigned by the journal on acceptance, and is not
+yet known.
 
 Repository: https://github.com/cybervinisun/juno-framework-preliminary

@@ -1,11 +1,16 @@
 # Author list confirmed (Vinícius Nunes da Rocha, corresponding/primary
 # author; Carlos Maurício Rabello de Sant'Anna, secondary author).
 # Still PLACEHOLDER -- fill in once available:
-#   - the article's own DOI, once accepted (add under preferred-citation.doi)
-cff-version: 1.2.0
-message: "If you use this code, data, or trained models, please cite the article below."
+#   - the article's own DOI, once accepted
+#
+# Data (data/, results/) is separately licensed under CC-BY-4.0 -- see
+# LICENSE-DATA. The `license` field below covers the code (Apache-2.0)
+# only, since this CFF schema version (1.1.0, for maximum compatibility
+# with Zenodo's GitHub-integration parser) does not support multiple
+# licenses in a single field.
+cff-version: 1.1.0
+message: "If you use this code, data, or trained models, please cite the article: Nunes da Rocha, V. & Rabello de Sant'Anna, C. M. (2026), Journal of Cheminformatics (submitted)."
 title: "A multifaceted CADD architecture integrating molecular docking, pharmacophore interaction fingerprints, and machine learning to classify negative allosteric modulators of the GluN1--GluN2B NMDA receptor site"
-type: software
 authors:
   - family-names: "Nunes da Rocha"
     given-names: "Vinícius"
@@ -18,16 +23,4 @@ authors:
 version: "1.0.0"
 date-released: "2026-08-28"
 repository-code: "https://github.com/cybervinisun/juno-framework-preliminary"
-license:
-  - "Apache-2.0"
-  - "CC-BY-4.0"
-preferred-citation:
-  type: article
-  title: "A multifaceted CADD architecture integrating molecular docking, pharmacophore interaction fingerprints, and machine learning to classify negative allosteric modulators of the GluN1--GluN2B NMDA receptor site"
-  authors:
-    - family-names: "Nunes da Rocha"
-      given-names: "Vinícius"
-    - family-names: "Rabello de Sant'Anna"
-      given-names: "Carlos Maurício"
-  journal: "Journal of Cheminformatics"
-  year: 2026
+license: "Apache-2.0"

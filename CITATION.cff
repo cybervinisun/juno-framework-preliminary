@@ -1,9 +1,9 @@
 # Author list confirmed (Vinícius Nunes da Rocha, corresponding/primary
 # author; Carlos Maurício Rabello de Sant'Anna, secondary author).
-# `doi` below is the Zenodo concept DOI, which always resolves to the most
-# recent archived version of this repository. Each release also receives its
-# own version DOI; cite that one when an exact snapshot matters. Neither is
-# the article's own DOI -- the journal assigns that on acceptance.
+# No `doi` field on purpose. Zenodo reserves a DOI for each deposit it creates
+# from a GitHub release, and a DOI declared here conflicts with it. The concept
+# DOI that always resolves to the latest archived version, and each release's
+# own version DOI, are documented in README.md instead.
 #
 # Data (data/, results/) is separately licensed under CC-BY-4.0 -- see
 # LICENSE-DATA. The `license` field below covers the code (Apache-2.0)
@@ -24,6 +24,5 @@ authors:
     affiliation: "Universidade Federal Rural do Rio de Janeiro (UFRRJ)"
 version: "2.0.0"
 date-released: "2026-09-25"
-doi: "10.5281/zenodo.22149633"
 repository-code: "https://github.com/cybervinisun/juno-framework-preliminary"
 license: "Apache-2.0"

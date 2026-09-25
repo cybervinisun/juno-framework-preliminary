@@ -1,7 +1,7 @@
 """Held-out ROC curves for the three retained champions, in two panels.
 
 Panel (a): the uncalibrated scores that underlie the final held-out evaluation
-           (``tab4_heldout_test_metrics_G.csv``; Table 5 of the article).
+           (``results/metrics_heldout_test.csv``; Table 5 of the article).
 Panel (b): the same champions after Platt calibration fitted on the 224
            original, non-synthetic training ligands (Section 3.6 of the article).
 
@@ -11,20 +11,21 @@ collapses distinct scores into ties.
 
 Outputs
 -------
-results/fig7_roc_curve_points_G.csv   fpr/tpr for both panels
-figures_G/figG4_roc_curves_wide.png
+results/heldout_roc_curve_points.csv   fpr/tpr for both panels
+figures/heldout_roc_curves_two_panel.png
 
 Note on loading the XGBoost champion
 ------------------------------------
-``models/final_model_XGBoost_G.pkl`` stores the Booster as the byte buffer
+``models/champion_XGBoost.pkl`` stores the Booster as the byte buffer
 produced by ``XGBoosterSerializeToBuffer``, which is not portable across
 XGBoost builds: plain ``joblib.load`` raises "input stream corrupted" on a
 different build even at the same version.  ``load_booster`` below works around
 that by extracting the ``Model`` sub-document from the buffer and loading it
-through the model reader.  ``models/final_model_XGBoost_G.ubj`` is the same
+through the model reader.  ``models/champion_XGBoost.ubj`` is the same
 champion in the portable UBJSON format and needs no workaround -- prefer it.
 """
 import ctypes
+import os
 from pathlib import Path
 
 import joblib
@@ -37,10 +38,11 @@ from sklearn.calibration import CalibratedClassifierCV
 from sklearn.metrics import roc_auc_score, roc_curve
 from xgboost.core import _LIB, _check_call
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-MODEL_DIR = BASE_DIR / "models"
-OUT_DIR = BASE_DIR / "results"
-FIG_DIR = BASE_DIR / "figures_G"
+REPO_ROOT = Path(__file__).resolve().parent.parent
+MODEL_DIR = REPO_ROOT / "models"
+# Regenerated output, kept apart from the deposited copy in results/.
+OUT_DIR = Path(os.environ.get("OUT_DIR", REPO_ROOT / "results" / "regenerated"))
+FIG_DIR = OUT_DIR / "figures"
 
 MODEL_COLORS = {"MLP": "#d62728", "SVM": "#2ca02c", "XGBoost": "#1f77b4"}
 LABEL_MAP = {"Inactive": 0, "Active": 1}
@@ -73,9 +75,9 @@ def load_booster_from_pickle(path):
 
 
 def load_champion(name):
-    ubj = MODEL_DIR / "final_model_XGBoost_G.ubj"
+    ubj = MODEL_DIR / "champion_XGBoost.ubj"
     if name == "XGBoost" and ubj.exists():
-        pipeline = load_booster_from_pickle(MODEL_DIR / "final_model_XGBoost_G.pkl")
+        pipeline = load_booster_from_pickle(MODEL_DIR / "champion_XGBoost.pkl")
         booster = xgb.Booster()
         blob = bytearray(ubj.read_bytes())
         ptr = (ctypes.c_char * len(blob)).from_buffer(blob)
@@ -84,8 +86,8 @@ def load_champion(name):
         pipeline[-1]._Booster = booster
         return pipeline
     if name == "XGBoost":
-        return load_booster_from_pickle(MODEL_DIR / "final_model_XGBoost_G.pkl")
-    return joblib.load(MODEL_DIR / f"final_model_{name}_G.pkl")
+        return load_booster_from_pickle(MODEL_DIR / "champion_XGBoost.pkl")
+    return joblib.load(MODEL_DIR / f"champion_{name}.pkl")
 
 
 def uncalibrated_score(pipeline, X):
@@ -109,7 +111,7 @@ def platt_calibrated_score(pipeline, X, X_cal, y_cal):
 
 
 def main():
-    checkpoint = joblib.load(MODEL_DIR / "checkpoint_post_svmsmote_G.pkl")
+    checkpoint = joblib.load(MODEL_DIR / "training_partition_after_svmsmote.pkl")
     X_train = checkpoint["X_train_final"]
     X_test = checkpoint["X_test"]
     y_train = np.array([LABEL_MAP[c] for c in checkpoint["y_train_final"]])
@@ -132,7 +134,7 @@ def main():
             print(f"{name:<8} {panel:<18} AUC = {roc_auc_score(y_test, score):.6f}")
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    pd.DataFrame(rows).to_csv(OUT_DIR / "fig7_roc_curve_points_G.csv", index=False)
+    pd.DataFrame(rows).to_csv(OUT_DIR / "heldout_roc_curve_points.csv", index=False)
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 7.1), dpi=150)
     panels = [("(a) Final held-out evaluation\n(uncalibrated scores)", "uncalibrated"),
@@ -152,7 +154,7 @@ def main():
     axes[1].set_yticklabels([])
     fig.tight_layout()
     FIG_DIR.mkdir(parents=True, exist_ok=True)
-    fig.savefig(FIG_DIR / "figG4_roc_curves_wide.png", bbox_inches="tight")
+    fig.savefig(FIG_DIR / "heldout_roc_curves_two_panel.png", bbox_inches="tight")
     plt.close(fig)
 
 

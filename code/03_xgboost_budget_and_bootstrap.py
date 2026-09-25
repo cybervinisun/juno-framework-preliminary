@@ -3,7 +3,7 @@ Version-G pipeline, part B: Bayesian-search budget sensitivity for XGBoost
 (n_iter = 5, 10, 15) plus statistical robustness (bootstrap) of the internal
 CV, supporting Table 4 of Article 1.
 
-Reuses the post-SVMSMOTE checkpoint produced by pipeline_G.py (the same
+Reuses the post-SVMSMOTE checkpoint produced by 01_split_balance_and_train_champions.py (the same
 balanced training partition, with nothing re-derived or re-sampled) so that
 the effect of the search budget (n_iter) on the selected champion, and on its
 robustness, is isolated.
@@ -11,6 +11,7 @@ robustness, is isolated.
 from __future__ import annotations
 
 import warnings
+import os
 from pathlib import Path
 
 import joblib
@@ -35,17 +36,27 @@ from skopt.space import Real, Integer, Categorical
 
 warnings.filterwarnings("ignore")
 
-BASE_DIR = Path(__file__).parent
-OUT_DIR = BASE_DIR / "version_G_outputs"
-REPO_ROOT_FOR_CKPT = BASE_DIR.parent
-FIG_DIR = OUT_DIR / "figures_G"
+REPO_ROOT = Path(__file__).resolve().parent.parent
+# Every regenerated file lands here, never on top of the deposited copies in
+# results/ and models/, so a fresh run can be diffed against what was published.
+OUT_DIR = Path(os.environ.get("OUT_DIR", REPO_ROOT / "results" / "regenerated"))
+OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def deposited_or_regenerated(name):
+    """Prefer a freshly regenerated artifact in OUT_DIR, else the deposited copy
+    under models/, so this script also runs standalone from a fresh clone."""
+    candidate = OUT_DIR / name
+    return candidate if candidate.exists() else REPO_ROOT / "models" / name
+
+FIG_DIR = OUT_DIR / "figures"
 FIG_DIR.mkdir(exist_ok=True)
 
-# Produced by pipeline_G.py into OUT_DIR; fall back to the copy deposited
+# Produced by 01_split_balance_and_train_champions.py into OUT_DIR; fall back to the copy deposited
 # under models/ so this script also runs standalone from a fresh clone.
-_ckpt_path = OUT_DIR / "checkpoint_post_svmsmote_G.pkl"
+_ckpt_path = OUT_DIR / "training_partition_after_svmsmote.pkl"
 if not _ckpt_path.exists():
-    _ckpt_path = REPO_ROOT_FOR_CKPT / "models" / "checkpoint_post_svmsmote_G.pkl"
+    _ckpt_path = REPO_ROOT / "models" / "training_partition_after_svmsmote.pkl"
 ckpt = joblib.load(_ckpt_path)
 X_train_final = ckpt["X_train_final"]
 y_train_final = ckpt["y_train_final"]
@@ -174,11 +185,11 @@ for n_iter in n_iter_values:
           f"bootstrap95%CI=[{boot_lo:.4f},{boot_hi:.4f}]  test_kappa={test_kappa:.4f}  test_AUC={test_auc:.4f}")
 
 sensitivity_df = pd.DataFrame(sensitivity_rows)
-sensitivity_df.to_csv(OUT_DIR / "table_xgb_niter_sensitivity_G.csv", index=False)
-print(f"\n[table saved] {OUT_DIR / 'table_xgb_niter_sensitivity_G.csv'}")
+sensitivity_df.to_csv(OUT_DIR / "xgboost_budget_sensitivity.csv", index=False)
+print(f"\n[table saved] {OUT_DIR / 'xgboost_budget_sensitivity.csv'}")
 
 dispersion_all_df = pd.DataFrame(dispersion_rows_all)
-dispersion_all_df.to_csv(OUT_DIR / "table_xgb_niter_candidate_dispersion_G.csv", index=False)
+dispersion_all_df.to_csv(OUT_DIR / "xgboost_budget_candidate_dispersion.csv", index=False)
 
 # ====================================================================
 # Also bring in MLP/SVM's existing single-budget champions (n_iter=5),
@@ -199,7 +210,7 @@ for n_iter, rep_scores in repeated_cv_by_niter.items():
     })
 
 for label in ["MLP", "SVM"]:
-    champion = joblib.load(OUT_DIR / f"final_model_{label}_G.pkl")
+    champion = joblib.load(deposited_or_regenerated(f"champion_{label}.pkl"))
     rep_scores = cross_validate(champion, X_resampled, y_train_bin, cv=repeated_cv, groups=groups,
                                  scoring=kappa_scorer, n_jobs=-1)["test_score"]
     repeated_cv_by_niter[label] = rep_scores
@@ -212,8 +223,8 @@ for label in ["MLP", "SVM"]:
           f"bootstrap95%CI=[{boot_lo:.4f},{boot_hi:.4f}]")
 
 bootstrap_summary_df = pd.DataFrame(all_bootstrap_rows)
-bootstrap_summary_df.to_csv(OUT_DIR / "table_bootstrap_internal_cv_robustness_G.csv", index=False)
-print(f"\n[table saved] {OUT_DIR / 'table_bootstrap_internal_cv_robustness_G.csv'}")
+bootstrap_summary_df.to_csv(OUT_DIR / "bootstrap_internal_cv_robustness.csv", index=False)
+print(f"\n[table saved] {OUT_DIR / 'bootstrap_internal_cv_robustness.csv'}")
 
 # ====================================================================
 # Figures (English)
@@ -239,9 +250,9 @@ ax.set_ylabel("Cohen's $\\kappa$ (mother-child grouped internal CV)")
 ax.set_title("XGBoost: convergence of internal cross-validated $\\kappa$\nacross Bayesian-search budgets")
 ax.legend(loc="lower right", fontsize=8)
 fig.tight_layout()
-fig.savefig(FIG_DIR / "figG7_xgb_niter_convergence.png", bbox_inches="tight")
+fig.savefig(FIG_DIR / "xgboost_budget_convergence.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Saved: {FIG_DIR / 'figG7_xgb_niter_convergence.png'}")
+print(f"Saved: {FIG_DIR / 'xgboost_budget_convergence.png'}")
 
 # Fig. G8: repeated-CV distributions (boxplot) for all 5 scenarios
 # (XGBoost x 3 budgets + MLP + SVM champions), with bootstrap CI markers
@@ -266,9 +277,9 @@ ax.set_ylabel("Cohen's $\\kappa$ (repeated grouped internal CV, 100 folds)")
 ax.set_title("Repeated internal cross-validation robustness across models\nand XGBoost search budgets (black bars: bootstrap 95% CI of the mean)")
 ax.tick_params(axis="x", rotation=15)
 fig.tight_layout()
-fig.savefig(FIG_DIR / "figG8_bootstrap_cv_robustness.png", bbox_inches="tight")
+fig.savefig(FIG_DIR / "bootstrap_cv_robustness.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Saved: {FIG_DIR / 'figG8_bootstrap_cv_robustness.png'}")
+print(f"Saved: {FIG_DIR / 'bootstrap_cv_robustness.png'}")
 
 print()
 print("=" * 70)

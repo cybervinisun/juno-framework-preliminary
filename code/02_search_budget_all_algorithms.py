@@ -12,6 +12,7 @@ official budget.
 """
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import joblib
@@ -33,15 +34,17 @@ from xgboost import XGBClassifier
 from skopt import BayesSearchCV
 from skopt.space import Real, Integer, Categorical
 
-BASE_DIR = Path(__file__).parent
-OUT_DIR = BASE_DIR / "version_G_outputs"
-REPO_ROOT_FOR_CKPT = BASE_DIR.parent
+REPO_ROOT = Path(__file__).resolve().parent.parent
+# Every regenerated file lands here, never on top of the deposited copies in
+# results/ and models/, so a fresh run can be diffed against what was published.
+OUT_DIR = Path(os.environ.get("OUT_DIR", REPO_ROOT / "results" / "regenerated"))
+OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# Produced by pipeline_G.py into OUT_DIR; fall back to the copy deposited
+# Produced by 01_split_balance_and_train_champions.py into OUT_DIR; fall back to the copy deposited
 # under models/ so this script also runs standalone from a fresh clone.
-_ckpt_path = OUT_DIR / "checkpoint_post_svmsmote_G.pkl"
+_ckpt_path = OUT_DIR / "training_partition_after_svmsmote.pkl"
 if not _ckpt_path.exists():
-    _ckpt_path = REPO_ROOT_FOR_CKPT / "models" / "checkpoint_post_svmsmote_G.pkl"
+    _ckpt_path = REPO_ROOT / "models" / "training_partition_after_svmsmote.pkl"
 ckpt = joblib.load(_ckpt_path)
 X_train_final = ckpt["X_train_final"]
 y_train_final = ckpt["y_train_final"]
@@ -196,16 +199,16 @@ for algo, (pipe, space) in PIPELINES.items():
             champions[algo] = champion
 
 results_df = pd.DataFrame(all_results)
-results_df.to_csv(OUT_DIR / "table_niter_1_3_5_all_algorithms_G.csv", index=False)
+results_df.to_csv(OUT_DIR / "search_budget_all_algorithms.csv", index=False)
 dispersion_df = pd.DataFrame(dispersion_rows)
-dispersion_df.to_csv(OUT_DIR / "table_niter_1_3_5_dispersion_all_G.csv", index=False)
-print(f"\n[table saved] {OUT_DIR / 'table_niter_1_3_5_all_algorithms_G.csv'}")
+dispersion_df.to_csv(OUT_DIR / "search_budget_candidate_dispersion.csv", index=False)
+print(f"\n[table saved] {OUT_DIR / 'search_budget_all_algorithms.csv'}")
 
 # Save the n_iter=5 champions (XGBoost's NEW official champion, others
 # should match the already-saved n_iter=5 champions from before)
 for algo, champion in champions.items():
-    joblib.dump(champion, OUT_DIR / f"final_model_{algo}_n_iter5_G.pkl")
-    print(f"Saved: final_model_{algo}_n_iter5_G.pkl")
+    joblib.dump(champion, OUT_DIR / f"champion_{algo}_budget5.pkl")
+    print(f"Saved: champion_{algo}_budget5.pkl")
 
 print()
 print("=" * 70)

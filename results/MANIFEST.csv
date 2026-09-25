@@ -1,0 +1,22 @@
+file,article_element,description,latex_label,produced_by
+metrics_across_search_and_validation_stages.csv,Table 4,Performance across search and validation stages,tab3,code/01_split_balance_and_train_champions.py
+metrics_heldout_test.csv,Table 5,"Final held-out performance, all four models (uncalibrated AUC)",tab4,code/01_split_balance_and_train_champions.py
+calibration_scenarios.csv,Table 6,"Held-out calibration scenarios, Model A vs Model B",tab_calib_scenarios,code/06_calibration_scenarios.py
+xgboost_feature_importance_top.csv,Table 7,"XGBoost feature importance, top entries",tab5,code/01_split_balance_and_train_champions.py
+xgboost_feature_importance_all_57.csv,Table 7 (full ranking),XGBoost importance for all 57 descriptors,tab5,code/01_split_balance_and_train_champions.py
+champion_hyperparameters.csv,Table 2,Selected hyperparameters of the three champions (the search ranges in that table are the spaces declared in the script),tab2,code/01_split_balance_and_train_champions.py
+heldout_roc_curve_points.csv,Figure 7,"Held-out ROC curves, both panels (uncalibrated and Platt-calibrated)",fig7,code/08_heldout_roc_panels.py
+search_budget_cv_kappa_all_algorithms.csv,"Figure 6, left panel",CV kappa against search budget,figG22,code/02_search_budget_all_algorithms.py
+search_budget_candidate_dispersion.csv,"Figure 6, left panel",Dispersion of the non-selected candidates,figG22,code/02_search_budget_all_algorithms.py
+repeated_cv_bootstrap_ci.csv,"Figure 6, right panel / Table 4",Repeated CV with bootstrap confidence intervals,figG22,code/03_xgboost_budget_and_bootstrap.py
+pif_prevalence_by_class.csv,"Supplementary Figure S6, Section S7",PIF prevalence by class,fig:s7-prevalence,code/09_descriptor_eda_and_pca.py
+pca_explained_variance.csv,Supplementary Figure S8,PCA scree,-,code/09_descriptor_eda_and_pca.py
+pca_loadings.csv,Supplementary Figure S8,PCA loadings,-,code/09_descriptor_eda_and_pca.py
+error_compounds_tanimoto_to_training.csv,Figure 8,Tanimoto similarity of the misclassified compounds to the training classes,figG15,code/10_misclassification_similarity.py
+error_compounds_pif_jaccard.csv,Figure 8,PIF/Jaccard similarity of the misclassified compounds,figG15,code/10_misclassification_similarity.py
+error_compounds_pairwise_tanimoto.csv,Figure 8 and Supplementary Section S4,Pairwise similarity among all 21 error compounds,figG15,code/10_misclassification_similarity.py
+svmsmote_synthetic_tracking.csv,Supplementary Figure S2,SVMSMOTE synthetic-sample tracking,-,code/01_split_balance_and_train_champions.py
+logreg_baseline_summary.csv,"Tables 4 and 5, logistic-regression row",Baseline summary and search result,-,code/05_logistic_regression_baseline.py
+logreg_search_candidates.csv,-,Logistic-regression Bayesian-search candidate dispersion,-,code/05_logistic_regression_baseline.py
+xgboost_champion_train_and_test_metrics.csv,"Tables 4 and 5, XGBoost row","XGBoost champion, train and test metrics in one row",-,code/04_apply_xgboost_champion_switch.py
+xgboost_champion_test_errors.csv,Table 8 input,"XGBoost champion, held-out misclassifications",-,code/04_apply_xgboost_champion_switch.py

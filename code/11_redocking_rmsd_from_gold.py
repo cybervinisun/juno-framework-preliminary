@@ -49,7 +49,8 @@ SYSTEMS = {
 }
 
 OUT_DIR = Path(os.environ.get("OUT_DIR", REPO_ROOT / "results" / "regenerated"))
-FIG_DIR = OUT_DIR / "figures_G"
+OUT_DIR.mkdir(parents=True, exist_ok=True)
+FIG_DIR = OUT_DIR / "figures"
 FIG_DIR.mkdir(exist_ok=True, parents=True)
 
 RMSD_THRESHOLD = 2.0  # A, standard redocking pose-recovery convention
@@ -104,9 +105,9 @@ for name, folder in SYSTEMS.items():
 summary_df = pd.DataFrame(rows_summary)
 full_df = pd.DataFrame(rows_full)
 
-summary_df.to_csv(OUT_DIR / "table_redocking_population_G.csv", index=False)
-full_df.to_csv(OUT_DIR / "table_redocking_rmsd_full_population_G.csv", index=False)
-print(f"\n[table saved] {OUT_DIR / 'table_redocking_population_G.csv'}")
+summary_df.to_csv(OUT_DIR / "redocking_rmsd_summary.csv", index=False)
+full_df.to_csv(OUT_DIR / "redocking_rmsd_full_population.csv", index=False)
+print(f"\n[table saved] {OUT_DIR / 'redocking_rmsd_summary.csv'}")
 
 # ====================================================================
 # Figure: violin/box of the full RMSD population per system, with the
@@ -141,9 +142,9 @@ ax.set_ylabel("RMSD to crystallographic pose (Å, heavy atoms)")
 ax.set_title("GoldScore redocking accuracy: full population of $N=1000$\ngenetic-algorithm solutions per reference ligand")
 ax.legend(loc="upper left", fontsize=8)
 fig.tight_layout()
-fig.savefig(FIG_DIR / "figG18_redocking_rmsd_population.png", bbox_inches="tight")
+fig.savefig(FIG_DIR / "redocking_rmsd_population.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Saved: {FIG_DIR / 'figG18_redocking_rmsd_population.png'}")
+print(f"Saved: {FIG_DIR / 'redocking_rmsd_population.png'}")
 
 print()
 print(summary_df.to_string(index=False))

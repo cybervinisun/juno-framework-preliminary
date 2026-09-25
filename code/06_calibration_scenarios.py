@@ -13,6 +13,7 @@ rather than hide.
 """
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import joblib
@@ -33,10 +34,10 @@ from sklearn.model_selection import StratifiedGroupKFold
 from skopt import BayesSearchCV
 from skopt.space import Categorical, Integer, Real
 
-# Search spaces and protocol IDENTICAL to those in pipeline_G.py.
+# Search spaces and protocol IDENTICAL to those in 01_split_balance_and_train_champions.py.
 # Budget: that of the RETAINED champion -- n_iter=5 for all three algorithms.
-# XGBoost uses 5, not the 15 that pipeline_G.py still carries, because the
-# n_iter=15 champion was superseded (see rebuild_xgb_niter5_cascade.py).
+# XGBoost uses 5, not the 15 that 01_split_balance_and_train_champions.py still carries, because the
+# n_iter=15 champion was superseded (see 04_apply_xgboost_champion_switch.py).
 PAIR_GRID = {
     "MLP": {
         "NN__hidden_layer_sizes": Integer(5, 15),
@@ -65,17 +66,27 @@ PAIR_GRID = {
 N_ITER_B = {"MLP": 5, "XGBoost": 5, "SVM": 5}
 KAPPA_SCORER = make_scorer(cohen_kappa_score)
 
-BASE_DIR = Path(__file__).parent
-OUT_DIR = BASE_DIR / "version_G_outputs"
-REPO_ROOT_FOR_CKPT = BASE_DIR.parent
-FIG_DIR = OUT_DIR / "figures_G"
+REPO_ROOT = Path(__file__).resolve().parent.parent
+# Every regenerated file lands here, never on top of the deposited copies in
+# results/ and models/, so a fresh run can be diffed against what was published.
+OUT_DIR = Path(os.environ.get("OUT_DIR", REPO_ROOT / "results" / "regenerated"))
+OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def deposited_or_regenerated(name):
+    """Prefer a freshly regenerated artifact in OUT_DIR, else the deposited copy
+    under models/, so this script also runs standalone from a fresh clone."""
+    candidate = OUT_DIR / name
+    return candidate if candidate.exists() else REPO_ROOT / "models" / name
+
+FIG_DIR = OUT_DIR / "figures"
 FIG_DIR.mkdir(exist_ok=True)
 
-# Produced by pipeline_G.py into OUT_DIR; fall back to the copy deposited
+# Produced by 01_split_balance_and_train_champions.py into OUT_DIR; fall back to the copy deposited
 # under models/ so this script also runs standalone from a fresh clone.
-_ckpt_path = OUT_DIR / "checkpoint_post_svmsmote_G.pkl"
+_ckpt_path = OUT_DIR / "training_partition_after_svmsmote.pkl"
 if not _ckpt_path.exists():
-    _ckpt_path = REPO_ROOT_FOR_CKPT / "models" / "checkpoint_post_svmsmote_G.pkl"
+    _ckpt_path = REPO_ROOT / "models" / "training_partition_after_svmsmote.pkl"
 ckpt = joblib.load(_ckpt_path)
 X_train_final = ckpt["X_train_final"]
 y_train_final = ckpt["y_train_final"]
@@ -95,7 +106,7 @@ print(f"X_orig (without synthetics): {X_orig.shape}  |  X_resampled (with synthe
 
 groups_original = tracking_table.loc[is_orig, "original_row_id"].astype(int).to_numpy()
 
-hp = pd.read_csv(OUT_DIR / "table_champion_hyperparameters_G.csv").set_index("Model")
+hp = pd.read_csv(OUT_DIR / "champion_hyperparameters.csv").set_index("Model")
 
 
 def fresh_pipeline(label: str):
@@ -166,7 +177,7 @@ for label in ["MLP", "SVM", "XGBoost"]:
     print(f"\n{'='*70}\n{label}\n{'='*70}")
 
     # Model A: already trained (version-G champion) on X_resampled.
-    model_a = joblib.load(OUT_DIR / f"final_model_{label}_G.pkl")
+    model_a = joblib.load(deposited_or_regenerated(f"champion_{label}.pkl"))
 
     # Model B: RE-OPTIMISED in its own regime -- same Bayesian search, same
     # space and same budget as the retained champion, but over X_orig (without
@@ -221,8 +232,8 @@ for label in ["MLP", "SVM", "XGBoost"]:
     reliability_by_model[label] = scenarios
 
 results_df = pd.DataFrame(all_rows)
-results_df.to_csv(OUT_DIR / "table_calibration_scenarios_G.csv", index=False)
-print(f"\n[table saved] {OUT_DIR / 'table_calibration_scenarios_G.csv'}")
+results_df.to_csv(OUT_DIR / "calibration_scenarios.csv", index=False)
+print(f"\n[table saved] {OUT_DIR / 'calibration_scenarios.csv'}")
 
 # ====================================================================
 # Figures: reliability diagrams, Model A (with synthetics) vs Model B
@@ -251,7 +262,7 @@ for label, scenarios in reliability_by_model.items():
         ax.set_ylim(-0.02, 1.02)
     fig.suptitle(f"Calibration scenarios on the held-out test set (n = 96): {label}", fontsize=12)
     fig.tight_layout()
-    fname = f"figG20_calibration_scenarios_{label.lower()}.png"
+    fname = f"calibration_scenarios_{label.lower()}.png"
     fig.savefig(FIG_DIR / fname, bbox_inches="tight")
     plt.close(fig)
     print(f"Saved: {FIG_DIR / fname}")

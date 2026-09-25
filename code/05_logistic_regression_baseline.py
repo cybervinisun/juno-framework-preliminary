@@ -7,6 +7,7 @@ rather than merely asserted.
 """
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import joblib
@@ -30,17 +31,19 @@ from sklearn.utils import check_random_state
 from skopt import BayesSearchCV
 from skopt.space import Real, Categorical
 
-BASE_DIR = Path(__file__).parent
-OUT_DIR = BASE_DIR / "version_G_outputs"
-REPO_ROOT_FOR_CKPT = BASE_DIR.parent
-FIG_DIR = OUT_DIR / "figures_G"
+REPO_ROOT = Path(__file__).resolve().parent.parent
+# Every regenerated file lands here, never on top of the deposited copies in
+# results/ and models/, so a fresh run can be diffed against what was published.
+OUT_DIR = Path(os.environ.get("OUT_DIR", REPO_ROOT / "results" / "regenerated"))
+OUT_DIR.mkdir(parents=True, exist_ok=True)
+FIG_DIR = OUT_DIR / "figures"
 FIG_DIR.mkdir(exist_ok=True)
 
-# Produced by pipeline_G.py into OUT_DIR; fall back to the copy deposited
+# Produced by 01_split_balance_and_train_champions.py into OUT_DIR; fall back to the copy deposited
 # under models/ so this script also runs standalone from a fresh clone.
-_ckpt_path = OUT_DIR / "checkpoint_post_svmsmote_G.pkl"
+_ckpt_path = OUT_DIR / "training_partition_after_svmsmote.pkl"
 if not _ckpt_path.exists():
-    _ckpt_path = REPO_ROOT_FOR_CKPT / "models" / "checkpoint_post_svmsmote_G.pkl"
+    _ckpt_path = REPO_ROOT / "models" / "training_partition_after_svmsmote.pkl"
 ckpt = joblib.load(_ckpt_path)
 X_train_final = ckpt["X_train_final"]
 y_train_final = ckpt["y_train_final"]
@@ -111,7 +114,7 @@ for idx, (mean_score, std_score) in enumerate(zip(bscv_lgr.cv_results_["mean_tes
         "std_cv_kappa": std_score, "is_best": mean_score == bscv_lgr.best_score_,
     })
 dispersion_df = pd.DataFrame(dispersion_rows)
-dispersion_df.to_csv(OUT_DIR / "table_logreg_candidate_dispersion_G.csv", index=False)
+dispersion_df.to_csv(OUT_DIR / "logreg_search_candidates.csv", index=False)
 
 rep_scores = cross_validate(champion_lgr, X_resampled, y_train_bin, cv=repeated_cv, groups=groups,
                              scoring=kappa_scorer, n_jobs=-1)["test_score"]
@@ -151,22 +154,22 @@ summary_row = {
     "TP": tp, "TN": tn, "FP": fp, "FN": fn,
     "best_params": str(dict(bscv_lgr.best_params_)),
 }
-pd.DataFrame([summary_row]).to_csv(OUT_DIR / "table_logreg_summary_G.csv", index=False)
-joblib.dump(champion_lgr, OUT_DIR / "final_model_LogisticRegression_G.pkl")
-print(f"\n[table saved] {OUT_DIR / 'table_logreg_summary_G.csv'}")
-print(f"Saved: {OUT_DIR / 'final_model_LogisticRegression_G.pkl'}")
+pd.DataFrame([summary_row]).to_csv(OUT_DIR / "logreg_baseline_summary.csv", index=False)
+joblib.dump(champion_lgr, OUT_DIR / "champion_LogisticRegression.pkl")
+print(f"\n[table saved] {OUT_DIR / 'logreg_baseline_summary.csv'}")
+print(f"Saved: {OUT_DIR / 'champion_LogisticRegression.pkl'}")
 
 # ====================================================================
 # Updated Table-3-companion figures including Logistic Regression
 # ====================================================================
 # Reload the existing 3-model dispersion + repeated-CV data to build a
 # unified 4-model comparison (MLP, SVM, XGBoost, LogisticRegression).
-xgb_sensitivity_disp = pd.read_csv(OUT_DIR / "table_xgb_niter_candidate_dispersion_G.csv")
+xgb_sensitivity_disp = pd.read_csv(OUT_DIR / "xgboost_budget_candidate_dispersion.csv")
 xgb_15 = xgb_sensitivity_disp[xgb_sensitivity_disp["n_iter_budget"] == 15].copy()
 xgb_15["Model"] = "XGBoost"
 
 # MLP/SVM dispersion: extract from the original combined dispersion table
-orig_disp = pd.read_csv(OUT_DIR / "table_bayes_search_candidate_dispersion_G.csv")
+orig_disp = pd.read_csv(OUT_DIR / "bayes_search_candidate_dispersion.csv")
 mlp_svm_disp = orig_disp[orig_disp["Model"].isin(["MLP", "SVM"])].copy()
 
 combined_disp = pd.concat([
@@ -191,9 +194,9 @@ for m, x in zip(order, range(1, len(order) + 1)):
 ax.set_ylabel("Internal 5-fold CV Cohen's $\\kappa$ (mother-child grouped)")
 ax.set_title("Bayesian-search candidate dispersion including a\nlogistic-regression baseline")
 fig.tight_layout()
-fig.savefig(FIG_DIR / "figG19_logreg_vs_models_dispersion.png", bbox_inches="tight")
+fig.savefig(FIG_DIR / "logreg_vs_models_dispersion.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Saved: {FIG_DIR / 'figG19_logreg_vs_models_dispersion.png'}")
+print(f"Saved: {FIG_DIR / 'logreg_vs_models_dispersion.png'}")
 
 print()
 print("=" * 70)

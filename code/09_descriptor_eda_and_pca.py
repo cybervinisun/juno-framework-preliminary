@@ -4,7 +4,7 @@ component analysis (PCA) of the descriptor block (continuous descriptors +
 PLIP interaction fingerprints), for the data-nature section of Article 1.
 
 Reuses exactly the same canonical 320-ligand matrix and the same
-split/normalisation as pipeline_G.py (same seeds), and retrains no model --
+split/normalisation as 01_split_balance_and_train_champions.py (same seeds), and retrains no model --
 it is purely descriptive.
 """
 from __future__ import annotations
@@ -29,8 +29,12 @@ DATA_DIR = Path(os.environ.get("DATA_DIR", REPO_ROOT / "data" / "processed"))
 X_PATH = DATA_DIR / "X_320ligands_57descriptors.xlsx"
 Y_PATH = DATA_DIR / "y_320ligands_labels.xlsx"
 
-OUT_DIR = Path(__file__).parent / "version_G_outputs"
-FIG_DIR = OUT_DIR / "figures_G"
+REPO_ROOT = Path(__file__).resolve().parent.parent
+# Every regenerated file lands here, never on top of the deposited copies in
+# results/ and models/, so a fresh run can be diffed against what was published.
+OUT_DIR = Path(os.environ.get("OUT_DIR", REPO_ROOT / "results" / "regenerated"))
+OUT_DIR.mkdir(parents=True, exist_ok=True)
+FIG_DIR = OUT_DIR / "figures"
 FIG_DIR.mkdir(exist_ok=True)
 
 df4 = pd.read_excel(X_PATH, index_col=0)
@@ -83,9 +87,9 @@ for j in range(n_cont, len(axes)):
     axes[j].axis("off")
 fig.suptitle("Class-conditional distributions of the nine continuous descriptors\n(training partition, min-max normalised)", fontsize=13)
 fig.tight_layout()
-fig.savefig(FIG_DIR / "figG9_descriptor_distributions.png", bbox_inches="tight")
+fig.savefig(FIG_DIR / "descriptor_distributions.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Saved: {FIG_DIR / 'figG9_descriptor_distributions.png'}")
+print(f"Saved: {FIG_DIR / 'descriptor_distributions.png'}")
 
 # ====================================================================
 # EDA 2: correlation heatmap of the 9 continuous descriptors
@@ -104,9 +108,9 @@ for i in range(len(continuous_cols_pca)):
 fig.colorbar(im, ax=ax, label="Pearson r")
 ax.set_title("Correlation structure of the nine continuous descriptors\n(training partition)")
 fig.tight_layout()
-fig.savefig(FIG_DIR / "figG10_continuous_correlation_heatmap.png", bbox_inches="tight")
+fig.savefig(FIG_DIR / "continuous_descriptor_correlation.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Saved: {FIG_DIR / 'figG10_continuous_correlation_heatmap.png'}")
+print(f"Saved: {FIG_DIR / 'continuous_descriptor_correlation.png'}")
 
 # ====================================================================
 # EDA 3: binary PLIP fingerprint prevalence (overall and by class)
@@ -117,8 +121,8 @@ binary_prevalence = pd.DataFrame({
     "Active_prevalence": X_train.loc[y_train["Activity"] == "Active", binary_cols].mean().to_numpy(),
     "Inactive_prevalence": X_train.loc[y_train["Activity"] == "Inactive", binary_cols].mean().to_numpy(),
 }).sort_values("Overall_prevalence", ascending=False)
-binary_prevalence.to_csv(OUT_DIR / "table_plip_fingerprint_prevalence_G.csv", index=False)
-print(f"[table saved] {OUT_DIR / 'table_plip_fingerprint_prevalence_G.csv'}")
+binary_prevalence.to_csv(OUT_DIR / "pif_prevalence_by_class.csv", index=False)
+print(f"[table saved] {OUT_DIR / 'pif_prevalence_by_class.csv'}")
 
 fig, ax = plt.subplots(figsize=(9, 12), dpi=150)
 plot_df = binary_prevalence.sort_values("Overall_prevalence")
@@ -131,9 +135,9 @@ ax.set_xlabel("Prevalence (fraction of training-set ligands with this contact)")
 ax.set_title("PLIP interaction-fingerprint prevalence by class\n(training partition, 48 binary descriptors)")
 ax.legend()
 fig.tight_layout()
-fig.savefig(FIG_DIR / "figG11_plip_prevalence_by_class.png", bbox_inches="tight")
+fig.savefig(FIG_DIR / "pif_prevalence_by_class.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Saved: {FIG_DIR / 'figG11_plip_prevalence_by_class.png'}")
+print(f"Saved: {FIG_DIR / 'pif_prevalence_by_class.png'}")
 
 # ====================================================================
 # PCA: scree plot + PC1xPC2 scatter coloured by class + loadings
@@ -160,9 +164,9 @@ axes[1].legend(fontsize=8)
 
 fig.suptitle("Principal component analysis of the nine continuous descriptors (training partition)", fontsize=13)
 fig.tight_layout()
-fig.savefig(FIG_DIR / "figG12_pca_scree_scores.png", bbox_inches="tight")
+fig.savefig(FIG_DIR / "pca_scree_and_scores.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Saved: {FIG_DIR / 'figG12_pca_scree_scores.png'}")
+print(f"Saved: {FIG_DIR / 'pca_scree_and_scores.png'}")
 
 loadings = pd.DataFrame(pca.components_.T, index=continuous_cols_pca, columns=[f"PC{i+1}" for i in range(pca.n_components_)])
 fig, ax = plt.subplots(figsize=(8, 5), dpi=150)
@@ -177,17 +181,17 @@ for i in range(len(continuous_cols_pca)):
 fig.colorbar(im, ax=ax, label="Loading")
 ax.set_title("PCA loadings (PC1-PC3) of the nine continuous descriptors")
 fig.tight_layout()
-fig.savefig(FIG_DIR / "figG13_pca_loadings.png", bbox_inches="tight")
+fig.savefig(FIG_DIR / "pca_loadings.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Saved: {FIG_DIR / 'figG13_pca_loadings.png'}")
+print(f"Saved: {FIG_DIR / 'pca_loadings.png'}")
 
 pca_var_df = pd.DataFrame({
     "component": [f"PC{i+1}" for i in range(pca.n_components_)],
     "explained_variance": pca.explained_variance_ratio_,
     "cumulative_variance": np.cumsum(pca.explained_variance_ratio_),
 })
-pca_var_df.to_csv(OUT_DIR / "table_pca_explained_variance_G.csv", index=False)
-loadings.reset_index().rename(columns={"index": "descriptor"}).to_csv(OUT_DIR / "table_pca_loadings_G.csv", index=False)
+pca_var_df.to_csv(OUT_DIR / "pca_explained_variance.csv", index=False)
+loadings.reset_index().rename(columns={"index": "descriptor"}).to_csv(OUT_DIR / "pca_loadings.csv", index=False)
 
 print()
 print("PCA summary:")

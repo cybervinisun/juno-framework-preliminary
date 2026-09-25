@@ -22,6 +22,7 @@ prediction time (scikit-learn's default ensemble=True behaviour).
 """
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import joblib
@@ -40,17 +41,27 @@ from sklearn import svm
 from xgboost import XGBClassifier
 from sklearn.base import clone
 
-BASE_DIR = Path(__file__).parent
-OUT_DIR = BASE_DIR / "version_G_outputs"
-REPO_ROOT_FOR_CKPT = BASE_DIR.parent
-FIG_DIR = OUT_DIR / "figures_G"
+REPO_ROOT = Path(__file__).resolve().parent.parent
+# Every regenerated file lands here, never on top of the deposited copies in
+# results/ and models/, so a fresh run can be diffed against what was published.
+OUT_DIR = Path(os.environ.get("OUT_DIR", REPO_ROOT / "results" / "regenerated"))
+OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def deposited_or_regenerated(name):
+    """Prefer a freshly regenerated artifact in OUT_DIR, else the deposited copy
+    under models/, so this script also runs standalone from a fresh clone."""
+    candidate = OUT_DIR / name
+    return candidate if candidate.exists() else REPO_ROOT / "models" / name
+
+FIG_DIR = OUT_DIR / "figures"
 FIG_DIR.mkdir(exist_ok=True)
 
-# Produced by pipeline_G.py into OUT_DIR; fall back to the copy deposited
+# Produced by 01_split_balance_and_train_champions.py into OUT_DIR; fall back to the copy deposited
 # under models/ so this script also runs standalone from a fresh clone.
-_ckpt_path = OUT_DIR / "checkpoint_post_svmsmote_G.pkl"
+_ckpt_path = OUT_DIR / "training_partition_after_svmsmote.pkl"
 if not _ckpt_path.exists():
-    _ckpt_path = REPO_ROOT_FOR_CKPT / "models" / "checkpoint_post_svmsmote_G.pkl"
+    _ckpt_path = REPO_ROOT / "models" / "training_partition_after_svmsmote.pkl"
 ckpt = joblib.load(_ckpt_path)
 X_train_final = ckpt["X_train_final"]
 y_train_final = ckpt["y_train_final"]
@@ -70,7 +81,7 @@ LABEL_MAP = {"Inactive": 0, "Active": 1}
 y_test_bin = np.array([LABEL_MAP[c] for c in y_test["Activity"]], dtype=np.int64)
 y_train_bin = np.array([LABEL_MAP[c] for c in y_resampled], dtype=np.int64)
 
-hp = pd.read_csv(OUT_DIR / "table_champion_hyperparameters_G.csv").set_index("Model")
+hp = pd.read_csv(OUT_DIR / "champion_hyperparameters.csv").set_index("Model")
 
 
 def fresh_pipeline(label: str) -> Pipeline:
@@ -189,7 +200,7 @@ for label in ["MLP", "SVM", "XGBoost"]:
     brier_leakfree = brier_score_loss(y_test_bin, y_score_leakfree)
     ece_leakfree, ece_bins_leakfree = expected_calibration_error(y_test_bin, y_score_leakfree)
 
-    previous_calibrator = joblib.load(OUT_DIR / f"final_model_{label}_calibrated_G.pkl")
+    previous_calibrator = joblib.load(deposited_or_regenerated(f"champion_{label}_platt_calibrated.pkl"))
     y_score_previous = previous_calibrator.predict_proba(X_test)[:, 1]
     auc_previous = roc_auc_score(y_test_bin, y_score_previous)
     brier_previous = brier_score_loss(y_test_bin, y_score_previous)
@@ -206,21 +217,21 @@ for label in ["MLP", "SVM", "XGBoost"]:
     })
     reliability_data[label] = (y_score_leakfree, y_score_previous)
 
-    joblib.dump(calibration_pairs, OUT_DIR / f"final_model_{label}_calibrated_leakfree_G.pkl")
+    joblib.dump(calibration_pairs, OUT_DIR / f"champion_{label}_platt_calibrated_leakfree.pkl")
 
 calib_quality_df = pd.DataFrame(rows)
-calib_quality_df.to_csv(OUT_DIR / "table_calibration_quality_G.csv", index=False)
-print(f"\n[table saved] {OUT_DIR / 'table_calibration_quality_G.csv'}")
+calib_quality_df.to_csv(OUT_DIR / "calibration_quality_leakfree.csv", index=False)
+print(f"\n[table saved] {OUT_DIR / 'calibration_quality_leakfree.csv'}")
 
 # Update Table 4 test-set AUC to the leak-free values (hard labels/other
 # metrics unaffected -- unchanged from the champion's own .predict()).
-test_df = pd.read_csv(OUT_DIR / "table_heldout_test_metrics_G.csv")
+test_df = pd.read_csv(OUT_DIR / "metrics_heldout_three_champions.csv")
 test_df = test_df.set_index("Model")
 for label in ["MLP", "SVM", "XGBoost"]:
     test_df.loc[label, "AUC"] = calib_quality_df.set_index("Model").loc[label, "AUC_leakfree"]
 test_df = test_df.reset_index()
-test_df.to_csv(OUT_DIR / "table_heldout_test_metrics_G.csv", index=False)
-print(f"[table updated] the AUC in {OUT_DIR / 'table_heldout_test_metrics_G.csv'} now uses the leak-free calibration")
+test_df.to_csv(OUT_DIR / "metrics_heldout_three_champions.csv", index=False)
+print(f"[table updated] the AUC in {OUT_DIR / 'metrics_heldout_three_champions.csv'} now uses the leak-free calibration")
 
 # ====================================================================
 # Fig. reliability diagram (calibration curve): leak-free vs. previous
@@ -247,9 +258,9 @@ for ax, title in zip(axes, ["Leak-free calibration (CalibratedClassifierCV, cv=5
 
 fig.suptitle("Reliability diagrams on the held-out test set (n = 96)", fontsize=13)
 fig.tight_layout()
-fig.savefig(FIG_DIR / "figG14_reliability_diagrams.png", bbox_inches="tight")
+fig.savefig(FIG_DIR / "reliability_diagrams.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Saved: {FIG_DIR / 'figG14_reliability_diagrams.png'}")
+print(f"Saved: {FIG_DIR / 'reliability_diagrams.png'}")
 
 print()
 print("=" * 70)

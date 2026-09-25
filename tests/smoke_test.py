@@ -61,7 +61,7 @@ EXPECTED = {
 def check_models() -> list[str]:
     errors = []
     for label, expected_params in EXPECTED.items():
-        path = MODEL_DIR / f"final_model_{label}_G.pkl"
+        path = MODEL_DIR / f"champion_{label}.pkl"
         try:
             model = joblib.load(path)
         except Exception as exc:  # noqa: BLE001
@@ -84,7 +84,7 @@ def check_models() -> list[str]:
                 )
         print(f"[ok] {label}: loaded and hyperparameters match.")
 
-    for name in ["scaler_minmax_train_G.pkl", "checkpoint_post_svmsmote_G.pkl"]:
+    for name in ["minmax_scaler_fitted_on_training.pkl", "training_partition_after_svmsmote.pkl"]:
         try:
             joblib.load(MODEL_DIR / name)
             print(f"[ok] {name}: loaded.")

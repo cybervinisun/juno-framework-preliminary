@@ -80,7 +80,7 @@ warnings.filterwarnings("ignore")
 # 0. Paths and output
 #
 # DATA_DIR can be overridden through an environment variable, e.g.:
-#   DATA_DIR=/some/other/path python pipeline_G.py
+#   DATA_DIR=/some/other/path python 01_split_balance_and_train_champions.py
 # By default it points at data/processed/ in the repository root.
 # ====================================================================
 import os
@@ -91,7 +91,10 @@ DATA_DIR = Path(os.environ.get("DATA_DIR", REPO_ROOT / "data" / "processed"))
 X_PATH = DATA_DIR / "X_320ligands_57descriptors.xlsx"
 Y_PATH = DATA_DIR / "y_320ligands_labels.xlsx"
 
-OUT_DIR = Path(__file__).parent / "version_G_outputs"
+REPO_ROOT = Path(__file__).resolve().parent.parent
+# Every regenerated file lands here, never on top of the deposited copies in
+# results/ and models/, so a fresh run can be diffed against what was published.
+OUT_DIR = Path(os.environ.get("OUT_DIR", REPO_ROOT / "results" / "regenerated"))
 OUT_DIR.mkdir(exist_ok=True)
 
 
@@ -162,7 +165,7 @@ print(f"Continuous normalised: {len(continuous_cols_for_scaler)} | "
       f"Binary preserved: {len(binary_cols_for_scaler)} | "
       f"Already normalised, preserved: {PRE_NORMALISED_DESCRIPTORS}")
 
-joblib.dump(scaler, OUT_DIR / "scaler_minmax_train_G.pkl")
+joblib.dump(scaler, OUT_DIR / "minmax_scaler_fitted_on_training.pkl")
 
 # ====================================================================
 # 3. Diagnostic PCA (notebook cells 56-57) -- 9 continuous descriptors;
@@ -187,14 +190,14 @@ loadings = pd.DataFrame(
     index=continuous_cols_pca,
     columns=[f"PC{i+1}" for i in range(pca.n_components_)],
 )
-save_table(loadings.reset_index().rename(columns={"index": "descriptor"}), "table_pca_loadings_G.csv")
+save_table(loadings.reset_index().rename(columns={"index": "descriptor"}), "pca_loadings.csv")
 
 pca_var_df = pd.DataFrame({
     "component": [f"PC{i+1}" for i in range(pca.n_components_)],
     "explained_variance": pca.explained_variance_ratio_,
     "cumulative_variance": np.cumsum(pca.explained_variance_ratio_),
 })
-save_table(pca_var_df, "table_pca_explained_variance_G.csv")
+save_table(pca_var_df, "pca_explained_variance.csv")
 
 # ====================================================================
 # 4. SVMSMOTE parts A/B (notebook cells 103-106) -- faithful reconstruction
@@ -760,7 +763,7 @@ if len(synthetic_metadata) > 0:
     print(f"Synthetic-sample similarity -- min:{sim_final.min():.4f} max:{sim_final.max():.4f} "
           f"mean:{sim_final.mean():.4f} median:{np.median(sim_final):.4f}")
 
-save_table(tracking_table, "table_svmsmote_tracking_G.csv")
+save_table(tracking_table, "svmsmote_synthetic_tracking.csv")
 
 # The balanced training partition, the held-out partition and the parent-child
 # tracking table are what every downstream script in this repository consumes,
@@ -775,9 +778,9 @@ joblib.dump(
         "y_test": y_test,
         "tracking_table": tracking_table,
     },
-    OUT_DIR / "checkpoint_post_svmsmote_G.pkl",
+    OUT_DIR / "training_partition_after_svmsmote.pkl",
 )
-print(f"Saved: {OUT_DIR / 'checkpoint_post_svmsmote_G.pkl'}")
+print(f"Saved: {OUT_DIR / 'training_partition_after_svmsmote.pkl'}")
 
 # ====================================================================
 # 5. Bayesian optimisation + champion selection (notebook cells 116-117)
@@ -869,7 +872,7 @@ labels = ["MLP", "XGBoost", "SVM"]
 # Retained budget: n_iter=5 for all three families. The XGBoost champion was
 # originally selected from a wider n_iter=15 search, but that candidate was
 # superseded (see archive/round_niter15_exploratory/ and
-# pipeline_G_niter_all_algorithms.py): the marginal gain in internal kappa was
+# 02_search_budget_all_algorithms.py): the marginal gain in internal kappa was
 # small next to the risk of the search itself overfitting one CV partition.
 # This budget is what reproduces the published champions of Table 2.
 n_iter_list = [5, 5, 5]
@@ -923,8 +926,8 @@ print(train_df)
 print("\nTest performance -- external validation (model already fixed by CV):")
 print(test_df)
 
-save_table(train_df, "table_training_metrics_G.csv")
-save_table(test_df, "table_heldout_test_metrics_G.csv")
+save_table(train_df, "metrics_training_partition.csv")
+save_table(test_df, "metrics_heldout_three_champions.csv")
 
 # Champion hyperparameters per model
 hp_rows = []
@@ -932,7 +935,7 @@ for label, bscv in bscv_objects.items():
     row = {"Model": label, "best_score_cv_kappa": bscv.best_score_}
     row.update({k: v for k, v in bscv.best_params_.items()})
     hp_rows.append(row)
-save_table(pd.DataFrame(hp_rows), "table_champion_hyperparameters_G.csv")
+save_table(pd.DataFrame(hp_rows), "champion_hyperparameters.csv")
 
 # ====================================================================
 # 7. Diagnostic: repeated CV (20x5) of the already-selected candidate
@@ -956,13 +959,13 @@ for label, model in champions.items():
         "kappa_ci95_low": np.percentile(vals, 2.5), "kappa_ci95_high": np.percentile(vals, 97.5),
     })
 
-save_table(pd.DataFrame(diagnostic_rows), "table_repeated_cv_diagnostic_G.csv")
+save_table(pd.DataFrame(diagnostic_rows), "repeated_cv_diagnostic.csv")
 
 # ====================================================================
 # 8. Save the final models
 # ====================================================================
 for label, model in champions.items():
-    filename = OUT_DIR / f"final_model_{label}_G.pkl"
+    filename = OUT_DIR / f"champion_{label}.pkl"
     joblib.dump(model, filename)
     print(f"Saved: {filename}")
 
@@ -974,7 +977,7 @@ for label, model in champions.items():
 #    in the Accuracy/Precision/Recall/F1/kappa metrics above -- it only
 #    affects the continuous score used for AUC/ROC. The full
 #    multi-scenario calibration study (Model A vs B, per-bin ECE
-#    bootstrap) lives in pipeline_G_calibration_scenarios.py.
+#    bootstrap) lives in 06_calibration_scenarios.py.
 # ====================================================================
 print()
 print("=" * 70)
@@ -1020,12 +1023,12 @@ for label, model in champions.items():
 
     print(f"  {label:<10} AUC train (calibrated)={auc_train_cal:.4f}  AUC test (calibrated)={auc_test_cal:.4f}")
 
-save_table(train_df, "table_training_metrics_G.csv")
-save_table(test_df, "table_heldout_test_metrics_G.csv")
-save_table(pd.DataFrame(roc_rows), "table_roc_points_G.csv")
+save_table(train_df, "metrics_training_partition.csv")
+save_table(test_df, "metrics_heldout_three_champions.csv")
+save_table(pd.DataFrame(roc_rows), "roc_points_calibrated.csv")
 
 for label, model in calibrated_champions.items():
-    joblib.dump(model, OUT_DIR / f"final_model_{label}_calibrated_G.pkl")
+    joblib.dump(model, OUT_DIR / f"champion_{label}_platt_calibrated.pkl")
 
 # ====================================================================
 # 10. Feature importance of the XGBoost champion (gain/cover), using the
@@ -1058,8 +1061,8 @@ importance_full = all_features.merge(importance_df, on="Feature", how="left").fi
 importance_full = importance_full.sort_values(by="gain", ascending=False).reset_index(drop=True)
 
 top20_df = importance_df.head(20)
-save_table(top20_df, "table_feature_importance_top20_G.csv")
-save_table(importance_full, "table_feature_importance_all57_G.csv")
+save_table(top20_df, "xgboost_feature_importance_top20.csv")
+save_table(importance_full, "xgboost_feature_importance_all_57.csv")
 
 print(top20_df.to_string(index=False))
 
@@ -1071,7 +1074,7 @@ print("=" * 70)
 print("11. Figures for Article 1")
 print("=" * 70)
 
-FIG_DIR = OUT_DIR / "figures_G"
+FIG_DIR = OUT_DIR / "figures"
 FIG_DIR.mkdir(exist_ok=True)
 
 MODEL_COLORS = {"MLP": "#d62728", "SVM": "#2ca02c", "XGBoost": "#1f77b4"}
@@ -1119,9 +1122,9 @@ if len(synthetic_metadata) > 0:
 
     fig.suptitle("SVMSMOTE synthetic Inactive samples: similarity and balance diagnostics", fontsize=14)
     fig.tight_layout()
-    fig.savefig(FIG_DIR / "figG1_svmsmote_diagnostics.png", bbox_inches="tight")
+    fig.savefig(FIG_DIR / "svmsmote_diagnostics.png", bbox_inches="tight")
     plt.close(fig)
-    print(f"Saved: {FIG_DIR / 'figG1_svmsmote_diagnostics.png'}")
+    print(f"Saved: {FIG_DIR / 'svmsmote_diagnostics.png'}")
 
 # --- Fig. G2: Bayesian-search candidate dispersion per model family
 #     (replaces the 20-candidate MLP/SVM/XGBoost comparison figures;
@@ -1135,7 +1138,7 @@ for label, bscv in bscv_objects.items():
             "std_cv_kappa": std_score, "is_best": mean_score == bscv.best_score_,
         })
 dispersion_df = pd.DataFrame(dispersion_rows)
-save_table(dispersion_df, "table_bayes_search_candidate_dispersion_G.csv")
+save_table(dispersion_df, "bayes_search_candidate_dispersion.csv")
 
 fig, ax = plt.subplots(figsize=(8, 6), dpi=150)
 order = ["MLP", "SVM", "XGBoost"]
@@ -1156,9 +1159,9 @@ ax.set_ylabel("Internal 5-fold CV Cohen's $\\kappa$ (mother-child grouped)")
 ax.set_title("Bayesian-search candidate dispersion by model family\n(n_iter = 5 for MLP, SVM and XGBoost)")
 ax.legend(loc="lower right")
 fig.tight_layout()
-fig.savefig(FIG_DIR / "figG2_bayes_search_dispersion.png", bbox_inches="tight")
+fig.savefig(FIG_DIR / "bayes_search_dispersion.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Saved: {FIG_DIR / 'figG2_bayes_search_dispersion.png'}")
+print(f"Saved: {FIG_DIR / 'bayes_search_dispersion.png'}")
 
 # --- Fig. G3: Repeated group-CV (20x5) robustness of the chosen
 #     candidate -- supports "the optimisation itself did not overfit
@@ -1183,9 +1186,9 @@ ax.set_ylabel("Cohen's $\\kappa$ (mother-child grouped CV)")
 ax.set_title("Repeated cross-validation (20$\\times$5 = 100 folds) of the\nselected champion, vs. the search's internal best_score_")
 ax.legend(loc="lower right")
 fig.tight_layout()
-fig.savefig(FIG_DIR / "figG3_repeated_cv_robustness.png", bbox_inches="tight")
+fig.savefig(FIG_DIR / "repeated_cv_robustness.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Saved: {FIG_DIR / 'figG3_repeated_cv_robustness.png'}")
+print(f"Saved: {FIG_DIR / 'repeated_cv_robustness.png'}")
 
 # --- Fig. G4 (replaces Fig. 7): ROC curves on the held-out test set,
 #     calibrated scores, all three retained classifiers ---
@@ -1201,9 +1204,9 @@ ax.set_ylabel("True positive rate")
 ax.set_title("ROC curves on the held-out test set (n = 96)\nfinal retained MLP, SVM and XGBoost classifiers")
 ax.legend(loc="lower right")
 fig.tight_layout()
-fig.savefig(FIG_DIR / "figG4_roc_curves.png", bbox_inches="tight")
+fig.savefig(FIG_DIR / "heldout_roc_curves.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Saved: {FIG_DIR / 'figG4_roc_curves.png'}")
+print(f"Saved: {FIG_DIR / 'heldout_roc_curves.png'}")
 
 # --- Fig. G5 (replaces Fig. 8): global XGBoost feature importance
 #     (mean gain), full 57-descriptor set, champion model ---
@@ -1214,9 +1217,9 @@ ax.set_xlabel("Mean gain")
 ax.set_title("Global XGBoost feature importance (mean gain)\nacross the full 57-descriptor set -- selected champion model")
 ax.tick_params(axis="y", labelsize=7)
 fig.tight_layout()
-fig.savefig(FIG_DIR / "figG5_feature_importance_full.png", bbox_inches="tight")
+fig.savefig(FIG_DIR / "xgboost_feature_importance_all_57.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Saved: {FIG_DIR / 'figG5_feature_importance_full.png'}")
+print(f"Saved: {FIG_DIR / 'xgboost_feature_importance_all_57.png'}")
 
 # --- Fig. G6 (replaces Fig. 4): class distribution across the 70/30
 #     split AND the SVMSMOTE-balanced training partition, in English ---
@@ -1241,9 +1244,9 @@ axes[1].tick_params(axis="x", rotation=20)
 
 fig.suptitle("Class distribution: 70/30 split and SVMSMOTE-balanced training partition", fontsize=13)
 fig.tight_layout()
-fig.savefig(FIG_DIR / "figG6_class_distribution.png", bbox_inches="tight")
+fig.savefig(FIG_DIR / "class_distribution.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Saved: {FIG_DIR / 'figG6_class_distribution.png'}")
+print(f"Saved: {FIG_DIR / 'class_distribution.png'}")
 
 print()
 print("=" * 70)

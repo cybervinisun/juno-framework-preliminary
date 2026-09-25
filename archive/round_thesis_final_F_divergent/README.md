@@ -24,8 +24,8 @@ the article, per the authors' own note in Section 3.4.
 
 ## Files
 
-- `model_svc_descriptors_F_no_pipeline.pkl`
-- `model_xgb_descriptors_F_no_pipeline.pkl`
+- `svc_descriptors_F_no_pipeline.pkl`
+- `xgb_descriptors_F_no_pipeline.pkl`
 
 ## Hyperparameters of this round (verified via `get_params()`)
 
@@ -52,5 +52,5 @@ the article, per the authors' own note in Section 3.4.
 | `subsample` | 0.6 |
 
 Compare against Table 2 of the published article and against
-`models/final_model_SVM_G.pkl` / `models/final_model_XGBoost_G.pkl` — none
+`models/champion_SVM.pkl` / `models/champion_XGBoost.pkl` — none
 of the values above match the published champions.

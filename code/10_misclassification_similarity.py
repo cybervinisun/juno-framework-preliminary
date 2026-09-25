@@ -33,7 +33,7 @@ SMILES_PATH = DATA_DIR / "smiles_320ligands_reference.xlsx"
 
 MODEL_DIR = Path(os.environ.get("MODEL_DIR", REPO_ROOT / "models"))
 OUT_DIR = Path(os.environ.get("OUT_DIR", REPO_ROOT / "results" / "regenerated"))
-FIG_DIR = OUT_DIR / "figures_G"
+FIG_DIR = OUT_DIR / "figures"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 FIG_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -61,7 +61,7 @@ PRE_NORMALISED_DESCRIPTORS = ["corrScore"]
 binary_cols = [c for c in X_train.columns if set(X_train[c].dropna().unique()) <= {0, 1}]
 continuous_cols = [c for c in X_train.columns if c not in binary_cols and c not in PRE_NORMALISED_DESCRIPTORS]
 
-scaler = joblib.load(MODEL_DIR / "scaler_minmax_train_G.pkl")
+scaler = joblib.load(MODEL_DIR / "minmax_scaler_fitted_on_training.pkl")
 X_test_scaled = X_test.copy()
 X_test_scaled[continuous_cols] = scaler.transform(X_test[continuous_cols])
 
@@ -78,7 +78,7 @@ print("=" * 70)
 
 errors_by_model = {}
 for label in ["MLP", "SVM", "XGBoost"]:
-    champion = joblib.load(MODEL_DIR / f"final_model_{label}_G.pkl")
+    champion = joblib.load(MODEL_DIR / f"champion_{label}.pkl")
     y_pred = champion.predict(X_test_scaled)
     y_pred_series = pd.Series(y_pred, index=X_test_scaled.index)
 
@@ -147,8 +147,8 @@ for idx in all_error_ids:
     })
 
 results_df = pd.DataFrame(result_rows).sort_values("compound_idx")
-results_df.to_csv(OUT_DIR / "table_tanimoto_errors_G.csv", index=False)
-print(f"\n[table saved] {OUT_DIR / 'table_tanimoto_errors_G.csv'}")
+results_df.to_csv(OUT_DIR / "error_compounds_tanimoto_to_training.csv", index=False)
+print(f"\n[table saved] {OUT_DIR / 'error_compounds_tanimoto_to_training.csv'}")
 print(results_df[["compound_idx", "true_activity", "misclassified_by", "median_tanimoto_active", "max_tanimoto_active", "median_tanimoto_inactive", "max_tanimoto_inactive"]].to_string(index=False))
 
 # ====================================================================
@@ -162,7 +162,7 @@ for a, b in combinations(valid_error_ids, 2):
     pair_rows.append({"compound_a": a, "compound_b": b, "tanimoto": sim})
     print(f"  {a} x {b}: {sim:.3f}")
 pairs_df = pd.DataFrame(pair_rows)
-pairs_df.to_csv(OUT_DIR / "table_tanimoto_error_pairs_G.csv", index=False)
+pairs_df.to_csv(OUT_DIR / "error_compounds_pairwise_tanimoto.csv", index=False)
 
 # ====================================================================
 # 5. Figure: Tanimoto distribution of each misclassified compound against
@@ -188,9 +188,9 @@ for ax, idx in zip(axes, valid_error_ids):
 
 fig.suptitle("Tanimoto similarity of version-G misclassified test-set compounds\nto the training Active/Inactive populations", fontsize=12)
 fig.tight_layout()
-fig.savefig(FIG_DIR / "figG15_tanimoto_errors_G.png", bbox_inches="tight")
+fig.savefig(FIG_DIR / "error_compounds_tanimoto.png", bbox_inches="tight")
 plt.close(fig)
-print(f"\nSaved: {FIG_DIR / 'figG15_tanimoto_errors_G.png'}")
+print(f"\nSaved: {FIG_DIR / 'error_compounds_tanimoto.png'}")
 
 print()
 print("=" * 70)

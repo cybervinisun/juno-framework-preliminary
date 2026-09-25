@@ -20,17 +20,17 @@ the sensitivity analysis (n_iter = 1, 3, 5) showed the extra search budget of
 this exploratory round bought only a marginal, non-decisive gain in internal
 CV performance relative to the added optimization cost. To keep the
 comparison across the four algorithms on equal footing, the `n_iter=5`
-XGBoost model in `models/final_model_XGBoost_G.pkl` is the one reported in
+XGBoost model in `models/champion_XGBoost.pkl` is the one reported in
 Tables 1, 3, 4, and 5 and used throughout the manuscript.
 
 ## Files
 
-- `final_model_XGBoost_niter15_G.pkl` — the champion XGBoost `Pipeline`
+- `champion_XGBoost_niter15.pkl` — the champion XGBoost `Pipeline`
   object from this round (raw, uncalibrated).
-- `final_model_XGBoost_niter15_calibrated_G.pkl` — its `FrozenEstimator`-based
+- `champion_XGBoost_niter15_platt_calibrated.pkl` — its `FrozenEstimator`-based
   calibrated counterpart (probability calibration fit on this same,
   superseded model — do **not** mix with the published n_iter=5 model).
-- `table_champion_hyperparameters_G.csv` — the hyperparameter table this
+- `champion_hyperparameters.csv` — the hyperparameter table this
   round was drawn from (see the `XGBoost` row).
 
 ## Hyperparameters of this round (verified via `get_params()`)

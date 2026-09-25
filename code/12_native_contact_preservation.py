@@ -26,7 +26,7 @@ import numpy as np
 import pandas as pd
 
 # Directory holding the crystallographic PDBs and the raw GOLD redocking
-# folders (see the note in redocking_analysis.py). Override it through the
+# folders (see the note in 11_redocking_rmsd_from_gold.py). Override it through the
 # GOLD_RAW_DIR environment variable if your copy lives elsewhere; the
 # already-extracted results of this analysis are in
 # data/raw/table_native_vs_redocked_contacts_*.csv.
@@ -249,7 +249,7 @@ summary_df = pd.DataFrame(summary_rows)
 detail_df = pd.DataFrame(detail_rows)
 OUT_DIR = Path(os.environ.get("OUT_DIR", REPO_ROOT / "results" / "regenerated"))
 OUT_DIR.mkdir(parents=True, exist_ok=True)
-summary_df.to_csv(OUT_DIR / "table_native_vs_redocked_contacts_G.csv", index=False)
-detail_df.to_csv(OUT_DIR / "table_native_vs_redocked_contacts_detail_G.csv", index=False)
+summary_df.to_csv(OUT_DIR / "native_vs_redocked_contacts_summary.csv", index=False)
+detail_df.to_csv(OUT_DIR / "native_vs_redocked_contacts_detail.csv", index=False)
 print("\n\n=== FINAL SUMMARY ===")
 print(summary_df.to_string(index=False))

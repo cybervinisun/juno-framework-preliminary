@@ -123,3 +123,47 @@ uncalibrated:
   absent. They are now deposited, each fitted by Platt scaling on the 224
   original, non-synthetic training ligands, and each verified against the
   corresponding row of `tab_calib_scenarios_G.csv`.
+
+## Reproducing these tables on a different software build
+
+Everything in this folder was regenerated and checked against the article on the
+software stack pinned in `environment.yml`. Re-running the pipeline on a
+different build reproduces almost all of it exactly, but not quite all, and the
+exception is worth stating plainly.
+
+Reproduces exactly, verified on an independent build (scikit-learn 1.9.0,
+XGBoost 3.4.1, NumPy 2.5.2, pandas 3.0.5):
+
+- the champion hyperparameters of Table 2, including the XGBoost champion
+  (`n_estimators=141`, `max_leaves=97`);
+- every row of Table 5, the held-out evaluation - for XGBoost, AUC 0.947917,
+  kappa 0.736842 and the 65/21/3/7 confusion matrix;
+- `fig7_roc_curve_points_G.csv`, byte for byte;
+- the Model A rows of Table 6, in all three calibration scenarios.
+
+Does **not** reproduce exactly across builds:
+
+- the three XGBoost **Model B** rows of Table 6 (B1, B2, B3). Model B is not a
+  refit of a fixed model: `code/pipeline_G_calibration_scenarios.py` runs a
+  fresh Bayesian search over the 224 original ligands, and for XGBoost that
+  search settles on a different candidate on a different build. Its AUC came out
+  0.943 rather than the 0.950 reported, with Brier, ECE and LogLoss shifting by
+  up to 0.03. The MLP Model B rows reproduce exactly, so the sensitivity is
+  specific to the XGBoost search, not to the Model B design.
+
+This has a consequence worth stating, because it affects how Section 3.6 should
+be read. On the environment of `environment.yml`, every proper score favours the
+XGBoost Model B over Model A by a small margin. On the independent build above
+that ordering does not survive: Model B still wins on all three proper scores in
+the uncalibrated comparison (Brier 0.071 against 0.078, ECE 0.068 against 0.074,
+LogLoss 0.252 against 0.260), but Model A wins once calibration is fitted on the
+balanced partition, and AUC favours Model A in all three comparisons (0.948
+against 0.943). So the *direction* of the XGBoost Model A/B difference is itself
+within the noise of the re-optimisation, while its *magnitude* - small in every
+scenario, on both builds - is the robust observation. The qualitative reading
+that the choice between Model A and Model B is marginal for XGBoost holds on
+both builds; a stronger claim, that Model B is uniformly better, would not.
+
+The published values are those obtained on the environment of
+`environment.yml`. A run that differs in those three rows is showing the build
+sensitivity described here, not a failed reproduction.

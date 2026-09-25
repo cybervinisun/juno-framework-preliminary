@@ -762,6 +762,23 @@ if len(synthetic_metadata) > 0:
 
 save_table(tracking_table, "table_svmsmote_tracking_G.csv")
 
+# The balanced training partition, the held-out partition and the parent-child
+# tracking table are what every downstream script in this repository consumes,
+# so persist them here: that is what makes the chain runnable end to end from a
+# fresh clone. The same object is deposited under models/ for anyone who wants
+# to run a downstream script without re-running this one.
+joblib.dump(
+    {
+        "X_train_final": X_train_final,
+        "y_train_final": y_train_final,
+        "X_test": X_test,
+        "y_test": y_test,
+        "tracking_table": tracking_table,
+    },
+    OUT_DIR / "checkpoint_post_svmsmote_G.pkl",
+)
+print(f"Saved: {OUT_DIR / 'checkpoint_post_svmsmote_G.pkl'}")
+
 # ====================================================================
 # 5. Bayesian optimisation + champion selection (notebook cells 116-117)
 # ====================================================================

@@ -32,10 +32,16 @@ from skopt.space import Real, Categorical
 
 BASE_DIR = Path(__file__).parent
 OUT_DIR = BASE_DIR / "version_G_outputs"
+REPO_ROOT_FOR_CKPT = BASE_DIR.parent
 FIG_DIR = OUT_DIR / "figures_G"
 FIG_DIR.mkdir(exist_ok=True)
 
-ckpt = joblib.load(OUT_DIR / "checkpoint_post_svmsmote_G.pkl")
+# Produced by pipeline_G.py into OUT_DIR; fall back to the copy deposited
+# under models/ so this script also runs standalone from a fresh clone.
+_ckpt_path = OUT_DIR / "checkpoint_post_svmsmote_G.pkl"
+if not _ckpt_path.exists():
+    _ckpt_path = REPO_ROOT_FOR_CKPT / "models" / "checkpoint_post_svmsmote_G.pkl"
+ckpt = joblib.load(_ckpt_path)
 X_train_final = ckpt["X_train_final"]
 y_train_final = ckpt["y_train_final"]
 X_test = ckpt["X_test"]

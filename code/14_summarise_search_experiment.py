@@ -19,6 +19,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from scipy import stats
 from scipy.stats import binomtest, wilcoxon
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -50,6 +51,14 @@ def describe(label, internal_gain, heldout_delta):
     if len(nonzero) >= 6:
         print(f"  Wilcoxon signed-rank on the held-out change: p = {wilcoxon(nonzero).pvalue:.4f}"
               f"  (n = {len(nonzero)})")
+        # For a null result the interval is what carries the information: it bounds
+        # how large a real effect could be and still have gone unseen here.
+        se = stats.sem(nonzero)
+        low, high = stats.t.interval(0.95, len(nonzero) - 1, loc=nonzero.mean(), scale=se)
+        mde = (stats.norm.ppf(0.975) + stats.norm.ppf(0.80)) * nonzero.std(ddof=1) / np.sqrt(len(nonzero))
+        print(f"  95% CI of the mean held-out change: [{low:+.4f}, {high:+.4f}]")
+        print(f"  smallest difference detectable at 80% power: {mde:.4f} kappa"
+              f"  (one compound of the 96-ligand held-out set is worth {1/96:.4f})")
     if len(worse) + len(better) >= 1:
         p = binomtest(len(worse), len(worse) + len(better), 0.5).pvalue
         print(f"  sign test, worse against better: {len(worse)}/{len(worse) + len(better)}, p = {p:.4f}")

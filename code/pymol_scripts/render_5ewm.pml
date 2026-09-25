@@ -15,7 +15,7 @@ GOLD_RAW_DIR = os.environ.get(
 )
 OUT_DIR = os.environ.get(
     "OUT_DIR",
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "results", "regenerated", "figuras_pymol"),
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "results", "regenerated", "figures_pymol"),
 )
 os.makedirs(OUT_DIR, exist_ok=True)
 SYS_DIR = os.path.join(GOLD_RAW_DIR, "5ewm", "redocagem")

@@ -1,41 +1,40 @@
 """
-Pipeline "versao G" -- reconstrucao fiel do notebook RECONSTRUIDO
+Version-G pipeline -- faithful reconstruction of the reference notebook
 (Modelo_Classificacao_ML_QSAR_320_ligantes_GoldsScore_v_Tese_RECONSTRUIDO)
-rodando sobre o banco real de 320 ligantes, para o Artigo 1
-(Journal of Cheminformatics).
+run over the real 320-ligand dataset, for Article 1 (Journal of
+Cheminformatics).
 
-Reaproveita, sem alteracao de logica, exatamente o que foi confirmado
-celula-a-celula no notebook original:
-  - Split 70/30 estratificado (random_state=42)
-  - Normalizacao Min-Max (fit no treino, corrScore excluido)
-  - PCA(0.999) diagnostico sobre os 9 descritores continuos (nao entra
-    na matriz de modelagem -- e so estudo/figura, igual na tese)
-  - SVMSMOTE PARTE A/B: distancia mista Gower-like (Manhattan continuas +
-    Hamming simetrico binarias, 50/50), geracao de candidatos crus via
-    SVMSMOTE, correcao formal (reflexao de continuas fora de [0,1],
-    snap de pKa ordinal, atribuicao de bits binarios por correlacao
-    ponto-bisserial com tolerancia noise_budget/temperatura), selecao
-    balanceada por mae dentro da faixa de similaridade 0.83-0.90
-  - Otimizacao bayesiana (skopt.BayesSearchCV) com StratifiedGroupKFold
-    (grupos mae-filha) e scoring = Cohen's Kappa (kappa_scorer), para
-    MLP, XGBoost e SVM -- confirmado como o UNICO criterio real de
-    selecao de hiperparametros/campeao em todas as chamadas efetivas
-    do notebook (MCC e importado mas nunca chamado; so aparece como
-    coluna extra opcional no relatorio de CV repetida).
-  - Selecao do campeao via best_estimator_/best_score_ (CV interna),
-    NUNCA por metrica de teste.
-  - Metricas de treino/teste + diagnostico de CV repetida (20x5) do
-    candidato ja escolhido.
+Reproduces, with no change in logic, exactly what was confirmed
+cell-by-cell in the original notebook:
+  - Stratified 70/30 split (random_state=42)
+  - Min-max normalisation (fitted on the training partition, corrScore excluded)
+  - Diagnostic PCA(0.999) over the 9 continuous descriptors (it does NOT
+    enter the modelling matrix -- it is study/figure material only)
+  - SVMSMOTE parts A/B: mixed Gower-like distance (Manhattan on the
+    continuous block + symmetric Hamming on the binary block, 50/50),
+    raw candidate generation via SVMSMOTE, formal correction (reflection
+    of continuous values outside [0,1], snapping of the ordinal pKa code,
+    binary-bit assignment by point-biserial correlation with a
+    noise_budget/temperature tolerance), and parent-balanced selection
+    within the 0.83-0.90 similarity band
+  - Bayesian optimisation (skopt.BayesSearchCV) with StratifiedGroupKFold
+    (parent-child groups) and scoring = Cohen's kappa (kappa_scorer), for
+    MLP, XGBoost and SVM -- confirmed as the ONLY real criterion for
+    hyperparameter/champion selection in every effective call of the
+    notebook (MCC is imported but never called; it appears only as an
+    optional extra column in the repeated-CV report).
+  - Champion selection via best_estimator_/best_score_ (internal CV),
+    NEVER by a test-set metric.
+  - Training/test metrics + a repeated-CV diagnostic (20x5) of the
+    already-selected candidate.
 
-Escopo desta reconstrucao (decisao explicita, documentada para o
-usuario): a PARTE A do notebook (bootstrap dos limiares de
-similaridade Ativo-Inativo/Inativo-Inativo) e reproduzida apenas na
-sua conclusao operacional -- o notebook usa os limiares fixos 0.83 e
-0.90 (nao le programaticamente `limiar_equilibrado`/`limiar_conservador`
-de volta no codigo da PARTE B, sao so diagnostico impresso). O
-bootstrap completo (graficos/tabelas de cobertura) fica de fora deste
-script porque nao afeta o modelo final -- pode ser adicionado depois
-se for necessario para a secao de Metodos.
+Scope of this reconstruction: part A of the notebook (bootstrap of the
+Active-Inactive/Inactive-Inactive similarity thresholds) is reproduced
+only in its operational conclusion -- the notebook uses the fixed
+thresholds 0.83 and 0.90 and never reads its bootstrap estimates back
+into the part-B code, where they are printed as a diagnostic only. The
+full bootstrap (coverage plots/tables) is therefore out of scope for
+this script, because it does not affect the final model.
 """
 
 from __future__ import annotations
@@ -78,11 +77,11 @@ from skopt.space import Real, Integer, Categorical
 warnings.filterwarnings("ignore")
 
 # ====================================================================
-# 0. Caminhos e saida
+# 0. Paths and output
 #
-# DATA_DIR pode ser sobrescrito via variavel de ambiente, ex.:
-#   DATA_DIR=/caminho/outro python pipeline_G.py
-# Por padrao aponta para data/processed/ na raiz do repositorio.
+# DATA_DIR can be overridden through an environment variable, e.g.:
+#   DATA_DIR=/some/other/path python pipeline_G.py
+# By default it points at data/processed/ in the repository root.
 # ====================================================================
 import os
 
@@ -92,27 +91,27 @@ DATA_DIR = Path(os.environ.get("DATA_DIR", REPO_ROOT / "data" / "processed"))
 X_PATH = DATA_DIR / "X_320ligands_57descriptors.xlsx"
 Y_PATH = DATA_DIR / "y_320ligands_labels.xlsx"
 
-OUT_DIR = Path(__file__).parent / "versao_G_outputs"
+OUT_DIR = Path(__file__).parent / "version_G_outputs"
 OUT_DIR.mkdir(exist_ok=True)
 
 
-def salvar_tabela(df: pd.DataFrame, nome: str) -> None:
+def save_table(df: pd.DataFrame, nome: str) -> None:
     path = OUT_DIR / nome
     df.to_csv(path, index=False)
-    print(f"[tabela salva] {path}")
+    print(f"[table saved] {path}")
 
 
 # ====================================================================
-# 1. Carregamento e split (celulas 91/93/94 do notebook)
+# 1. Loading and split (notebook cells 91/93/94)
 # ====================================================================
 print("=" * 70)
-print("1. Carregamento e split 70/30 estratificado")
+print("1. Loading and stratified 70/30 split")
 print("=" * 70)
 
 df4 = pd.read_excel(X_PATH, index_col=0)
 y = pd.read_excel(Y_PATH, index_col=0)
 
-assert (df4.index == y.index).all(), "X e y desalinhados pelo indice."
+assert (df4.index == y.index).all(), "X and y are misaligned by index."
 
 X_final = df4.copy()
 y_final = y.copy()
@@ -121,7 +120,7 @@ X_train, X_test, y_train, y_test = train_test_split(
     X_final,
     y_final,
     test_size=0.30,
-    stratify=y_final["Atividade"],
+    stratify=y_final["Activity"],
     random_state=42,
 )
 
@@ -131,78 +130,78 @@ y_train = y_train.reset_index(drop=True)
 y_test = y_test.reset_index(drop=True)
 
 print(f"X_train: {X_train.shape}  X_test: {X_test.shape}")
-print("Distribuicao treino:\n", y_train["Atividade"].value_counts())
-print("Distribuicao teste:\n", y_test["Atividade"].value_counts())
+print("Training distribution:\n", y_train["Activity"].value_counts())
+print("Test distribution:\n", y_test["Activity"].value_counts())
 
 # ====================================================================
-# 2. Normalizacao Min-Max (celula 96) -- fit no treino, corrScore fora
+# 2. Min-max normalisation (notebook cell 96) -- fitted on train, corrScore excluded
 # ====================================================================
 print()
 print("=" * 70)
-print("2. Normalizacao Min-Max (fit no treino)")
+print("2. Min-max normalisation (fitted on the training partition)")
 print("=" * 70)
 
-descritores_ja_normalizados = ["corrScore"]
+PRE_NORMALISED_DESCRIPTORS = ["corrScore"]
 
-col_binarias_scaler = [
+binary_cols_for_scaler = [
     col for col in X_train.columns
     if set(X_train[col].dropna().unique()) <= {0, 1}
 ]
-col_continuas_scaler = [
+continuous_cols_for_scaler = [
     col for col in X_train.columns
-    if col not in col_binarias_scaler and col not in descritores_ja_normalizados
+    if col not in binary_cols_for_scaler and col not in PRE_NORMALISED_DESCRIPTORS
 ]
 
 scaler = MinMaxScaler()
-scaler.fit(X_train[col_continuas_scaler])
+scaler.fit(X_train[continuous_cols_for_scaler])
 
-X_train[col_continuas_scaler] = scaler.transform(X_train[col_continuas_scaler])
-X_test[col_continuas_scaler] = scaler.transform(X_test[col_continuas_scaler])
+X_train[continuous_cols_for_scaler] = scaler.transform(X_train[continuous_cols_for_scaler])
+X_test[continuous_cols_for_scaler] = scaler.transform(X_test[continuous_cols_for_scaler])
 
-print(f"Continuos normalizados: {len(col_continuas_scaler)} | "
-      f"Binarios preservados: {len(col_binarias_scaler)} | "
-      f"Ja normalizados preservados: {descritores_ja_normalizados}")
+print(f"Continuous normalised: {len(continuous_cols_for_scaler)} | "
+      f"Binary preserved: {len(binary_cols_for_scaler)} | "
+      f"Already normalised, preserved: {PRE_NORMALISED_DESCRIPTORS}")
 
-joblib.dump(scaler, OUT_DIR / "scaler_minmax_treino_G.pkl")
+joblib.dump(scaler, OUT_DIR / "scaler_minmax_train_G.pkl")
 
 # ====================================================================
-# 3. PCA diagnostico (celulas 56-57) -- 9 continuas, NAO entra no
-#    modelo, so estudo/figura (igual na tese)
+# 3. Diagnostic PCA (notebook cells 56-57) -- 9 continuous descriptors;
+#    does NOT enter the model, study/figure material only
 # ====================================================================
 print()
 print("=" * 70)
-print("3. PCA diagnostico sobre os descritores continuos (0.999 var.)")
+print("3. Diagnostic PCA over the continuous descriptors (0.999 var.)")
 print("=" * 70)
 
-continuous_cols_pca = [c for c in X_train.columns if c not in col_binarias_scaler]
+continuous_cols_pca = [c for c in X_train.columns if c not in binary_cols_for_scaler]
 pca = PCA(n_components=0.999, svd_solver="full")
 pca_scores = pca.fit_transform(X_train[continuous_cols_pca])
 
-print(f"Descritores continuos usados na ACP: {len(continuous_cols_pca)}")
-print(f"Componentes retidas (0.999 da variancia): {pca.n_components_}")
-print(f"Variancia explicada por componente: {np.round(pca.explained_variance_ratio_, 4)}")
-print(f"Variancia acumulada: {np.round(np.cumsum(pca.explained_variance_ratio_), 4)}")
+print(f"Continuous descriptors used in the PCA: {len(continuous_cols_pca)}")
+print(f"Components retained (0.999 of the variance): {pca.n_components_}")
+print(f"Explained variance per component: {np.round(pca.explained_variance_ratio_, 4)}")
+print(f"Cumulative variance: {np.round(np.cumsum(pca.explained_variance_ratio_), 4)}")
 
 loadings = pd.DataFrame(
     pca.components_.T,
     index=continuous_cols_pca,
     columns=[f"PC{i+1}" for i in range(pca.n_components_)],
 )
-salvar_tabela(loadings.reset_index().rename(columns={"index": "descritor"}), "tabela_ACP_loadings_G.csv")
+save_table(loadings.reset_index().rename(columns={"index": "descriptor"}), "table_pca_loadings_G.csv")
 
 pca_var_df = pd.DataFrame({
-    "componente": [f"PC{i+1}" for i in range(pca.n_components_)],
-    "variancia_explicada": pca.explained_variance_ratio_,
-    "variancia_acumulada": np.cumsum(pca.explained_variance_ratio_),
+    "component": [f"PC{i+1}" for i in range(pca.n_components_)],
+    "explained_variance": pca.explained_variance_ratio_,
+    "cumulative_variance": np.cumsum(pca.explained_variance_ratio_),
 })
-salvar_tabela(pca_var_df, "tabela_ACP_variancia_G.csv")
+save_table(pca_var_df, "table_pca_explained_variance_G.csv")
 
 # ====================================================================
-# 4. SVMSMOTE PARTE A/B (celulas 103-106) -- reconstrucao fiel
+# 4. SVMSMOTE parts A/B (notebook cells 103-106) -- faithful reconstruction
 # ====================================================================
 print()
 print("=" * 70)
-print("4. SVMSMOTE PARTE A/B -- geracao balanceada de sinteticas Inativo")
+print("4. SVMSMOTE parts A/B -- balanced generation of synthetic Inactive samples")
 print("=" * 70)
 
 
@@ -223,7 +222,7 @@ def prepare_mixed_distance_columns(X, binary_cols=None):
         if col not in binary_cols
     ]
     if not binary_cols and not numeric_cols:
-        raise ValueError("Nenhuma coluna numerica ou binaria foi encontrada.")
+        raise ValueError("No numeric or binary column was found.")
     return numeric_cols, binary_cols
 
 
@@ -273,59 +272,59 @@ def compute_point_biserial_matrix(X_min_orig, binary_cols, numeric_cols):
 
 
 def enforce_formal_binary_assignment(
-    X_sint_raw, X_min_orig, binary_cols, numeric_cols, r_matrix,
-    noise_budget, temperatura, random_state,
+    X_synth_raw, X_min_orig, binary_cols, numeric_cols, r_matrix,
+    noise_budget, temperature, random_state,
 ):
-    X_out = X_sint_raw.copy()
+    X_out = X_synth_raw.copy()
     mean_k = X_min_orig[numeric_cols].mean()
     std_k = X_min_orig[numeric_cols].std().replace(0, 1e-8)
     Z = (X_out[numeric_cols] - mean_k) / std_k
     rng = np.random.default_rng(random_state)
-    flips_por_coluna = {}
+    flips_per_column = {}
     for j in binary_cols:
-        b_bruto = X_out[j].to_numpy(dtype=float)
-        b_binario = (b_bruto >= 0.5).astype(float)
+        b_raw = X_out[j].to_numpy(dtype=float)
+        b_binarised = (b_raw >= 0.5).astype(float)
         r_j = r_matrix.loc[j].to_numpy(dtype=float)
-        bit_sem_evidencia = np.allclose(r_j, 0.0) and X_min_orig[j].std() == 0
-        if bit_sem_evidencia:
-            X_out[j] = b_binario
-            flips_por_coluna[j] = 0
+        bit_without_evidence = np.allclose(r_j, 0.0) and X_min_orig[j].std() == 0
+        if bit_without_evidence:
+            X_out[j] = b_binarised
+            flips_per_column[j] = 0
             continue
-        score = (Z.to_numpy() * r_j).sum(axis=1) * temperatura
+        score = (Z.to_numpy() * r_j).sum(axis=1) * temperature
         p1 = 1.0 / (1.0 + np.exp(-score))
-        disagree = np.abs(p1 - b_binario)
-        prob_correcao = noise_budget * disagree
-        sorteio = rng.random(len(X_out))
-        corrigir = sorteio < prob_correcao
-        b_final = b_binario.copy()
-        b_final[corrigir] = 1 - b_binario[corrigir]
-        X_out[j] = b_final
-        flips_por_coluna[j] = int(corrigir.sum())
-    return X_out, flips_por_coluna
+        disagree = np.abs(p1 - b_binarised)
+        correction_probability = noise_budget * disagree
+        draw = rng.random(len(X_out))
+        to_correct = draw < correction_probability
+        b_corrected = b_binarised.copy()
+        b_corrected[to_correct] = 1 - b_binarised[to_correct]
+        X_out[j] = b_corrected
+        flips_per_column[j] = int(to_correct.sum())
+    return X_out, flips_per_column
 
 
-def enforce_continuous_bounds_by_reflection(X_sint_raw, numeric_cols, limite_inferior=0.0, limite_superior=1.0):
-    X_out = X_sint_raw.copy()
-    largura = limite_superior - limite_inferior
-    periodo = 2 * largura
-    contagem_corrigidos = {}
+def enforce_continuous_bounds_by_reflection(X_synth_raw, numeric_cols, lower_bound=0.0, upper_bound=1.0):
+    X_out = X_synth_raw.copy()
+    width = upper_bound - lower_bound
+    period = 2 * width
+    n_corrected_per_column = {}
     for col in numeric_cols:
-        valores = X_out[col].to_numpy(dtype=float)
-        fora = (valores < limite_inferior) | (valores > limite_superior)
-        deslocado = (valores - limite_inferior) % periodo
-        refletido = np.where(deslocado > largura, periodo - deslocado, deslocado)
-        X_out[col] = limite_inferior + refletido
-        contagem_corrigidos[col] = int(fora.sum())
-    return X_out, contagem_corrigidos
+        values_array = X_out[col].to_numpy(dtype=float)
+        out_of_bounds = (values_array < lower_bound) | (values_array > upper_bound)
+        shifted = (values_array - lower_bound) % period
+        reflected = np.where(shifted > width, period - shifted, shifted)
+        X_out[col] = lower_bound + reflected
+        n_corrected_per_column[col] = int(out_of_bounds.sum())
+    return X_out, n_corrected_per_column
 
 
-def enforce_ordinal_pka_category(X_sint_raw, X_orig, col_pka_ordinal):
-    X_out = X_sint_raw.copy()
-    for col in col_pka_ordinal:
-        categorias_validas = np.sort(X_orig[col].unique())
-        valores = X_out[col].to_numpy(dtype=float)
-        idx_mais_proximo = np.abs(valores[:, None] - categorias_validas[None, :]).argmin(axis=1)
-        X_out[col] = categorias_validas[idx_mais_proximo]
+def enforce_ordinal_pka_category(X_synth_raw, X_orig, ordinal_pka_cols):
+    X_out = X_synth_raw.copy()
+    for col in ordinal_pka_cols:
+        valid_categories = np.sort(X_orig[col].unique())
+        values_array = X_out[col].to_numpy(dtype=float)
+        nearest_category_idx = np.abs(values_array[:, None] - valid_categories[None, :]).argmin(axis=1)
+        X_out[col] = valid_categories[nearest_category_idx]
     return X_out
 
 
@@ -359,11 +358,11 @@ def assign_similarity_bins_with_clipping(similarity, similarity_min, similarity_
     return np.asarray(sim_bins, dtype=object)
 
 
-def generate_svmsmote_candidates(X_orig, y_orig, classe_min, target_minority_count, random_state, k_neighbors):
+def generate_svmsmote_candidates(X_orig, y_orig, minority_class, target_minority_count, random_state, k_neighbors):
     sampler = SVMSMOTE(
         random_state=random_state,
         k_neighbors=k_neighbors,
-        sampling_strategy={classe_min: target_minority_count},
+        sampling_strategy={minority_class: target_minority_count},
     )
     X_res, _ = sampler.fit_resample(X_orig, y_orig)
     if len(X_res) <= len(X_orig):
@@ -558,7 +557,7 @@ def select_balanced_pool(candidates, metadata, mother_quotas, n_bins, similarity
     return final_candidates, final_metadata
 
 
-def build_tracking_table(X_orig, y_orig, X_sint_final, synthetic_metadata, classe_min, original_source_index):
+def build_tracking_table(X_orig, y_orig, X_synth_final, synthetic_metadata, minority_class, original_source_index):
     original_tracking = pd.DataFrame({
         "final_row_id": np.arange(len(X_orig)),
         "sample_id": [f"orig_{idx}" for idx in range(len(X_orig))],
@@ -578,18 +577,18 @@ def build_tracking_table(X_orig, y_orig, X_sint_final, synthetic_metadata, class
         "candidate_global_id": pd.NA,
     })
 
-    synthetic_ids = [f"synth_inactive_{idx:05d}" for idx in range(len(X_sint_final))]
-    minority_positions_in_X_orig = np.where(y_orig.to_numpy() == classe_min)[0]
+    synthetic_ids = [f"synth_inactive_{idx:05d}" for idx in range(len(X_synth_final))]
+    minority_positions_in_X_orig = np.where(y_orig.to_numpy() == minority_class)[0]
     mother_index_in_minority = synthetic_metadata["mother_index"].to_numpy(dtype=int)
     mother_original_row_ids = minority_positions_in_X_orig[mother_index_in_minority]
     mother_source_indices = original_source_index[mother_original_row_ids]
 
     synthetic_tracking = pd.DataFrame({
-        "final_row_id": np.arange(len(X_orig), len(X_orig) + len(X_sint_final)),
+        "final_row_id": np.arange(len(X_orig), len(X_orig) + len(X_synth_final)),
         "sample_id": synthetic_ids,
         "is_synthetic": True,
         "synthetic_id": synthetic_ids,
-        "class_label": classe_min,
+        "class_label": minority_class,
         "original_row_id": pd.NA,
         "original_source_index": pd.NA,
         "mother_index": mother_index_in_minority,
@@ -605,99 +604,99 @@ def build_tracking_table(X_orig, y_orig, X_sint_final, synthetic_metadata, class
     return pd.concat([original_tracking, synthetic_tracking], ignore_index=True)
 
 
-# ---- Parametros principais (identicos ao notebook, celula 106) ----
-similaridade_minima = 0.83
-similaridade_maxima = 0.90
-n_bins_uniforme = 6
+# ---- Main parameters (identical to the notebook, cell 106) ----
+SIMILARITY_MIN = 0.83
+SIMILARITY_MAX = 0.90
+N_SIMILARITY_BINS = 6
 max_iter = 1000
 pool_overshoot_factor = 4
 strict_bin_coverage = False
-random_state_base = 479
-k_neighbors_base = 10
+RANDOM_STATE_BASE = 479
+K_NEIGHBORS_BASE = 10
 noise_budget = 0.05
-temperatura = 3.0
+temperature = 3.0
 
 X_orig = X_train.copy().reset_index(drop=True)
-y_orig = y_train["Atividade"].copy().reset_index(drop=True)
+y_orig = y_train["Activity"].copy().reset_index(drop=True)
 original_source_index = np.arange(len(X_orig))
 
-classe_min = y_orig.value_counts().idxmin()
-classe_maj = y_orig.value_counts().idxmax()
+minority_class = y_orig.value_counts().idxmin()
+majority_class = y_orig.value_counts().idxmax()
 
-X_min_orig = X_orig[y_orig == classe_min].reset_index(drop=True)
+X_min_orig = X_orig[y_orig == minority_class].reset_index(drop=True)
 n_min = len(X_min_orig)
-n_maj = int((y_orig == classe_maj).sum())
+n_maj = int((y_orig == majority_class).sum())
 n_target = n_maj
 n_needed = n_target - n_min
 
-print(f"Classe minoritaria: {classe_min} (n={n_min}) | Classe majoritaria: {classe_maj} (n={n_maj})")
-print(f"Sinteticas necessarias para balancear 100%: {n_needed}")
+print(f"Minority class: {minority_class} (n={n_min}) | Majority class: {majority_class} (n={n_maj})")
+print(f"Synthetic samples needed for a fully balanced partition: {n_needed}")
 
 numeric_cols, binary_cols = prepare_mixed_distance_columns(X_orig)
 numeric_min = X_orig[numeric_cols].min() if numeric_cols else pd.Series(dtype=float)
 numeric_range = (X_orig[numeric_cols].max() - X_orig[numeric_cols].min()) if numeric_cols else pd.Series(dtype=float)
 numeric_range = numeric_range.replace(0, 1.0)
 
-col_pka_ordinal = [c for c in X_orig.columns if "pka" in c.lower()]
+ordinal_pka_cols = [c for c in X_orig.columns if "pka" in c.lower()]
 r_matrix = compute_point_biserial_matrix(X_min_orig, binary_cols, numeric_cols)
 
-D_all_symmetric = mixed_gower_like_distance_symmetric_binary(
+distance_matrix_symmetric = mixed_gower_like_distance_symmetric_binary(
     X_orig, X_orig, numeric_cols=numeric_cols, binary_cols=binary_cols,
     numeric_min=numeric_min, numeric_range=numeric_range, numeric_weight=0.5, binary_weight=0.5,
 )
-ref_max_unificado = float(D_all_symmetric.max())
-if ref_max_unificado <= 0:
-    raise ValueError("A distancia de referencia unificada deve ser maior que zero.")
+unified_ref_max = float(distance_matrix_symmetric.max())
+if unified_ref_max <= 0:
+    raise ValueError("The unified reference distance must be greater than zero.")
 
-print(f"Colunas numericas continuas: {len(numeric_cols)} | Colunas binarias: {len(binary_cols)}")
-print(f"ref_max_unificado simetrico: {ref_max_unificado:.6f}")
+print(f"Continuous numeric columns: {len(numeric_cols)} | Binary columns: {len(binary_cols)}")
+print(f"Symmetric unified_ref_max: {unified_ref_max:.6f}")
 
-rng = np.random.default_rng(random_state_base)
+rng = np.random.default_rng(RANDOM_STATE_BASE)
 
 if n_needed <= 0:
     X_train_final = X_orig.copy()
     y_train_final = y_orig.copy()
     synthetic_metadata = pd.DataFrame(columns=["mother_index", "similarity", "bin"])
     tracking_table = build_tracking_table(
-        X_orig, y_orig, pd.DataFrame(columns=X_orig.columns), synthetic_metadata, classe_min, original_source_index,
+        X_orig, y_orig, pd.DataFrame(columns=X_orig.columns), synthetic_metadata, minority_class, original_source_index,
     )
-    print("A classe minoritaria ja esta balanceada ou acima da majoritaria.")
+    print("The minority class is already balanced with, or above, the majority class.")
 else:
     if n_min < 2:
-        raise ValueError("SVMSMOTE precisa de pelo menos 2 amostras minoritarias.")
+        raise ValueError("SVMSMOTE needs at least 2 minority samples.")
 
-    k_neighbors = min(k_neighbors_base, n_min - 1)
+    k_neighbors = min(K_NEIGHBORS_BASE, n_min - 1)
     mother_quotas = allocate_evenly(total=n_needed, n_groups=n_min, rng=rng)
 
     candidate_frames = []
     metadata_frames = []
     next_candidate_global_id = 0
     minimum_pool_size = n_needed * pool_overshoot_factor
-    flips_acumulados = {j: 0 for j in binary_cols}
-    reflexoes_acumuladas = {j: 0 for j in numeric_cols}
+    flips_cumulative = {j: 0 for j in binary_cols}
+    reflections_cumulative = {j: 0 for j in numeric_cols}
 
     for iteration in range(max_iter):
-        X_sint_raw = generate_svmsmote_candidates(
-            X_orig=X_orig, y_orig=y_orig, classe_min=classe_min,
-            target_minority_count=n_target, random_state=random_state_base + iteration, k_neighbors=k_neighbors,
+        X_synth_raw = generate_svmsmote_candidates(
+            X_orig=X_orig, y_orig=y_orig, minority_class=minority_class,
+            target_minority_count=n_target, random_state=RANDOM_STATE_BASE + iteration, k_neighbors=k_neighbors,
         )
-        X_sint, reflexoes_iteracao = enforce_continuous_bounds_by_reflection(X_sint_raw, numeric_cols)
-        for col, n in reflexoes_iteracao.items():
-            reflexoes_acumuladas[col] += n
+        X_synth, reflections_this_iteration = enforce_continuous_bounds_by_reflection(X_synth_raw, numeric_cols)
+        for col, n in reflections_this_iteration.items():
+            reflections_cumulative[col] += n
 
-        X_sint = enforce_ordinal_pka_category(X_sint, X_orig, col_pka_ordinal)
-        X_sint, flips_iteracao = enforce_formal_binary_assignment(
-            X_sint_raw=X_sint, X_min_orig=X_min_orig, binary_cols=binary_cols, numeric_cols=numeric_cols,
-            r_matrix=r_matrix, noise_budget=noise_budget, temperatura=temperatura,
-            random_state=random_state_base + iteration,
+        X_synth = enforce_ordinal_pka_category(X_synth, X_orig, ordinal_pka_cols)
+        X_synth, flips_this_iteration = enforce_formal_binary_assignment(
+            X_synth_raw=X_synth, X_min_orig=X_min_orig, binary_cols=binary_cols, numeric_cols=numeric_cols,
+            r_matrix=r_matrix, noise_budget=noise_budget, temperature=temperature,
+            random_state=RANDOM_STATE_BASE + iteration,
         )
-        for col, n in flips_iteracao.items():
-            flips_acumulados[col] += n
+        for col, n in flips_this_iteration.items():
+            flips_cumulative[col] += n
 
         X_valid, metadata_valid = score_svmsmote_candidates(
-            candidates=X_sint, X_min_orig=X_min_orig, numeric_cols=numeric_cols, binary_cols=binary_cols,
-            numeric_min=numeric_min, numeric_range=numeric_range, ref_max=ref_max_unificado,
-            similarity_min=similaridade_minima, similarity_max=similaridade_maxima, n_bins=n_bins_uniforme,
+            candidates=X_synth, X_min_orig=X_min_orig, numeric_cols=numeric_cols, binary_cols=binary_cols,
+            numeric_min=numeric_min, numeric_range=numeric_range, ref_max=unified_ref_max,
+            similarity_min=SIMILARITY_MIN, similarity_max=SIMILARITY_MAX, n_bins=N_SIMILARITY_BINS,
         )
 
         if len(X_valid) > 0:
@@ -711,71 +710,71 @@ else:
             pool_metadata_check = pd.concat(metadata_frames, ignore_index=True)
             enough_coverage = has_minimum_pool_coverage(
                 metadata=pool_metadata_check, mother_quotas=mother_quotas,
-                n_bins=n_bins_uniforme, strict_bin_coverage=strict_bin_coverage,
+                n_bins=N_SIMILARITY_BINS, strict_bin_coverage=strict_bin_coverage,
             )
             if enough_coverage and len(pool_metadata_check) >= minimum_pool_size:
-                print(f"Convergiu na iteracao {iteration} (pool={len(pool_metadata_check)}).")
+                print(f"Converged at iteration {iteration} (pool={len(pool_metadata_check)}).")
                 break
 
     if not candidate_frames:
-        raise RuntimeError("SVMSMOTE nao gerou candidatos dentro do fluxo configurado.")
+        raise RuntimeError("SVMSMOTE generated no candidates under the configured flow.")
 
     X_pool = pd.concat(candidate_frames, ignore_index=True)
     pool_metadata = pd.concat(metadata_frames, ignore_index=True)
 
-    print(f"Candidatos no pool: {len(pool_metadata)} (minimo desejado: {minimum_pool_size})")
+    print(f"Candidates in the pool: {len(pool_metadata)} (desired minimum: {minimum_pool_size})")
 
     if len(pool_metadata) < n_needed:
-        raise RuntimeError(f"Pool insuficiente: {len(pool_metadata)} candidatos para {n_needed} sinteticas necessarias.")
+        raise RuntimeError(f"Insufficient pool: {len(pool_metadata)} candidates for {n_needed} synthetic samples needed.")
 
     pool_metadata = add_secondary_mother_assignments(
         candidates=X_pool, metadata=pool_metadata, X_min_orig=X_min_orig, mother_quotas=mother_quotas,
         numeric_cols=numeric_cols, binary_cols=binary_cols, numeric_min=numeric_min, numeric_range=numeric_range,
-        ref_max=ref_max_unificado, similarity_min=similaridade_minima, similarity_max=similaridade_maxima,
-        n_bins=n_bins_uniforme,
+        ref_max=unified_ref_max, similarity_min=SIMILARITY_MIN, similarity_max=SIMILARITY_MAX,
+        n_bins=N_SIMILARITY_BINS,
     )
 
-    X_sint_final, synthetic_metadata = select_balanced_pool(
+    X_synth_final, synthetic_metadata = select_balanced_pool(
         candidates=X_pool, metadata=pool_metadata, mother_quotas=mother_quotas,
-        n_bins=n_bins_uniforme, similarity_min=similaridade_minima, similarity_max=similaridade_maxima,
+        n_bins=N_SIMILARITY_BINS, similarity_min=SIMILARITY_MIN, similarity_max=SIMILARITY_MAX,
     )
 
-    y_sint_final = pd.Series([classe_min] * len(X_sint_final), dtype=y_orig.dtype)
-    X_train_final = pd.concat([X_orig, X_sint_final], ignore_index=True)
-    y_train_final = pd.concat([y_orig, y_sint_final], ignore_index=True)
+    y_synth_final = pd.Series([minority_class] * len(X_synth_final), dtype=y_orig.dtype)
+    X_train_final = pd.concat([X_orig, X_synth_final], ignore_index=True)
+    y_train_final = pd.concat([y_orig, y_synth_final], ignore_index=True)
 
     tracking_table = build_tracking_table(
-        X_orig=X_orig, y_orig=y_orig, X_sint_final=X_sint_final, synthetic_metadata=synthetic_metadata,
-        classe_min=classe_min, original_source_index=original_source_index,
+        X_orig=X_orig, y_orig=y_orig, X_synth_final=X_synth_final, synthetic_metadata=synthetic_metadata,
+        minority_class=minority_class, original_source_index=original_source_index,
     )
 
 print()
-print("Distribuicao final das classes (X_train_final):")
+print("Final class distribution (X_train_final):")
 print(y_train_final.value_counts())
 
 if len(synthetic_metadata) > 0:
     children_by_mother = synthetic_metadata["mother_index"].value_counts().sort_index()
-    print(f"Filhos/mae -- min: {children_by_mother.min()} max: {children_by_mother.max()} "
-          f"homogeneo: {(children_by_mother.max() - children_by_mother.min()) <= 1}")
+    print(f"Children per parent -- min: {children_by_mother.min()} max: {children_by_mother.max()} "
+          f"homogeneous: {(children_by_mother.max() - children_by_mother.min()) <= 1}")
     sim_final = synthetic_metadata["similarity"].to_numpy(dtype=float)
-    print(f"Similaridade das sinteticas -- min:{sim_final.min():.4f} max:{sim_final.max():.4f} "
-          f"media:{sim_final.mean():.4f} mediana:{np.median(sim_final):.4f}")
+    print(f"Synthetic-sample similarity -- min:{sim_final.min():.4f} max:{sim_final.max():.4f} "
+          f"mean:{sim_final.mean():.4f} median:{np.median(sim_final):.4f}")
 
-salvar_tabela(tracking_table, "tabela_rastreio_SVMSMOTE_G.csv")
+save_table(tracking_table, "table_svmsmote_tracking_G.csv")
 
 # ====================================================================
-# 5. Otimizacao bayesiana + selecao do campeao (celulas 116-117)
+# 5. Bayesian optimisation + champion selection (notebook cells 116-117)
 # ====================================================================
 print()
 print("=" * 70)
-print("5. Otimizacao bayesiana (BayesSearchCV, scoring=Kappa) + campeoes")
+print("5. Bayesian optimisation (BayesSearchCV, scoring=kappa) + champions")
 print("=" * 70)
 
 X_resampled = X_train_final.copy()
 y_resampled = y_train_final.copy()
 
-assert len(X_resampled) == len(tracking_table), "X_resampled e tracking_table com tamanhos diferentes."
-assert len(X_resampled) == len(y_resampled), "X_resampled e y_resampled com tamanhos diferentes."
+assert len(X_resampled) == len(tracking_table), "X_resampled and tracking_table have different lengths."
+assert len(X_resampled) == len(y_resampled), "X_resampled and y_resampled have different lengths."
 
 kappa_scorer = make_scorer(cohen_kappa_score)
 
@@ -820,9 +819,9 @@ mask = tracking_table["is_synthetic"] == False
 groups.loc[mask] = tracking_table.loc[mask, "original_row_id"]
 groups = groups.astype(int)
 
-mapeamento = {"Inativo": 0, "Ativo": 1}
-y_test_bin = np.array([mapeamento[c] for c in y_test["Atividade"]], dtype=np.int64)
-y_train_bin = np.array([mapeamento[c] for c in y_resampled], dtype=np.int64)
+LABEL_MAP = {"Inactive": 0, "Active": 1}
+y_test_bin = np.array([LABEL_MAP[c] for c in y_test["Activity"]], dtype=np.int64)
+y_train_bin = np.array([LABEL_MAP[c] for c in y_resampled], dtype=np.int64)
 
 pipe_mlp = Pipeline(steps=[("NN", MLPClassifier(solver="lbfgs", max_iter=20000, random_state=23, verbose=False))])
 pipe_xgb = Pipeline(steps=[("xgb", XGBClassifier(random_state=0, booster="gbtree", objective="binary:logistic"))])
@@ -850,7 +849,13 @@ pair_grid_3 = {"svm__C": Real(0.5, 1, prior="log-uniform"), "svm__gamma": Real(0
 
 pair_grid_list = [pair_grid_1, pair_grid_2, pair_grid_3]
 labels = ["MLP", "XGBoost", "SVM"]
-n_iter_list = [5, 15, 5]
+# Retained budget: n_iter=5 for all three families. The XGBoost champion was
+# originally selected from a wider n_iter=15 search, but that candidate was
+# superseded (see archive/round_niter15_exploratory/ and
+# pipeline_G_niter_all_algorithms.py): the marginal gain in internal kappa was
+# small next to the risk of the search itself overfitting one CV partition.
+# This budget is what reproduces the published champions of Table 2.
+n_iter_list = [5, 5, 5]
 pipelines = [pipe_mlp, pipe_xgb, pipe_svm]
 
 cv = StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=21)
@@ -859,7 +864,7 @@ bscv_results = {}
 bscv_objects = {}
 
 for i in range(len(pipelines)):
-    print(f"\n--- Busca bayesiana: {labels[i]} (n_iter={n_iter_list[i]}) ---")
+    print(f"\n--- Bayesian search: {labels[i]} (n_iter={n_iter_list[i]}) ---")
     BSCV = BayesSearchCV(
         estimator=pipelines[i], search_spaces=pair_grid_list[i], n_iter=n_iter_list[i],
         n_jobs=-1, cv=cv, scoring=kappa_scorer, error_score="raise", random_state=21,
@@ -868,27 +873,27 @@ for i in range(len(pipelines)):
     bscv_results[labels[i]] = BSCV.cv_results_
     bscv_objects[labels[i]] = BSCV
 
-melhores_modelos = {}
-print("\nModelo campeao de cada familia (escolhido pela CV interna, kappa):")
+champions = {}
+print("\nChampion model of each family (selected by internal CV kappa):")
 for label, bscv in bscv_objects.items():
-    melhores_modelos[label] = bscv.best_estimator_
+    champions[label] = bscv.best_estimator_
     print(f"{label}\n  best_params_: {bscv.best_params_}\n  best_score_ (CV, kappa): {bscv.best_score_:.4f}")
 
 # ====================================================================
-# 6. Metricas de treino/teste do modelo ja fixado
+# 6. Training/test metrics of the already-fixed model
 # ====================================================================
 train_metrics = {k: [] for k in ["Model", "Accuracy", "Precision", "Recall", "F1-score", "TP", "TN", "FP", "FN", "Kappa", "AUC"]}
 test_metrics = {k: [] for k in ["Model", "Accuracy", "Precision", "Recall", "F1-score", "TP", "TN", "FP", "FN", "Kappa", "AUC"]}
 
-for label, modelo in melhores_modelos.items():
-    y_train_pred = modelo.predict(X_resampled)
-    y_train_score = modelo.predict_proba(X_resampled)[:, 1] if hasattr(modelo, "predict_proba") else None
+for label, model in champions.items():
+    y_train_pred = model.predict(X_resampled)
+    y_train_score = model.predict_proba(X_resampled)[:, 1] if hasattr(model, "predict_proba") else None
     acc, prec, rec, f1, tp, tn, fp, fn, p_fn, p_fp, kappa, auc = calculate_classification_metrics(y_train_bin, y_train_pred, y_train_score)
     for k, v in zip(train_metrics.keys(), [label, acc, prec, rec, f1, tp, tn, fp, fn, kappa, auc]):
         train_metrics[k].append(v)
 
-    y_test_pred = modelo.predict(X_test)
-    y_test_score = modelo.predict_proba(X_test)[:, 1] if hasattr(modelo, "predict_proba") else None
+    y_test_pred = model.predict(X_test)
+    y_test_score = model.predict_proba(X_test)[:, 1] if hasattr(model, "predict_proba") else None
     acc, prec, rec, f1, tp, tn, fp, fn, p_fn, p_fp, kappa, auc = calculate_classification_metrics(y_test_bin, y_test_pred, y_test_score)
     for k, v in zip(test_metrics.keys(), [label, acc, prec, rec, f1, tp, tn, fp, fn, kappa, auc]):
         test_metrics[k].append(v)
@@ -896,87 +901,95 @@ for label, modelo in melhores_modelos.items():
 train_df = pd.DataFrame(train_metrics)
 test_df = pd.DataFrame(test_metrics)
 
-print("\nDesempenho no treino (modelo ja fixado pela CV):")
+print("\nTraining performance (model already fixed by CV):")
 print(train_df)
-print("\nDesempenho no teste -- validacao externa (modelo ja fixado pela CV):")
+print("\nTest performance -- external validation (model already fixed by CV):")
 print(test_df)
 
-salvar_tabela(train_df, "tabela_metricas_treino_G.csv")
-salvar_tabela(test_df, "tabela_metricas_teste_externo_G.csv")
+save_table(train_df, "table_training_metrics_G.csv")
+save_table(test_df, "table_heldout_test_metrics_G.csv")
 
-# Hiperparametros do campeao por modelo
+# Champion hyperparameters per model
 hp_rows = []
 for label, bscv in bscv_objects.items():
     row = {"Model": label, "best_score_cv_kappa": bscv.best_score_}
     row.update({k: v for k, v in bscv.best_params_.items()})
     hp_rows.append(row)
-salvar_tabela(pd.DataFrame(hp_rows), "tabela_hiperparametros_campeoes_G.csv")
+save_table(pd.DataFrame(hp_rows), "table_champion_hyperparameters_G.csv")
 
 # ====================================================================
-# 7. Diagnostico: CV repetida (20x5) do candidato ja escolhido
+# 7. Diagnostic: repeated CV (20x5) of the already-selected candidate
 # ====================================================================
 print()
 print("=" * 70)
-print("7. CV repetida (20x5) do candidato ja escolhido (diagnostico)")
+print("7. Repeated CV (20x5) of the already-selected candidate (diagnostic)")
 print("=" * 70)
 
-N_REPEATS_DIAGNOSTICO = 20
-cv_repetida = RepeatedStratifiedGroupKFold(n_splits=5, n_repeats=N_REPEATS_DIAGNOSTICO, random_state=21)
+N_REPEATS_DIAGNOSTIC = 20
+repeated_cv = RepeatedStratifiedGroupKFold(n_splits=5, n_repeats=N_REPEATS_DIAGNOSTIC, random_state=21)
 
-diag_rows = []
-for label, modelo in melhores_modelos.items():
-    scores = cross_validate(modelo, X_resampled, y_train_bin, cv=cv_repetida, groups=groups, scoring=kappa_scorer, n_jobs=-1)
+diagnostic_rows = []
+for label, model in champions.items():
+    scores = cross_validate(model, X_resampled, y_train_bin, cv=repeated_cv, groups=groups, scoring=kappa_scorer, n_jobs=-1)
     vals = scores["test_score"]
-    print(f"  {label:<10} n={len(vals)}  media={vals.mean():.4f}  desvio={vals.std():.4f}  "
+    print(f"  {label:<10} n={len(vals)}  mean={vals.mean():.4f}  sd={vals.std():.4f}  "
           f"IC95%=[{np.percentile(vals,2.5):.4f}, {np.percentile(vals,97.5):.4f}]")
-    diag_rows.append({
-        "Model": label, "n": len(vals), "kappa_media": vals.mean(), "kappa_desvio": vals.std(),
-        "kappa_IC95_inf": np.percentile(vals, 2.5), "kappa_IC95_sup": np.percentile(vals, 97.5),
+    diagnostic_rows.append({
+        "Model": label, "n": len(vals), "kappa_mean": vals.mean(), "kappa_sd": vals.std(),
+        "kappa_ci95_low": np.percentile(vals, 2.5), "kappa_ci95_high": np.percentile(vals, 97.5),
     })
 
-salvar_tabela(pd.DataFrame(diag_rows), "tabela_CV_repetida_diagnostico_G.csv")
+save_table(pd.DataFrame(diagnostic_rows), "table_repeated_cv_diagnostic_G.csv")
 
 # ====================================================================
-# 8. Salvar modelos finais
+# 8. Save the final models
 # ====================================================================
-for label, modelo in melhores_modelos.items():
-    filename = OUT_DIR / f"modelo_final_{label}_G.pkl"
-    joblib.dump(modelo, filename)
-    print(f"Salvo: {filename}")
+for label, model in champions.items():
+    filename = OUT_DIR / f"final_model_{label}_G.pkl"
+    joblib.dump(model, filename)
+    print(f"Saved: {filename}")
 
 # ====================================================================
-# 9. Calibracao minima dos campeoes (Platt/sigmoid), so para obter
-#    scores de probabilidade utilizaveis em AUC/ROC -- necessario em
-#    especial para o SVM (pipe_svm usa probability=False, identico ao
-#    notebook). Nao mexe nos rotulos preditos (predict()) usados nas
-#    metricas de Accuracy/Precision/Recall/F1/Kappa acima -- so afeta
-#    o score continuo usado para AUC/ROC. O estudo multi-cenario
-#    completo de calibracao (Modelo A vs B, bootstrap de ECE por bin)
-#    e parte da secao "Extra a metodologia" do notebook, deliberadamente
-#    adiada por instrucao do usuario -- nao reproduzida aqui.
+# 9. Minimal Platt/sigmoid calibration of the champions, only to obtain
+#    probability scores usable for AUC/ROC -- needed in particular for
+#    the SVM (pipe_svm uses probability=False, identical to the
+#    notebook). It does NOT touch the predicted labels (predict()) used
+#    in the Accuracy/Precision/Recall/F1/kappa metrics above -- it only
+#    affects the continuous score used for AUC/ROC. The full
+#    multi-scenario calibration study (Model A vs B, per-bin ECE
+#    bootstrap) lives in pipeline_G_calibration_scenarios.py.
 # ====================================================================
 print()
 print("=" * 70)
-print("9. Calibracao (Platt/sigmoid) dos campeoes para AUC/ROC")
+print("9. Platt/sigmoid calibration of the champions for AUC/ROC")
 print("=" * 70)
 
 from sklearn.calibration import CalibratedClassifierCV
 
+# Calibration set: ONLY the original training ligands, deliberately excluding
+# the SVMSMOTE synthetic instances the champion itself saw while being fitted
+# (Section 2.6 of Article 1; the "calib. original" scenario of Table 6).
+is_original_for_calibration = (tracking_table["is_synthetic"] == False).to_numpy()
+X_cal = X_resampled.loc[is_original_for_calibration].reset_index(drop=True)
+y_cal = y_train_bin[is_original_for_calibration]
+print(f"  calibration set: {len(X_cal)} original ligands "
+      f"({int((~is_original_for_calibration).sum())} synthetic instances excluded)")
+
 try:
     from sklearn.frozen import FrozenEstimator
 
-    def calibrar(modelo):
-        return CalibratedClassifierCV(estimator=FrozenEstimator(modelo), method="sigmoid").fit(X_resampled, y_train_bin)
+    def fit_platt_calibration(model):
+        return CalibratedClassifierCV(estimator=FrozenEstimator(model), method="sigmoid").fit(X_cal, y_cal)
 except ImportError:
-    def calibrar(modelo):
-        return CalibratedClassifierCV(estimator=modelo, method="sigmoid", cv="prefit").fit(X_resampled, y_train_bin)
+    def fit_platt_calibration(model):
+        return CalibratedClassifierCV(estimator=model, method="sigmoid", cv="prefit").fit(X_cal, y_cal)
 
-calibrados = {label: calibrar(modelo) for label, modelo in melhores_modelos.items()}
+calibrated_champions = {label: fit_platt_calibration(model) for label, model in champions.items()}
 
 roc_rows = []
-for label, modelo in melhores_modelos.items():
-    y_train_score_cal = calibrados[label].predict_proba(X_resampled)[:, 1]
-    y_test_score_cal = calibrados[label].predict_proba(X_test)[:, 1]
+for label, model in champions.items():
+    y_train_score_cal = calibrated_champions[label].predict_proba(X_resampled)[:, 1]
+    y_test_score_cal = calibrated_champions[label].predict_proba(X_test)[:, 1]
 
     auc_train_cal = roc_auc_score(y_train_bin, y_train_score_cal)
     auc_test_cal = roc_auc_score(y_test_bin, y_test_score_cal)
@@ -988,28 +1001,28 @@ for label, modelo in melhores_modelos.items():
     for f, t in zip(fpr, tpr):
         roc_rows.append({"Model": label, "fpr": f, "tpr": t})
 
-    print(f"  {label:<10} AUC treino (calibrado)={auc_train_cal:.4f}  AUC teste (calibrado)={auc_test_cal:.4f}")
+    print(f"  {label:<10} AUC train (calibrated)={auc_train_cal:.4f}  AUC test (calibrated)={auc_test_cal:.4f}")
 
-salvar_tabela(train_df, "tabela_metricas_treino_G.csv")
-salvar_tabela(test_df, "tabela_metricas_teste_externo_G.csv")
-salvar_tabela(pd.DataFrame(roc_rows), "tabela_ROC_pontos_G.csv")
+save_table(train_df, "table_training_metrics_G.csv")
+save_table(test_df, "table_heldout_test_metrics_G.csv")
+save_table(pd.DataFrame(roc_rows), "table_roc_points_G.csv")
 
-for label, modelo in calibrados.items():
-    joblib.dump(modelo, OUT_DIR / f"modelo_final_{label}_calibrado_G.pkl")
+for label, model in calibrated_champions.items():
+    joblib.dump(model, OUT_DIR / f"final_model_{label}_calibrated_G.pkl")
 
 # ====================================================================
-# 10. Importancia de features do campeao XGBoost (gain/cover), mesma
-#     tecnica de extracao do notebook (booster.get_score), mas aplicada
-#     ao CAMPEAO real da busca bayesiana por kappa (cell 116-117), nao
-#     ao modelo D1 log-loss/early-stopping separado (esse pertence ao
-#     ramo exploratorio "Modelo C/D1", fora do escopo pedido agora).
+# 10. Feature importance of the XGBoost champion (gain/cover), using the
+#     same extraction technique as the notebook (booster.get_score) but
+#     applied to the REAL champion of the kappa-scored Bayesian search
+#     (cells 116-117), not to the separate log-loss/early-stopping D1
+#     model, which belongs to an exploratory branch outside this scope.
 # ====================================================================
 print()
 print("=" * 70)
-print("10. Importancia de features (gain/cover) do campeao XGBoost")
+print("10. Feature importance (gain/cover) of the XGBoost champion")
 print("=" * 70)
 
-xgb_champion = melhores_modelos["XGBoost"].named_steps["xgb"]
+xgb_champion = champions["XGBoost"].named_steps["xgb"]
 booster = xgb_champion.get_booster()
 
 importance_types = ["gain", "total_gain", "cover", "total_cover"]
@@ -1021,51 +1034,50 @@ importance_df = importance_df.reset_index()
 importance_df[importance_types] = importance_df[importance_types].fillna(0)
 importance_df = importance_df.sort_values(by="total_gain", ascending=False).reset_index(drop=True)
 
-# Garante presenca de TODOS os 57 descritores (mesmo os nao usados em
-# nenhum split, importancia = 0) para a figura do conjunto completo.
-todas_features = pd.DataFrame({"Feature": X_resampled.columns})
-importance_full = todas_features.merge(importance_df, on="Feature", how="left").fillna(0)
+# Guarantees that ALL 57 descriptors are present (even those used in no
+# split, importance = 0) for the full-set figure.
+all_features = pd.DataFrame({"Feature": X_resampled.columns})
+importance_full = all_features.merge(importance_df, on="Feature", how="left").fillna(0)
 importance_full = importance_full.sort_values(by="gain", ascending=False).reset_index(drop=True)
 
 top20_df = importance_df.head(20)
-salvar_tabela(top20_df, "tabela5_feature_importance_top20_G.csv")
-salvar_tabela(importance_full, "tabela_feature_importance_completa_57_G.csv")
+save_table(top20_df, "table_feature_importance_top20_G.csv")
+save_table(importance_full, "table_feature_importance_all57_G.csv")
 
 print(top20_df.to_string(index=False))
 
 # ====================================================================
-# 11. Figuras em ingles, aproveitaveis diretamente no Artigo 1
+# 11. Figures, directly usable in Article 1
 # ====================================================================
 print()
 print("=" * 70)
-print("11. Figuras (ingles) para o Artigo 1")
+print("11. Figures for Article 1")
 print("=" * 70)
 
-FIG_DIR = OUT_DIR / "figuras_ingles_G"
+FIG_DIR = OUT_DIR / "figures_G"
 FIG_DIR.mkdir(exist_ok=True)
 
 MODEL_COLORS = {"MLP": "#d62728", "SVM": "#2ca02c", "XGBoost": "#1f77b4"}
 
-# --- Fig. G1: SVMSMOTE synthetic-sample diagnostics (replaces the
-#     Portuguese diagnostic figure from the notebook; 4-panel layout) ---
+# --- Fig. G1: SVMSMOTE synthetic-sample diagnostics (4-panel layout) ---
 if len(synthetic_metadata) > 0:
     fig, axes = plt.subplots(2, 2, figsize=(13, 9), dpi=150)
     axes = axes.ravel()
 
     sim_values = synthetic_metadata["similarity"].to_numpy(dtype=float)
-    bins = np.linspace(similaridade_minima - 0.01, similaridade_maxima + 0.01, 28)
+    bins = np.linspace(SIMILARITY_MIN - 0.01, SIMILARITY_MAX + 0.01, 28)
 
     axes[0].hist(sim_values, bins=bins, color="#6a3d9a", edgecolor="white", alpha=0.9)
-    axes[0].axvspan(similaridade_minima, similaridade_maxima, color="green", alpha=0.08)
-    axes[0].axvline(similaridade_minima, color="black", linestyle="--", linewidth=1)
-    axes[0].axvline(similaridade_maxima, color="black", linestyle="--", linewidth=1)
+    axes[0].axvspan(SIMILARITY_MIN, SIMILARITY_MAX, color="green", alpha=0.08)
+    axes[0].axvline(SIMILARITY_MIN, color="black", linestyle="--", linewidth=1)
+    axes[0].axvline(SIMILARITY_MAX, color="black", linestyle="--", linewidth=1)
     axes[0].set_title("Selected synthetic-sample similarities")
     axes[0].set_xlabel("Mixed-distance similarity to nearest Inactive parent")
     axes[0].set_ylabel("Frequency")
 
     axes[1].boxplot(sim_values, showfliers=False, patch_artist=True,
                      boxprops=dict(facecolor="#cab2d6"))
-    axes[1].axhspan(similaridade_minima, similaridade_maxima, color="green", alpha=0.08)
+    axes[1].axhspan(SIMILARITY_MIN, SIMILARITY_MAX, color="green", alpha=0.08)
     axes[1].set_title("Similarity summary")
     axes[1].set_ylabel("Similarity")
     axes[1].set_xticks([])
@@ -1092,11 +1104,11 @@ if len(synthetic_metadata) > 0:
     fig.tight_layout()
     fig.savefig(FIG_DIR / "figG1_svmsmote_diagnostics.png", bbox_inches="tight")
     plt.close(fig)
-    print(f"Salvo: {FIG_DIR / 'figG1_svmsmote_diagnostics.png'}")
+    print(f"Saved: {FIG_DIR / 'figG1_svmsmote_diagnostics.png'}")
 
 # --- Fig. G2: Bayesian-search candidate dispersion per model family
 #     (replaces the 20-candidate MLP/SVM/XGBoost comparison figures;
-#     here n_iter differs by family: 5/15/5, per the refined pipeline) ---
+#     n_iter = 5 for every family, the retained budget) ---
 dispersion_rows = []
 for label, bscv in bscv_objects.items():
     cvr = bscv.cv_results_
@@ -1106,7 +1118,7 @@ for label, bscv in bscv_objects.items():
             "std_cv_kappa": std_score, "is_best": mean_score == bscv.best_score_,
         })
 dispersion_df = pd.DataFrame(dispersion_rows)
-salvar_tabela(dispersion_df, "tabela3_dispersao_candidatos_bayesianos_G.csv")
+save_table(dispersion_df, "table_bayes_search_candidate_dispersion_G.csv")
 
 fig, ax = plt.subplots(figsize=(8, 6), dpi=150)
 order = ["MLP", "SVM", "XGBoost"]
@@ -1124,12 +1136,12 @@ for m, x in zip(order, range(1, len(order) + 1)):
         ax.scatter([x], best_val.values[:1], color="gold", edgecolor="black", s=140, zorder=4, marker="*",
                    label="Selected candidate" if m == order[0] else None)
 ax.set_ylabel("Internal 5-fold CV Cohen's $\\kappa$ (mother-child grouped)")
-ax.set_title("Bayesian-search candidate dispersion by model family\n(n_iter = 5 / 5 / 15 for MLP / SVM / XGBoost)")
+ax.set_title("Bayesian-search candidate dispersion by model family\n(n_iter = 5 for MLP, SVM and XGBoost)")
 ax.legend(loc="lower right")
 fig.tight_layout()
 fig.savefig(FIG_DIR / "figG2_bayes_search_dispersion.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Salvo: {FIG_DIR / 'figG2_bayes_search_dispersion.png'}")
+print(f"Saved: {FIG_DIR / 'figG2_bayes_search_dispersion.png'}")
 
 # --- Fig. G3: Repeated group-CV (20x5) robustness of the chosen
 #     candidate -- supports "the optimisation itself did not overfit
@@ -1138,7 +1150,7 @@ fig, ax = plt.subplots(figsize=(8, 6), dpi=150)
 rep_data = []
 rep_labels = []
 for label in order:
-    scores = cross_validate(melhores_modelos[label], X_resampled, y_train_bin, cv=cv_repetida, groups=groups,
+    scores = cross_validate(champions[label], X_resampled, y_train_bin, cv=repeated_cv, groups=groups,
                              scoring=kappa_scorer, n_jobs=-1)["test_score"]
     rep_data.append(scores)
     rep_labels.append(label)
@@ -1156,13 +1168,13 @@ ax.legend(loc="lower right")
 fig.tight_layout()
 fig.savefig(FIG_DIR / "figG3_repeated_cv_robustness.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Salvo: {FIG_DIR / 'figG3_repeated_cv_robustness.png'}")
+print(f"Saved: {FIG_DIR / 'figG3_repeated_cv_robustness.png'}")
 
 # --- Fig. G4 (replaces Fig. 7): ROC curves on the held-out test set,
 #     calibrated scores, all three retained classifiers ---
 fig, ax = plt.subplots(figsize=(7, 7), dpi=150)
 for label in order:
-    y_score = calibrados[label].predict_proba(X_test)[:, 1]
+    y_score = calibrated_champions[label].predict_proba(X_test)[:, 1]
     fpr, tpr, _ = roc_curve(y_test_bin, y_score)
     auc_val = roc_auc_score(y_test_bin, y_score)
     ax.plot(fpr, tpr, color=MODEL_COLORS[label], linewidth=2, label=f"{label} (AUC = {auc_val:.3f})")
@@ -1174,7 +1186,7 @@ ax.legend(loc="lower right")
 fig.tight_layout()
 fig.savefig(FIG_DIR / "figG4_roc_curves.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Salvo: {FIG_DIR / 'figG4_roc_curves.png'}")
+print(f"Saved: {FIG_DIR / 'figG4_roc_curves.png'}")
 
 # --- Fig. G5 (replaces Fig. 8): global XGBoost feature importance
 #     (mean gain), full 57-descriptor set, champion model ---
@@ -1187,16 +1199,16 @@ ax.tick_params(axis="y", labelsize=7)
 fig.tight_layout()
 fig.savefig(FIG_DIR / "figG5_feature_importance_full.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Salvo: {FIG_DIR / 'figG5_feature_importance_full.png'}")
+print(f"Saved: {FIG_DIR / 'figG5_feature_importance_full.png'}")
 
 # --- Fig. G6 (replaces Fig. 4): class distribution across the 70/30
 #     split AND the SVMSMOTE-balanced training partition, in English ---
 fig, axes = plt.subplots(1, 2, figsize=(11, 5), dpi=150)
 split_counts = pd.DataFrame({
     "Train (pre-resampling)": y_orig.value_counts(),
-    "Test": y_test["Atividade"].value_counts(),
+    "Test": y_test["Activity"].value_counts(),
     "Train (post-SVMSMOTE)": y_train_final.value_counts(),
-}).reindex(["Ativo", "Inativo"]).rename(index={"Ativo": "Active", "Inativo": "Inactive"})
+}).reindex(["Active", "Inactive"])
 split_counts.T.plot(kind="bar", stacked=True, ax=axes[0], color=["#d62728", "#1f77b4"])
 axes[0].set_ylabel("Number of compounds")
 axes[0].set_title("Class counts across the pipeline")
@@ -1214,9 +1226,9 @@ fig.suptitle("Class distribution: 70/30 split and SVMSMOTE-balanced training par
 fig.tight_layout()
 fig.savefig(FIG_DIR / "figG6_class_distribution.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Salvo: {FIG_DIR / 'figG6_class_distribution.png'}")
+print(f"Saved: {FIG_DIR / 'figG6_class_distribution.png'}")
 
 print()
 print("=" * 70)
-print("PIPELINE VERSAO G CONCLUIDO")
+print("VERSION-G PIPELINE COMPLETE")
 print("=" * 70)

@@ -1,11 +1,11 @@
 """
-Pipeline G - Parte C: Analise exploratoria de dados (EDA) e Analise de
-Componentes Principais (ACP), para a nova secao do Artigo 1 sobre a
-natureza dos dados (descritores continuos + fingerprints PLIP).
+Version-G pipeline, part C: exploratory data analysis (EDA) and principal
+component analysis (PCA) of the descriptor block (continuous descriptors +
+PLIP interaction fingerprints), for the data-nature section of Article 1.
 
-Reusa exatamente a mesma matriz canonica de 320 ligantes e o mesmo
-split/normalizacao do pipeline_G.py (mesmos seeds), sem re-treinar
-nenhum modelo -- e puramente descritivo.
+Reuses exactly the same canonical 320-ligand matrix and the same
+split/normalisation as pipeline_G.py (same seeds), and retrains no model --
+it is purely descriptive.
 """
 from __future__ import annotations
 
@@ -29,8 +29,8 @@ DATA_DIR = Path(os.environ.get("DATA_DIR", REPO_ROOT / "data" / "processed"))
 X_PATH = DATA_DIR / "X_320ligands_57descriptors.xlsx"
 Y_PATH = DATA_DIR / "y_320ligands_labels.xlsx"
 
-OUT_DIR = Path(__file__).parent / "versao_G_outputs"
-FIG_DIR = OUT_DIR / "figuras_ingles_G"
+OUT_DIR = Path(__file__).parent / "version_G_outputs"
+FIG_DIR = OUT_DIR / "figures_G"
 FIG_DIR.mkdir(exist_ok=True)
 
 df4 = pd.read_excel(X_PATH, index_col=0)
@@ -40,40 +40,40 @@ X_final = df4.copy()
 y_final = y.copy()
 
 X_train, X_test, y_train, y_test = train_test_split(
-    X_final, y_final, test_size=0.30, stratify=y_final["Atividade"], random_state=42,
+    X_final, y_final, test_size=0.30, stratify=y_final["Activity"], random_state=42,
 )
 X_train = X_train.reset_index(drop=True)
 X_test = X_test.reset_index(drop=True)
 y_train = y_train.reset_index(drop=True)
 y_test = y_test.reset_index(drop=True)
 
-descritores_ja_normalizados = ["corrScore"]
-col_binarias = [c for c in X_train.columns if set(X_train[c].dropna().unique()) <= {0, 1}]
-col_continuas = [c for c in X_train.columns if c not in col_binarias and c not in descritores_ja_normalizados]
+PRE_NORMALISED_DESCRIPTORS = ["corrScore"]
+binary_cols = [c for c in X_train.columns if set(X_train[c].dropna().unique()) <= {0, 1}]
+continuous_cols = [c for c in X_train.columns if c not in binary_cols and c not in PRE_NORMALISED_DESCRIPTORS]
 
 scaler = MinMaxScaler()
-scaler.fit(X_train[col_continuas])
-X_train[col_continuas] = scaler.transform(X_train[col_continuas])
-X_test[col_continuas] = scaler.transform(X_test[col_continuas])
+scaler.fit(X_train[continuous_cols])
+X_train[continuous_cols] = scaler.transform(X_train[continuous_cols])
+X_test[continuous_cols] = scaler.transform(X_test[continuous_cols])
 
-print(f"Continuous descriptors: {len(col_continuas)} | Binary PLIP fingerprints: {len(col_binarias)}")
+print(f"Continuous descriptors: {len(continuous_cols)} | Binary PLIP fingerprints: {len(binary_cols)}")
 
 # ====================================================================
 # EDA 1: class-conditional distributions of the 9 continuous descriptors
 # ====================================================================
-continuous_cols_pca = [c for c in X_train.columns if c not in col_binarias]
-X_eda = pd.concat([X_train.reset_index(drop=True), y_train["Atividade"].reset_index(drop=True)], axis=1)
+continuous_cols_pca = [c for c in X_train.columns if c not in binary_cols]
+X_eda = pd.concat([X_train.reset_index(drop=True), y_train["Activity"].reset_index(drop=True)], axis=1)
 
 n_cont = len(continuous_cols_pca)
 ncols = 3
 nrows = int(np.ceil(n_cont / ncols))
 fig, axes = plt.subplots(nrows, ncols, figsize=(4.2 * ncols, 3.2 * nrows), dpi=150)
 axes = np.atleast_1d(axes).ravel()
-palette = {"Ativo": "#d62728", "Inativo": "#1f77b4"}
+palette = {"Active": "#d62728", "Inactive": "#1f77b4"}
 for i, col in enumerate(continuous_cols_pca):
     ax = axes[i]
     for cls, color in palette.items():
-        vals = X_eda.loc[X_eda["Atividade"] == cls, col]
+        vals = X_eda.loc[X_eda["Activity"] == cls, col]
         ax.hist(vals, bins=20, alpha=0.55, color=color, label=cls, density=True)
     ax.set_title(col, fontsize=9)
     ax.tick_params(labelsize=7)
@@ -85,7 +85,7 @@ fig.suptitle("Class-conditional distributions of the nine continuous descriptors
 fig.tight_layout()
 fig.savefig(FIG_DIR / "figG9_descriptor_distributions.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Salvo: {FIG_DIR / 'figG9_descriptor_distributions.png'}")
+print(f"Saved: {FIG_DIR / 'figG9_descriptor_distributions.png'}")
 
 # ====================================================================
 # EDA 2: correlation heatmap of the 9 continuous descriptors
@@ -106,19 +106,19 @@ ax.set_title("Correlation structure of the nine continuous descriptors\n(trainin
 fig.tight_layout()
 fig.savefig(FIG_DIR / "figG10_continuous_correlation_heatmap.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Salvo: {FIG_DIR / 'figG10_continuous_correlation_heatmap.png'}")
+print(f"Saved: {FIG_DIR / 'figG10_continuous_correlation_heatmap.png'}")
 
 # ====================================================================
 # EDA 3: binary PLIP fingerprint prevalence (overall and by class)
 # ====================================================================
 binary_prevalence = pd.DataFrame({
-    "Feature": col_binarias,
-    "Overall_prevalence": X_train[col_binarias].mean().to_numpy(),
-    "Active_prevalence": X_train.loc[y_train["Atividade"] == "Ativo", col_binarias].mean().to_numpy(),
-    "Inactive_prevalence": X_train.loc[y_train["Atividade"] == "Inativo", col_binarias].mean().to_numpy(),
+    "Feature": binary_cols,
+    "Overall_prevalence": X_train[binary_cols].mean().to_numpy(),
+    "Active_prevalence": X_train.loc[y_train["Activity"] == "Active", binary_cols].mean().to_numpy(),
+    "Inactive_prevalence": X_train.loc[y_train["Activity"] == "Inactive", binary_cols].mean().to_numpy(),
 }).sort_values("Overall_prevalence", ascending=False)
-binary_prevalence.to_csv(OUT_DIR / "tabela_plip_fingerprint_prevalence_G.csv", index=False)
-print(f"[tabela salva] {OUT_DIR / 'tabela_plip_fingerprint_prevalence_G.csv'}")
+binary_prevalence.to_csv(OUT_DIR / "table_plip_fingerprint_prevalence_G.csv", index=False)
+print(f"[table saved] {OUT_DIR / 'table_plip_fingerprint_prevalence_G.csv'}")
 
 fig, ax = plt.subplots(figsize=(9, 12), dpi=150)
 plot_df = binary_prevalence.sort_values("Overall_prevalence")
@@ -133,7 +133,7 @@ ax.legend()
 fig.tight_layout()
 fig.savefig(FIG_DIR / "figG11_plip_prevalence_by_class.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Salvo: {FIG_DIR / 'figG11_plip_prevalence_by_class.png'}")
+print(f"Saved: {FIG_DIR / 'figG11_plip_prevalence_by_class.png'}")
 
 # ====================================================================
 # PCA: scree plot + PC1xPC2 scatter coloured by class + loadings
@@ -151,7 +151,7 @@ axes[0].set_title("Scree plot (9 continuous descriptors)")
 axes[0].legend(fontsize=8)
 
 for cls, color in palette.items():
-    mask = (y_train["Atividade"] == cls).to_numpy()
+    mask = (y_train["Activity"] == cls).to_numpy()
     axes[1].scatter(pca_scores[mask, 0], pca_scores[mask, 1], s=18, alpha=0.65, color=color, label=cls)
 axes[1].set_xlabel(f"PC1 ({pca.explained_variance_ratio_[0]*100:.1f}% var.)")
 axes[1].set_ylabel(f"PC2 ({pca.explained_variance_ratio_[1]*100:.1f}% var.)")
@@ -162,7 +162,7 @@ fig.suptitle("Principal component analysis of the nine continuous descriptors (t
 fig.tight_layout()
 fig.savefig(FIG_DIR / "figG12_pca_scree_scores.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Salvo: {FIG_DIR / 'figG12_pca_scree_scores.png'}")
+print(f"Saved: {FIG_DIR / 'figG12_pca_scree_scores.png'}")
 
 loadings = pd.DataFrame(pca.components_.T, index=continuous_cols_pca, columns=[f"PC{i+1}" for i in range(pca.n_components_)])
 fig, ax = plt.subplots(figsize=(8, 5), dpi=150)
@@ -179,18 +179,18 @@ ax.set_title("PCA loadings (PC1-PC3) of the nine continuous descriptors")
 fig.tight_layout()
 fig.savefig(FIG_DIR / "figG13_pca_loadings.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Salvo: {FIG_DIR / 'figG13_pca_loadings.png'}")
+print(f"Saved: {FIG_DIR / 'figG13_pca_loadings.png'}")
 
 pca_var_df = pd.DataFrame({
-    "componente": [f"PC{i+1}" for i in range(pca.n_components_)],
-    "variancia_explicada": pca.explained_variance_ratio_,
-    "variancia_acumulada": np.cumsum(pca.explained_variance_ratio_),
+    "component": [f"PC{i+1}" for i in range(pca.n_components_)],
+    "explained_variance": pca.explained_variance_ratio_,
+    "cumulative_variance": np.cumsum(pca.explained_variance_ratio_),
 })
-pca_var_df.to_csv(OUT_DIR / "tabela_ACP_variancia_G.csv", index=False)
-loadings.reset_index().rename(columns={"index": "descritor"}).to_csv(OUT_DIR / "tabela_ACP_loadings_G.csv", index=False)
+pca_var_df.to_csv(OUT_DIR / "table_pca_explained_variance_G.csv", index=False)
+loadings.reset_index().rename(columns={"index": "descriptor"}).to_csv(OUT_DIR / "table_pca_loadings_G.csv", index=False)
 
 print()
 print("PCA summary:")
 print(pca_var_df.to_string(index=False))
 print()
-print("CONCLUIDO: EDA + ACP")
+print("COMPLETE: EDA + PCA")

@@ -1,19 +1,18 @@
 """
-Reavaliacao dos dados REAIS de redocagem (GOLD, GoldScore, N=1000
-solucoes por sistema) para o Artigo 1 -- substitui a linguagem de
-"inspecao visual" por estatisticas quantitativas genuinas extraidas
-diretamente da populacao completa de solucoes geradas pelo GOLD
-("Estatistica da populacao (gold).xlsx", coluna RMSD ordenada por
-ranking de fitness/score -- "r.m.s.d. (S)").
+Reassessment of the REAL GOLD redocking data (GoldScore, N=1000 solutions per
+system) for Article 1 -- replaces "visual inspection" language with genuine
+quantitative statistics taken directly from the full population of solutions
+GOLD generated (the population-statistics spreadsheet's RMSD column, ordered
+by fitness rank, "r.m.s.d. (S)").
 
-NOTA: este script re-deriva os dados a partir das planilhas BRUTAS de
-populacao do GOLD (uma por sistema), que NAO fazem parte deste
-repositorio (arquivo de saida idiossincratico do GOLD, por sistema,
-nao redistribuido aqui por tamanho/formato). Se voce so precisa dos
-dados ja extraidos (RMSD de cada uma das ~1000 solucoes por sistema),
-use diretamente data/raw/redocking_rmsd_full_population_5systems.csv
--- este script so precisa ser rodado de novo se voce tiver acesso as
-planilhas originais do GOLD e quiser re-derivar/auditar a extracao.
+NOTE: this script re-derives the data from the RAW GOLD population
+spreadsheets (one per system), which are NOT part of this repository (an
+idiosyncratic per-system GOLD output, not redistributed here for size/format
+reasons). If you only need the already-extracted data (the RMSD of each of
+the ~1000 solutions per system), use
+data/raw/redocking_rmsd_full_population_5systems.csv directly -- this script
+only needs to be re-run if you have access to the original GOLD spreadsheets
+and want to re-derive or audit the extraction.
 """
 from __future__ import annotations
 
@@ -29,9 +28,13 @@ import matplotlib.pyplot as plt
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
-# Diretorio com as pastas brutas de redocagem do GOLD, uma subpasta por
-# sistema (veja SYSTEMS abaixo). Sobrescreva via variavel de ambiente
-# GOLD_RAW_DIR se sua copia estiver em outro lugar.
+# Directory holding the raw GOLD redocking folders, one subfolder per system
+# (see SYSTEMS below). Override it through the GOLD_RAW_DIR environment
+# variable if your copy lives elsewhere.
+#
+# The literal "redocagem"/"Goldscore" path segments below are the folder names
+# GOLD wrote on the original workstation and are kept verbatim so the script
+# still finds them; they are paths, not translatable text.
 D = os.environ.get(
     "GOLD_RAW_DIR",
     str(REPO_ROOT / "data" / "raw" / "gold_redocking_raw"),
@@ -46,7 +49,7 @@ SYSTEMS = {
 }
 
 OUT_DIR = Path(os.environ.get("OUT_DIR", REPO_ROOT / "results" / "regenerated"))
-FIG_DIR = OUT_DIR / "figuras_ingles_G"
+FIG_DIR = OUT_DIR / "figures_G"
 FIG_DIR.mkdir(exist_ok=True, parents=True)
 
 RMSD_THRESHOLD = 2.0  # A, standard redocking pose-recovery convention
@@ -56,7 +59,7 @@ rows_full = []
 
 for name, folder in SYSTEMS.items():
     matches = [m for m in glob.glob(os.path.join(folder, "*.xlsx")) if "popula" in m.lower() or "estat" in m.lower()]
-    assert matches, f"Nao encontrado para {name}: {folder}"
+    assert matches, f"Not found for {name}: {folder}"
     xlsx_path = matches[0]
 
     sheet_names = pd.ExcelFile(xlsx_path).sheet_names
@@ -66,10 +69,10 @@ for name, folder in SYSTEMS.items():
         if (probe.iloc[:3, :] == "r.m.s.d. (S)").any().any():
             stat_sheet = s
             break
-    assert stat_sheet is not None, f"Sheet com 'r.m.s.d. (S)' nao encontrada em {xlsx_path}"
+    assert stat_sheet is not None, f"No sheet containing 'r.m.s.d. (S)' was found in {xlsx_path}"
 
     df = pd.read_excel(xlsx_path, sheet_name=stat_sheet, header=None)
-    # Colunas (0-indexed): 13 = pontuacao ordenada por score (S), 14 = rmsd ordenado por score (S)
+    # Columns (0-indexed): 13 = fitness ordered by score (S), 14 = RMSD ordered by score (S)
     scores_by_rank = pd.to_numeric(df.iloc[2:, 13], errors="coerce").dropna().to_numpy()
     rmsd_by_rank = pd.to_numeric(df.iloc[2:, 14], errors="coerce").dropna().to_numpy()
 
@@ -101,9 +104,9 @@ for name, folder in SYSTEMS.items():
 summary_df = pd.DataFrame(rows_summary)
 full_df = pd.DataFrame(rows_full)
 
-summary_df.to_csv(OUT_DIR / "tabela_redocking_populacao_real_G.csv", index=False)
-full_df.to_csv(OUT_DIR / "tabela_redocking_rmsd_populacao_completa_G.csv", index=False)
-print(f"\n[tabela salva] {OUT_DIR / 'tabela_redocking_populacao_real_G.csv'}")
+summary_df.to_csv(OUT_DIR / "table_redocking_population_G.csv", index=False)
+full_df.to_csv(OUT_DIR / "table_redocking_rmsd_full_population_G.csv", index=False)
+print(f"\n[table saved] {OUT_DIR / 'table_redocking_population_G.csv'}")
 
 # ====================================================================
 # Figure: violin/box of the full RMSD population per system, with the
@@ -140,7 +143,7 @@ ax.legend(loc="upper left", fontsize=8)
 fig.tight_layout()
 fig.savefig(FIG_DIR / "figG18_redocking_rmsd_population.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Salvo: {FIG_DIR / 'figG18_redocking_rmsd_population.png'}")
+print(f"Saved: {FIG_DIR / 'figG18_redocking_rmsd_population.png'}")
 
 print()
 print(summary_df.to_string(index=False))

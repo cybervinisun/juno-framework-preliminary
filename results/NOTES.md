@@ -1,74 +1,125 @@
-# results/ — table/figure provenance
+# results/ - table/figure provenance
 
-Every file below corresponds to a table or figure in the published article
-(version-G pipeline, `n_iter=5` champions — see `models/` and
+Every file below corresponds to a table or figure in the article (version-G
+pipeline, `n_iter=5` champions - see `models/` and
 `archive/round_niter15_exploratory/NOTES.md` for why `n_iter=5` and not an
-earlier exploratory budget). Values were cross-checked line-by-line against
-the numbers printed in `main.tex` before being included here.
+earlier exploratory budget). Values were cross-checked line-by-line against the
+numbers printed in `main.tex` before being included here.
 
-| File | Article reference |
-|---|---|
-| `tab3_training_partition_metrics_G.csv` | Table 3 (training-partition performance) |
-| `figG22_niter_1_3_5_cv_kappa_all_algorithms_G.csv` | Fig. G22 left panel (CV kappa vs. search budget) |
-| `figG22_niter_1_3_5_candidate_dispersion_G.csv` | Fig. G22 left panel (non-selected candidate dispersion) |
-| `figG22_repeated_cv_bootstrap_G.csv` | Fig. G22 right panel / Table 3 (repeated CV + bootstrap CI) |
-| `tab4_heldout_test_metrics_G.csv` | Table 4 (held-out test performance, all 4 models) |
-| `tab_calib_scenarios_G.csv` | Table "tab_calib_scenarios" (calibration scenarios A/B) |
-| `fig7_roc_curve_points_G.csv` | Fig. 7 (ROC curves, all 3 retained classifiers) |
-| `tab5_feature_importance_top_G.csv` | Table 5 (top feature importances) |
-| `fig8_feature_importance_full57_G.csv` | Fig. 8 (full 57-descriptor importance) |
-| `figG15_tanimoto_errors_G.csv` | Fig. G15 (Tanimoto similarity of misclassified compounds) |
-| `figG15_pif_jaccard_errors_G.csv` | Fig. G15 (PIF/Jaccard similarity of misclassified compounds) |
-| `figG12_pca_explained_variance_G.csv` | Fig. G12 (PCA scree) |
-| `figG12_pca_loadings_G.csv` | Fig. G12 (PCA loadings) |
-| `figG11_pif_prevalence_G.csv` | Fig. G11 (PIF prevalence by class) |
-| `figG1_svmsmote_tracking_G.csv` | Fig. G1 (SVMSMOTE synthetic-sample tracking) |
-| `logreg_baseline_summary_G.csv` | Logistic-regression baseline (Table 3/4 row + search summary) |
-| `logreg_bayesian_search_candidates_G.csv` | Logistic-regression Bayesian-search candidate dispersion |
-| `xgboost_niter5_full_metrics_G.csv` | XGBoost champion, train+test metrics in one row |
-| `xgboost_niter5_test_errors_G.csv` | XGBoost champion, held-out test misclassifications |
-| `juno_screening_713library_ranked_G.csv` | Prospective 713-compound screening ranking |
-| `figG15_tanimoto_pairs_among_errors_G.csv` | Fig. G15 (pairwise Tanimoto similarity among all 21 consensus-error compounds) |
+Table and figure numbers below are those of the current manuscript. They changed
+relative to earlier revisions, in which some figures were merged, removed or
+reordered; the LaTeX label in the third column is the stable reference.
 
-Redocking validation (Table 1 / Fig. G18) and native-contact-preservation
-tables are shipped under `data/raw/` instead of here, since the pipeline
-scripts (`code/redocking_analysis.py`, `code/native_contacts_analysis.py`)
-treat them as ready-to-use inputs for anyone who doesn't want to re-derive
-them from the raw GOLD population spreadsheets.
+| File | Article reference | label |
+|---|---|---|
+| `tab3_training_partition_metrics_G.csv` | Table 4 (performance across search and validation stages) | `tab3` |
+| `tab4_heldout_test_metrics_G.csv` | Table 5 (final held-out performance, all 4 models) | `tab4` |
+| `tab_calib_scenarios_G.csv` | Table 6 (held-out calibration scenarios, Model A/B) | `tab_calib_scenarios` |
+| `tab5_feature_importance_top_G.csv` | Table 7 (XGBoost feature importance) | `tab5` |
+| `table_champion_hyperparameters_G.csv` | Table 2, "Final value" column (selected hyperparameters of the three champions; the search ranges in that table are the search spaces declared in `code/pipeline_G.py`) | `tab2` |
+| `fig7_roc_curve_points_G.csv` | Figure 7 (held-out ROC curves, both panels) | `fig7` |
+| `fig8_feature_importance_full57_G.csv` | Table 7, full ranking (XGBoost importance for all 57 descriptors; Table 7 prints the top entries) | `tab5` |
+| `figG22_niter_1_3_5_cv_kappa_all_algorithms_G.csv` | Figure 6 left panel (CV kappa vs. search budget) | `figG22` |
+| `figG22_niter_1_3_5_candidate_dispersion_G.csv` | Figure 6 left panel (non-selected candidate dispersion) | `figG22` |
+| `figG22_repeated_cv_bootstrap_G.csv` | Figure 6 right panel / Table 4 (repeated CV + bootstrap CI) | `figG22` |
+| `figG11_pif_prevalence_G.csv` | Supplementary Figure S6, Section S7 (PIF prevalence by class) | `fig:s7-prevalence` |
+| `figG15_tanimoto_errors_G.csv` | Figure 8 (Tanimoto similarity of misclassified compounds) | `figG15` |
+| `figG15_pif_jaccard_errors_G.csv` | Figure 8 (PIF/Jaccard similarity of misclassified compounds) | `figG15` |
+| `figG15_tanimoto_pairs_among_errors_G.csv` | Figure 8 and Supplementary Section S4 (pairwise similarity among all 21 error compounds) | `figG15` |
+| `figG12_pca_explained_variance_G.csv` | Supplementary Figure S8 (PCA scree) | - |
+| `figG12_pca_loadings_G.csv` | Supplementary Figure S8 (PCA loadings) | - |
+| `figG1_svmsmote_tracking_G.csv` | Supplementary Figure S2 (SVMSMOTE synthetic-sample tracking) | - |
+| `logreg_baseline_summary_G.csv` | Logistic-regression baseline (Table 4/5 row + search summary) | - |
+| `logreg_bayesian_search_candidates_G.csv` | Logistic-regression Bayesian-search candidate dispersion | - |
+| `xgboost_niter5_full_metrics_G.csv` | XGBoost champion, train+test metrics in one row | - |
+| `xgboost_niter5_test_errors_G.csv` | XGBoost champion, held-out test misclassifications | - |
+
+Redocking validation (Table 3 / Supplementary Figure S1) and
+native-contact-preservation tables are shipped under `data/raw/` instead of
+here, since the pipeline scripts (`code/redocking_analysis.py`,
+`code/native_contacts_analysis.py`) treat them as ready-to-use inputs for
+anyone who doesn't want to re-derive them from the raw GOLD population
+spreadsheets.
 
 ## How `tab3_training_partition_metrics_G.csv` and `tab4_heldout_test_metrics_G.csv` were built
 
 No single pre-existing script output covered all four algorithms (MLP, SVM,
-XGBoost, Logistic Regression) with the correct, final `n_iter=5` numbers in
-one file. These two CSVs were assembled from verified per-algorithm sources
+XGBoost, Logistic Regression) with the correct, final `n_iter=5` numbers in one
+file. These two CSVs were assembled from verified per-algorithm sources
 (MLP/SVM from the original train/test metrics tables, XGBoost from
-`tabelas_round6_7/tabela_xgb_niter5_metricas_finais_G.csv`, Logistic
-Regression from `tabela_logreg_resumo_G.csv`), with AUC taken from the Platt
-calibration scenario "A2" (calibrated on the 224 original training ligands)
-to match what Table 4's caption specifies. Every value was checked against
-the numbers printed in `main.tex` Section 3.4/3.5 and matches exactly.
+the XGBoost round's own final-metrics table, and Logistic Regression from
+`logreg_baseline_summary_G.csv`; the first two lived in a working folder that
+is not part of this repository). Every value was checked against the numbers
+printed in `main.tex` and matches exactly.
+
+**AUC is the uncalibrated value** (column `AUC_uncalibrated`), computed from the
+same champion and the same scores that produce the discrete metrics in the same
+row. This follows the caption of Table 5, which states that all eight metrics,
+AUC included, come from the champion without calibration. Platt-calibrated AUC
+belongs to the scenario study only and is reported in
+`tab_calib_scenarios_G.csv`.
+
+Platt scaling is monotonic, so the choice is numerically immaterial for three
+of the four models: SVM (0.929977), XGBoost (0.947917) and Logistic Regression
+(0.939815) give the same AUC either way. Only the MLP differs - 0.903646
+uncalibrated against 0.901620 calibrated - because the saturated sigmoid
+collapses distinct scores into ties. An earlier revision of this file reported
+the calibrated column (`AUC_platt_A2`), which is where that 0.901620 came from.
+
+## How `fig7_roc_curve_points_G.csv` was built
+
+Figure 7 of the article has two panels, and this file carries both, identified
+by the `panel` column:
+
+- `uncalibrated` - the scores behind the final held-out evaluation of Table 5;
+- `platt_calibrated` - the same champions after Platt scaling fitted on the
+  224 original, non-synthetic training ligands (calibration analysis,
+  Section 3.6).
+
+Regenerate with `code/pipeline_G_roc_panels.py`, which also renders the figure.
+The SVM and XGBoost curves are identical in the two panels, as a monotonic
+transformation cannot change a ROC curve; only the MLP curve differs.
+
+## Loading the XGBoost champion
+
+`models/final_model_XGBoost_G.pkl` stores the Booster as the byte buffer
+produced by `XGBoosterSerializeToBuffer`, which is **not portable across
+XGBoost builds**: on a different build, `joblib.load` fails with "input stream
+corrupted" even at the same declared version.
+
+`models/final_model_XGBoost_G.ubj` is the same champion exported in the
+portable UBJSON format, and was verified to reproduce Table 5 exactly (AUC
+0.947917, kappa 0.736842, TP/TN/FP/FN 65/21/3/7). Prefer it.
+`code/pipeline_G_roc_panels.py` shows both paths, including a fallback that
+extracts the model sub-document from the legacy buffer.
 
 ## Gaps found during curation, and how they were closed
 
 Two files initially found in the source material predated the switch to the
-`n_iter=5` XGBoost champion (Section 3.4) and were never regenerated
-afterward. Rather than ship them as-is or leave them out, both were
-regenerated directly against the actual published artifacts in this
-repository (`models/`, `models/checkpoint_post_svmsmote_G.pkl`) and verified
-before inclusion:
+`n_iter=5` XGBoost champion (Section 3.4) and were never regenerated afterward.
+Rather than ship them as-is or leave them out, both were regenerated directly
+against the published artifacts in this repository (`models/`,
+`models/checkpoint_post_svmsmote_G.pkl`) and verified before inclusion:
 
-- **`fig7_roc_curve_points_G.csv`** — the only pre-existing ROC-points file
-  predated the champion switch, so its XGBoost curve didn't correspond to
-  the published model (MLP/SVM were unaffected — same model artifact before
-  and after the switch). Regenerated by calibrating each champion in
-  `models/` on the 224 original training ligands (scenario "A2", matching
-  Table 4's caption) and computing `sklearn.metrics.roc_curve` against the
-  held-out test set. Resulting AUCs — MLP 0.90162, SVM 0.92998, XGBoost
-  0.94792 — match `main.tex` exactly.
-- **`figG15_tanimoto_pairs_among_errors_G.csv`** — the only pre-existing
+- **`fig7_roc_curve_points_G.csv`** - the only pre-existing ROC-points file
+  predated the champion switch, so its XGBoost curve didn't correspond to the
+  published model (MLP/SVM were unaffected - same model artifact before and
+  after the switch). Now regenerated by `code/pipeline_G_roc_panels.py`; the
+  resulting AUCs match `main.tex` exactly in both panels.
+- **`figG15_tanimoto_pairs_among_errors_G.csv`** - the only pre-existing
   pairwise-similarity file was missing compound 55, part of the `n_iter=5`
   XGBoost champion's actual error set. Regenerated by rerunning
   `code/pipeline_G_tanimoto_reassessment.py` (updated to load champions from
   `models/` rather than a local scratch folder) against the real published
   models; the resulting 21-compound error set is identical to
   `figG15_tanimoto_errors_G.csv`.
+
+One further gap was closed later, in the revision that made Table 5
+uncalibrated:
+
+- **The calibrated champions were never deposited.**
+  `code/pipeline_G_calibration_quality.py` loads
+  `models/final_model_{MLP,SVM,XGBoost}_calibrated_G.pkl`, and those files were
+  absent. They are now deposited, each fitted by Platt scaling on the 224
+  original, non-synthetic training ligands, and each verified against the
+  corresponding row of `tab_calib_scenarios_G.csv`.

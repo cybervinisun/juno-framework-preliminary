@@ -1,12 +1,12 @@
 """
-Pipeline G - Parte B: sensibilidade do orcamento de busca bayesiana para
-XGBoost (n_iter = 5, 10, 15) + robustez estatistica (bootstrap) da CV
-interna, para substanciar/"convergir" com a Tabela 3 do Artigo 1.
+Version-G pipeline, part B: Bayesian-search budget sensitivity for XGBoost
+(n_iter = 5, 10, 15) plus statistical robustness (bootstrap) of the internal
+CV, supporting Table 4 of Article 1.
 
-Reusa o checkpoint pos-SVMSMOTE gerado por pipeline_G.py (mesmo conjunto
-de treino balanceado, sem re-derivar/re-amostrar nada) para isolar
-exclusivamente o efeito do orcamento de busca (n_iter) sobre o campeao
-selecionado e sua robustez.
+Reuses the post-SVMSMOTE checkpoint produced by pipeline_G.py (the same
+balanced training partition, with nothing re-derived or re-sampled) so that
+the effect of the search budget (n_iter) on the selected champion, and on its
+robustness, is isolated.
 """
 from __future__ import annotations
 
@@ -36,8 +36,8 @@ from skopt.space import Real, Integer, Categorical
 warnings.filterwarnings("ignore")
 
 BASE_DIR = Path(__file__).parent
-OUT_DIR = BASE_DIR / "versao_G_outputs"
-FIG_DIR = OUT_DIR / "figuras_ingles_G"
+OUT_DIR = BASE_DIR / "version_G_outputs"
+FIG_DIR = OUT_DIR / "figures_G"
 FIG_DIR.mkdir(exist_ok=True)
 
 ckpt = joblib.load(OUT_DIR / "checkpoint_post_svmsmote_G.pkl")
@@ -55,9 +55,9 @@ mask = tracking_table["is_synthetic"] == False
 groups.loc[mask] = tracking_table.loc[mask, "original_row_id"]
 groups = groups.astype(int)
 
-mapeamento = {"Inativo": 0, "Ativo": 1}
-y_test_bin = np.array([mapeamento[c] for c in y_test["Atividade"]], dtype=np.int64)
-y_train_bin = np.array([mapeamento[c] for c in y_resampled], dtype=np.int64)
+LABEL_MAP = {"Inactive": 0, "Active": 1}
+y_test_bin = np.array([LABEL_MAP[c] for c in y_test["Activity"]], dtype=np.int64)
+y_train_bin = np.array([LABEL_MAP[c] for c in y_resampled], dtype=np.int64)
 
 kappa_scorer = make_scorer(cohen_kappa_score)
 
@@ -95,7 +95,7 @@ class RepeatedStratifiedGroupKFold:
         return self.n_splits * self.n_repeats
 
 
-cv_repetida = RepeatedStratifiedGroupKFold(n_splits=5, n_repeats=20, random_state=21)
+repeated_cv = RepeatedStratifiedGroupKFold(n_splits=5, n_repeats=20, random_state=21)
 
 
 def bootstrap_ci_of_mean(values, n_boot=5000, random_state=42):
@@ -110,7 +110,7 @@ def bootstrap_ci_of_mean(values, n_boot=5000, random_state=42):
 
 
 print("=" * 70)
-print("XGBoost: sensibilidade do orcamento de busca bayesiana (n_iter)")
+print("XGBoost: Bayesian-search budget sensitivity (n_iter)")
 print("=" * 70)
 
 n_iter_values = [5, 10, 15]
@@ -136,7 +136,7 @@ for n_iter in n_iter_values:
             "std_cv_kappa": std_score, "is_best": mean_score == bscv.best_score_,
         })
 
-    rep_scores = cross_validate(champion, X_resampled, y_train_bin, cv=cv_repetida, groups=groups,
+    rep_scores = cross_validate(champion, X_resampled, y_train_bin, cv=repeated_cv, groups=groups,
                                  scoring=kappa_scorer, n_jobs=-1)["test_score"]
     repeated_cv_by_niter[n_iter] = rep_scores
 
@@ -168,11 +168,11 @@ for n_iter in n_iter_values:
           f"bootstrap95%CI=[{boot_lo:.4f},{boot_hi:.4f}]  test_kappa={test_kappa:.4f}  test_AUC={test_auc:.4f}")
 
 sensitivity_df = pd.DataFrame(sensitivity_rows)
-sensitivity_df.to_csv(OUT_DIR / "tabela_xgb_niter_sensibilidade_G.csv", index=False)
-print(f"\n[tabela salva] {OUT_DIR / 'tabela_xgb_niter_sensibilidade_G.csv'}")
+sensitivity_df.to_csv(OUT_DIR / "table_xgb_niter_sensitivity_G.csv", index=False)
+print(f"\n[table saved] {OUT_DIR / 'table_xgb_niter_sensitivity_G.csv'}")
 
 dispersion_all_df = pd.DataFrame(dispersion_rows_all)
-dispersion_all_df.to_csv(OUT_DIR / "tabela_xgb_niter_dispersao_candidatos_G.csv", index=False)
+dispersion_all_df.to_csv(OUT_DIR / "table_xgb_niter_candidate_dispersion_G.csv", index=False)
 
 # ====================================================================
 # Also bring in MLP/SVM's existing single-budget champions (n_iter=5),
@@ -181,7 +181,7 @@ dispersion_all_df.to_csv(OUT_DIR / "tabela_xgb_niter_dispersao_candidatos_G.csv"
 # ====================================================================
 print()
 print("=" * 70)
-print("Bootstrap da robustez da CV interna: MLP e SVM (orcamento fixo, n_iter=5)")
+print("Bootstrap robustness of the internal CV: MLP and SVM (fixed budget, n_iter=5)")
 print("=" * 70)
 
 all_bootstrap_rows = []
@@ -193,8 +193,8 @@ for n_iter, rep_scores in repeated_cv_by_niter.items():
     })
 
 for label in ["MLP", "SVM"]:
-    champion = joblib.load(OUT_DIR / f"modelo_final_{label}_G.pkl")
-    rep_scores = cross_validate(champion, X_resampled, y_train_bin, cv=cv_repetida, groups=groups,
+    champion = joblib.load(OUT_DIR / f"final_model_{label}_G.pkl")
+    rep_scores = cross_validate(champion, X_resampled, y_train_bin, cv=repeated_cv, groups=groups,
                                  scoring=kappa_scorer, n_jobs=-1)["test_score"]
     repeated_cv_by_niter[label] = rep_scores
     boot_mean, boot_lo, boot_hi = bootstrap_ci_of_mean(rep_scores)
@@ -206,8 +206,8 @@ for label in ["MLP", "SVM"]:
           f"bootstrap95%CI=[{boot_lo:.4f},{boot_hi:.4f}]")
 
 bootstrap_summary_df = pd.DataFrame(all_bootstrap_rows)
-bootstrap_summary_df.to_csv(OUT_DIR / "tabela_bootstrap_robustez_CV_interna_G.csv", index=False)
-print(f"\n[tabela salva] {OUT_DIR / 'tabela_bootstrap_robustez_CV_interna_G.csv'}")
+bootstrap_summary_df.to_csv(OUT_DIR / "table_bootstrap_internal_cv_robustness_G.csv", index=False)
+print(f"\n[table saved] {OUT_DIR / 'table_bootstrap_internal_cv_robustness_G.csv'}")
 
 # ====================================================================
 # Figures (English)
@@ -235,7 +235,7 @@ ax.legend(loc="lower right", fontsize=8)
 fig.tight_layout()
 fig.savefig(FIG_DIR / "figG7_xgb_niter_convergence.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Salvo: {FIG_DIR / 'figG7_xgb_niter_convergence.png'}")
+print(f"Saved: {FIG_DIR / 'figG7_xgb_niter_convergence.png'}")
 
 # Fig. G8: repeated-CV distributions (boxplot) for all 5 scenarios
 # (XGBoost x 3 budgets + MLP + SVM champions), with bootstrap CI markers
@@ -262,9 +262,9 @@ ax.tick_params(axis="x", rotation=15)
 fig.tight_layout()
 fig.savefig(FIG_DIR / "figG8_bootstrap_cv_robustness.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Salvo: {FIG_DIR / 'figG8_bootstrap_cv_robustness.png'}")
+print(f"Saved: {FIG_DIR / 'figG8_bootstrap_cv_robustness.png'}")
 
 print()
 print("=" * 70)
-print("CONCLUIDO: sensibilidade XGBoost + robustez bootstrap da CV interna")
+print("COMPLETE: XGBoost sensitivity + bootstrap robustness of the internal CV")
 print("=" * 70)

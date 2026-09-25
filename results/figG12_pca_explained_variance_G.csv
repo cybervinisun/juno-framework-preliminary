@@ -1,4 +1,4 @@
-componente,variancia_explicada,variancia_acumulada
+component,explained_variance,cumulative_variance
 PC1,0.38926962964040135,0.38926962964040135
 PC2,0.22223979262140764,0.6115094222618089
 PC3,0.17422224071440376,0.7857316629762127

@@ -25,11 +25,3 @@ for any purpose, even commercially, under the following terms:
     anything the license permits.
 
 Full legal text: https://creativecommons.org/licenses/by/4.0/legalcode
-
----
-
-Note on the prospective 713-compound screening library
-(data/raw/prospective_library_713_*, results/juno_screening_713library_ranked_G.csv):
-these files have been anonymized (real SMILES/compound names replaced by a
-sequential compound_id) prior to publication -- see data/raw/NOTES.md for
-why. The CC-BY-4.0 terms above apply to the anonymized data as published.

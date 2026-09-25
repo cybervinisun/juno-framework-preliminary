@@ -7,7 +7,7 @@ this repository over time:
 1. The four published champion models (+ scaler + checkpoint) still load
    cleanly and have not been accidentally replaced/corrupted -- their key
    tuned hyperparameters are compared against the values verified against
-   Table 1 of the article at publication time.
+   Table 2 of the article at publication time.
 2. Every script under code/ still at least imports/compiles cleanly (catches
    syntax errors and missing-import regressions without actually running a
    full pipeline).
@@ -24,7 +24,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 MODEL_DIR = REPO_ROOT / "models"
 CODE_DIR = REPO_ROOT / "code"
 
-# Key tuned hyperparameters verified against Table 1 of the published
+# Key tuned hyperparameters verified against Table 2 of the published
 # article (see the original hyperparameter-verification pass). Only the
 # values that actually distinguish this champion from any other candidate
 # are checked -- not the full get_params() dict.
@@ -61,7 +61,7 @@ EXPECTED = {
 def check_models() -> list[str]:
     errors = []
     for label, expected_params in EXPECTED.items():
-        path = MODEL_DIR / f"modelo_final_{label}_G.pkl"
+        path = MODEL_DIR / f"final_model_{label}_G.pkl"
         try:
             model = joblib.load(path)
         except Exception as exc:  # noqa: BLE001
@@ -84,7 +84,7 @@ def check_models() -> list[str]:
                 )
         print(f"[ok] {label}: loaded and hyperparameters match.")
 
-    for name in ["scaler_minmax_treino_G.pkl", "checkpoint_post_svmsmote_G.pkl"]:
+    for name in ["scaler_minmax_train_G.pkl", "checkpoint_post_svmsmote_G.pkl"]:
         try:
             joblib.load(MODEL_DIR / name)
             print(f"[ok] {name}: loaded.")

@@ -43,8 +43,6 @@ the GluN1–GluN2B NMDA receptor amino-terminal domain, combining:
   ($n_{\mathrm{iter}}=5$, scored on Cohen's $\kappa$, mother–child-grouped
   5-fold internal CV), Platt-calibrated, and evaluated on a held-out test
   set ($n=96$).
-- A prospective, in-house-synthesized 713-compound screening library scored
-  by the retained champions (not used for training/tuning/calibration).
 
 See `main.tex` (not included here — this repo is the data/code companion,
 not the manuscript itself) for the full methodology.
@@ -57,8 +55,7 @@ not the manuscript itself) for the full methodology.
 │   └── pymol_scripts/        PyMOL scripts for the redocking pose-overlay figure
 ├── data/
 │   ├── processed/            320-ligand training matrix, labels, SMILES, appendix
-│   └── raw/                  redocking population stats, native contacts,
-│                              anonymized 713-compound prospective library
+│   └── raw/                  redocking population stats, native contacts
 ├── models/                   the 4 verified, published champion models + scaler
 │                              + post-SVMSMOTE checkpoint
 ├── archive/                  superseded modeling rounds, kept for historical
@@ -96,20 +93,26 @@ PubChem CID where available).
 
 `models/` contains only the four classifiers reported in the article
 (hyperparameters verified by direct `get_params()` inspection against
-Table 1 of the manuscript — an exact match, not the closest candidate):
+Table 2 of the manuscript — an exact match, not the closest candidate):
 
-- `modelo_final_MLP_G.pkl`, `modelo_final_SVM_G.pkl`,
-  `modelo_final_XGBoost_G.pkl`, `modelo_final_LogisticRegression_G.pkl` —
+- `final_model_MLP_G.pkl`, `final_model_SVM_G.pkl`,
+  `final_model_XGBoost_G.pkl`, `final_model_LogisticRegression_G.pkl` —
   each a fitted `sklearn.pipeline.Pipeline`.
-- `scaler_minmax_treino_G.pkl` — the MinMaxScaler fitted on the training
+- `scaler_minmax_train_G.pkl` — the MinMaxScaler fitted on the training
   partition only (Section 2.6); required to preprocess new data before
   calling `.predict()` on the champions above.
 - `checkpoint_post_svmsmote_G.pkl` — the SVMSMOTE-balanced, corrected
   training partition used to fit these champions (Sections 2.6/S2).
 
-**Calibrated (Platt-scaled) versions of these models are not included.**
-`code/pipeline_G_juno_screening.py` looks for them optionally and falls
-back to label-only predictions if absent — see that script's own note.
+Also included:
+
+- `final_model_MLP_calibrated_G.pkl`, `final_model_SVM_calibrated_G.pkl`,
+  `final_model_XGBoost_calibrated_G.pkl` — the three retained champions with
+  Platt calibration fitted on the 224 original (non-synthetic) training
+  ligands (calibration scenarios, Section 3.6).
+- `final_model_XGBoost_G.ubj` — the XGBoost champion's booster in XGBoost's
+  portable UBJSON format. The booster inside the `.pkl` is not portable across
+  XGBoost builds; see `code/pipeline_G_roc_panels.py` for how to load either.
 
 ### Archive
 
@@ -122,7 +125,7 @@ for reproducing published results:
   ($n_{\mathrm{iter}}=15$) Bayesian search, superseded when every algorithm
   was capped at $n_{\mathrm{iter}}=5$ for consistency.
 - `round_thesis_final_F_divergent/` — pre-version-G SVC/XGBoost models with
-  hyperparameters that do not match Table 1, from an earlier, methodologically
+  hyperparameters that do not match Table 2, from an earlier, methodologically
   different pipeline.
 
 Each subfolder has its own `NOTES.md` with the exact hyperparameters and the
@@ -144,20 +147,9 @@ incomplete pairwise Tanimoto comparison, both superseded by the champion
 switch to $n_{\mathrm{iter}}=5$) and how they were closed by regenerating
 directly against the published models in this repository.
 
-Redocking validation (Table 1, Fig. G18) and native-contact-preservation
+Redocking validation (Table 3, Fig. 4) and native-contact-preservation
 data live under `data/raw/` instead, since the corresponding scripts treat
 them as ready-to-use inputs — see `data/raw/NOTES.md`.
-
-### Anonymized prospective screening library
-
-The 713-compound prospective library (`data/raw/prospective_library_713_*`,
-`results/juno_screening_713library_ranked_G.csv`) was synthesized in-house
-and has no experimental validation yet against the target used here.
-**SMILES and compound names have been removed** and replaced with a
-sequential `compound_id`, to avoid publicly linking a specific real
-compound to a target-specific activity prediction ahead of any future
-patent filing. Descriptors and predictions are otherwise unmodified — see
-`data/raw/NOTES.md` for the full rationale.
 
 ## Reproducing results
 
@@ -173,25 +165,27 @@ environment variables — see each script's header). Suggested order:
 1. `pipeline_G.py` — full pipeline: split, SVMSMOTE, Bayesian search, champion
    selection, calibration, held-out evaluation (Tables 3/4).
 2. `pipeline_G_pca_eda.py`, `pipeline_G_tanimoto_reassessment.py` — EDA/PCA
-   (Figs. G9–G12) and structural error analysis (Fig. G15).
-3. `pipeline_G_calibration_scenarios.py`, `pipeline_G_calibration_quality.py`
-   — calibration scenarios and Brier/ECE diagnostics.
+   (Fig. 5 and Supplementary Figs. S7–S8) and structural error analysis (Fig. 8).
+3. `pipeline_G_calibration_scenarios.py`, `pipeline_G_calibration_quality.py`,
+   `pipeline_G_roc_panels.py` — calibration scenarios, Brier/ECE diagnostics,
+   and the two-panel held-out ROC curves.
 4. `pipeline_G_niter_all_algorithms.py`, `pipeline_G_xgb_sensitivity.py`,
-   `pipeline_G_logreg_baseline.py` — budget-sensitivity study (Fig. G22) and
+   `pipeline_G_logreg_baseline.py` — budget-sensitivity study (Fig. 6) and
    the logistic-regression baseline.
 5. `redocking_analysis.py`, `native_contacts_analysis.py` — redocking
-   validation (Table 1, Fig. G18) and native-contact preservation; these
+   validation (Table 3, Fig. 4) and native-contact preservation; these
    need the raw, per-system GOLD population spreadsheets (**not included**,
    see below) — `data/raw/` already ships their extracted output for anyone
    who just wants the numbers.
-6. `pymol_scripts/render_*.pml` — pose-overlay rendering for Fig. 7; also
+6. `pymol_scripts/render_*.pml` — pose-overlay rendering for Fig. 4; also
    need the raw GOLD `.mol2` outputs (**not included**), run with
    `pymol -cq render_XXXX.pml`.
-7. `pipeline_G_juno_screening.py` — scores the anonymized 713-compound
-   library with the four champions.
-8. `rebuild_xgb_niter5_cascade.py` — utility script documenting how the
-   XGBoost champion switch (Section 3.4) was cascaded through dependent
-   outputs; provided for transparency, not needed for a fresh run.
+7. `rebuild_xgb_niter5_cascade.py` — recomputes everything that depends on
+   the XGBoost champion after the search-budget switch described in
+   Section 3.4. `pipeline_G.py` already searches at the retained budget
+   (`n_iter=5`) for all three families, so a fresh run reproduces the
+   published champions directly; this script documents how the switch was
+   propagated to the dependent outputs when it was first made.
 
 ### GOLD (proprietary software) caveat
 

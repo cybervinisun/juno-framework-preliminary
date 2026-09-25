@@ -1,18 +1,18 @@
 """
-Comparacao de contatos nativos (cristal) vs pose redocada (melhor
-fitness) para os 5 sistemas de referencia da redocagem (Tabela 1),
-usando o PLIP real sobre as estruturas reais.
+Comparison of native (crystal) contacts against the redocked best-fitness pose
+for the five redocking reference systems (Table 3), using real PLIP runs over
+the real structures.
 
-Para cada sistema:
-1. Identifica o arquivo gold_soln_*.mol2 da pose de melhor fitness
-   (cruzando o RMSD "melhor pose" ja reportado na Tabela 1 com a aba
-   "Worksheet" da planilha de populacao, que traz o numero da solucao).
-2. Funde receptor (gold_protein.mol2) + essa pose em um unico PDB
-   (removendo atomos fantasma tipo par-isolado "Lp"/"*", que o
-   OpenBabel nao consegue tipar a partir do mol2 do GOLD).
-3. Roda o PLIP na estrutura cristalografica original (contatos
-   nativos) e na pose redocada fundida (contatos redocados).
-4. Reporta contagens de interacao por tipo para ambas.
+For each system:
+1. Identifies the gold_soln_*.mol2 file of the best-fitness pose (by matching
+   the "best pose" RMSD already reported in Table 3 against the population
+   spreadsheet's worksheet, which carries the solution number).
+2. Merges receptor (gold_protein.mol2) and that pose into a single PDB,
+   removing lone-pair ghost atoms ("Lp"/"*") that OpenBabel cannot type from
+   GOLD's mol2 output.
+3. Runs PLIP on the original crystallographic structure (native contacts) and
+   on the merged redocked pose (redocked contacts).
+4. Reports per-interaction-type counts for both.
 """
 from __future__ import annotations
 
@@ -25,11 +25,15 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-# Diretorio com os PDBs cristalograficos e as pastas brutas de
-# redocagem do GOLD (ver nota em redocking_analysis.py). Sobrescreva
-# via variavel de ambiente GOLD_RAW_DIR se sua copia estiver em outro
-# lugar; os resultados ja extraidos desta analise estao em
-# data/raw/tabela_contatos_nativos_vs_redocados_*.csv.
+# Directory holding the crystallographic PDBs and the raw GOLD redocking
+# folders (see the note in redocking_analysis.py). Override it through the
+# GOLD_RAW_DIR environment variable if your copy lives elsewhere; the
+# already-extracted results of this analysis are in
+# data/raw/table_native_vs_redocked_contacts_*.csv.
+#
+# The literal "redocagem"/"goldscore" path segments below are the folder
+# names GOLD wrote on the original workstation and are kept verbatim so the
+# script still finds them; they are paths, not translatable text.
 BASE = os.environ.get(
     "GOLD_RAW_DIR",
     str(Path(__file__).resolve().parent.parent / "data" / "raw" / "gold_redocking_raw"),
@@ -156,7 +160,7 @@ def run_plip(pdb_path: str, outdir: str):
 
 
 def parse_interactions(report_xml: str, target_longnames: set[str] | None = None):
-    """Retorna lista de dicts {longname, chain, type, resname, resnr, reschain}."""
+    """Returns a list of dicts {longname, chain, type, resname, resnr, reschain}."""
     if report_xml is None:
         return []
     tree = ET.parse(report_xml)
@@ -238,14 +242,14 @@ for sys_name, cfg in SYSTEMS.items():
             "Redocked_waterbridge": redocked_types.get("water_bridge", 0),
         })
     except Exception as e:
-        print(f"FALHOU para {sys_name}: {e}")
+        print(f"FAILED for {sys_name}: {e}")
         summary_rows.append({"System": sys_name, "error": str(e)})
 
 summary_df = pd.DataFrame(summary_rows)
 detail_df = pd.DataFrame(detail_rows)
 OUT_DIR = Path(os.environ.get("OUT_DIR", REPO_ROOT / "results" / "regenerated"))
 OUT_DIR.mkdir(parents=True, exist_ok=True)
-summary_df.to_csv(OUT_DIR / "tabela_contatos_nativos_vs_redocados_G.csv", index=False)
-detail_df.to_csv(OUT_DIR / "tabela_contatos_nativos_vs_redocados_detalhe_G.csv", index=False)
-print("\n\n=== RESUMO FINAL ===")
+summary_df.to_csv(OUT_DIR / "table_native_vs_redocked_contacts_G.csv", index=False)
+detail_df.to_csv(OUT_DIR / "table_native_vs_redocked_contacts_detail_G.csv", index=False)
+print("\n\n=== FINAL SUMMARY ===")
 print(summary_df.to_string(index=False))

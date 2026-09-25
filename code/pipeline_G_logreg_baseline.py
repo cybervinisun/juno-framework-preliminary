@@ -1,10 +1,9 @@
 """
-Pipeline G - Parte G: baseline de Regressao Logistica, avaliada pelo
-MESMO protocolo (BayesSearchCV, scoring=kappa, StratifiedGroupKFold
-mae-filha) usado para MLP/SVM/XGBoost -- para quantificar, em vez de
-apenas afirmar qualitativamente, o quanto os modelos mais sofisticados
-melhoram sobre um classificador linear simples (ja apontado como
-insatisfatorio no estudo de comparacao de amostradores, Secao 2.6).
+Version-G pipeline, part G: a logistic-regression baseline, evaluated under
+the SAME protocol (BayesSearchCV, scoring=kappa, parent-child
+StratifiedGroupKFold) used for MLP/SVM/XGBoost -- so that the improvement of
+the more sophisticated models over a simple linear classifier is quantified
+rather than merely asserted.
 """
 from __future__ import annotations
 
@@ -32,8 +31,8 @@ from skopt import BayesSearchCV
 from skopt.space import Real, Categorical
 
 BASE_DIR = Path(__file__).parent
-OUT_DIR = BASE_DIR / "versao_G_outputs"
-FIG_DIR = OUT_DIR / "figuras_ingles_G"
+OUT_DIR = BASE_DIR / "version_G_outputs"
+FIG_DIR = OUT_DIR / "figures_G"
 FIG_DIR.mkdir(exist_ok=True)
 
 ckpt = joblib.load(OUT_DIR / "checkpoint_post_svmsmote_G.pkl")
@@ -51,9 +50,9 @@ mask = tracking_table["is_synthetic"] == False
 groups.loc[mask] = tracking_table.loc[mask, "original_row_id"]
 groups = groups.astype(int)
 
-mapeamento = {"Inativo": 0, "Ativo": 1}
-y_test_bin = np.array([mapeamento[c] for c in y_test["Atividade"]], dtype=np.int64)
-y_train_bin = np.array([mapeamento[c] for c in y_resampled], dtype=np.int64)
+LABEL_MAP = {"Inactive": 0, "Active": 1}
+y_test_bin = np.array([LABEL_MAP[c] for c in y_test["Activity"]], dtype=np.int64)
+y_train_bin = np.array([LABEL_MAP[c] for c in y_resampled], dtype=np.int64)
 
 kappa_scorer = make_scorer(cohen_kappa_score)
 cv = StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=21)
@@ -76,10 +75,10 @@ class RepeatedStratifiedGroupKFold:
         return self.n_splits * self.n_repeats
 
 
-cv_repetida = RepeatedStratifiedGroupKFold(n_splits=5, n_repeats=20, random_state=21)
+repeated_cv = RepeatedStratifiedGroupKFold(n_splits=5, n_repeats=20, random_state=21)
 
 print("=" * 70)
-print("Regressao Logistica: busca bayesiana (mesmo protocolo, kappa, CV agrupada)")
+print("Logistic regression: Bayesian search (same protocol, kappa, grouped CV)")
 print("=" * 70)
 
 pipe_lgr = Pipeline(steps=[("LGR", LogisticRegression(max_iter=5000, random_state=23))])
@@ -106,9 +105,9 @@ for idx, (mean_score, std_score) in enumerate(zip(bscv_lgr.cv_results_["mean_tes
         "std_cv_kappa": std_score, "is_best": mean_score == bscv_lgr.best_score_,
     })
 dispersion_df = pd.DataFrame(dispersion_rows)
-dispersion_df.to_csv(OUT_DIR / "tabela_logreg_dispersao_candidatos_G.csv", index=False)
+dispersion_df.to_csv(OUT_DIR / "table_logreg_candidate_dispersion_G.csv", index=False)
 
-rep_scores = cross_validate(champion_lgr, X_resampled, y_train_bin, cv=cv_repetida, groups=groups,
+rep_scores = cross_validate(champion_lgr, X_resampled, y_train_bin, cv=repeated_cv, groups=groups,
                              scoring=kappa_scorer, n_jobs=-1)["test_score"]
 print(f"Repeated CV (100 folds): mean={rep_scores.mean():.4f} SD={rep_scores.std():.4f}")
 
@@ -146,22 +145,22 @@ summary_row = {
     "TP": tp, "TN": tn, "FP": fp, "FN": fn,
     "best_params": str(dict(bscv_lgr.best_params_)),
 }
-pd.DataFrame([summary_row]).to_csv(OUT_DIR / "tabela_logreg_resumo_G.csv", index=False)
-joblib.dump(champion_lgr, OUT_DIR / "modelo_final_LogisticRegression_G.pkl")
-print(f"\n[tabela salva] {OUT_DIR / 'tabela_logreg_resumo_G.csv'}")
-print(f"Salvo: {OUT_DIR / 'modelo_final_LogisticRegression_G.pkl'}")
+pd.DataFrame([summary_row]).to_csv(OUT_DIR / "table_logreg_summary_G.csv", index=False)
+joblib.dump(champion_lgr, OUT_DIR / "final_model_LogisticRegression_G.pkl")
+print(f"\n[table saved] {OUT_DIR / 'table_logreg_summary_G.csv'}")
+print(f"Saved: {OUT_DIR / 'final_model_LogisticRegression_G.pkl'}")
 
 # ====================================================================
 # Updated Table-3-companion figures including Logistic Regression
 # ====================================================================
 # Reload the existing 3-model dispersion + repeated-CV data to build a
 # unified 4-model comparison (MLP, SVM, XGBoost, LogisticRegression).
-xgb_sensitivity_disp = pd.read_csv(OUT_DIR / "tabela_xgb_niter_dispersao_candidatos_G.csv")
+xgb_sensitivity_disp = pd.read_csv(OUT_DIR / "table_xgb_niter_candidate_dispersion_G.csv")
 xgb_15 = xgb_sensitivity_disp[xgb_sensitivity_disp["n_iter_budget"] == 15].copy()
 xgb_15["Model"] = "XGBoost"
 
 # MLP/SVM dispersion: extract from the original combined dispersion table
-orig_disp = pd.read_csv(OUT_DIR / "tabela3_dispersao_candidatos_bayesianos_G.csv")
+orig_disp = pd.read_csv(OUT_DIR / "table_bayes_search_candidate_dispersion_G.csv")
 mlp_svm_disp = orig_disp[orig_disp["Model"].isin(["MLP", "SVM"])].copy()
 
 combined_disp = pd.concat([
@@ -188,9 +187,9 @@ ax.set_title("Bayesian-search candidate dispersion including a\nlogistic-regress
 fig.tight_layout()
 fig.savefig(FIG_DIR / "figG19_logreg_vs_models_dispersion.png", bbox_inches="tight")
 plt.close(fig)
-print(f"Salvo: {FIG_DIR / 'figG19_logreg_vs_models_dispersion.png'}")
+print(f"Saved: {FIG_DIR / 'figG19_logreg_vs_models_dispersion.png'}")
 
 print()
 print("=" * 70)
-print("CONCLUIDO: baseline de Regressao Logistica")
+print("COMPLETE: logistic-regression baseline")
 print("=" * 70)

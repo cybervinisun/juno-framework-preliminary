@@ -1,15 +1,14 @@
 """
-Pipeline G - Parte H: sensibilidade do orcamento de busca bayesiana
-(n_iter = 1, 3, 5) para os QUATRO algoritmos (MLP, SVM, XGBoost,
-Regressao Logistica), no MESMO protocolo (kappa, StratifiedGroupKFold
-mae-filha), a partir do checkpoint pos-SVMSMOTE ja existente.
+Version-G pipeline, part H: Bayesian-search budget sensitivity
+(n_iter = 1, 3, 5) for all FOUR algorithms (MLP, SVM, XGBoost, logistic
+regression) under the SAME protocol (kappa, parent-child
+StratifiedGroupKFold), starting from the existing post-SVMSMOTE checkpoint.
 
-Decisao adotada por instrucao explicita do usuario: para o XGBoost, o
-campeao final passa a ser o de n_iter=5 (nao mais n_iter=15), pois o
-ganho marginal em kappa interno e pequeno frente ao risco de
-overfitting do proprio processo de busca bayesiana a uma particao de
-CV especifica. MLP e SVM ja usavam n_iter=5; Regressao Logistica
-tambem passa a ser reportada com n_iter=5 como orcamento oficial.
+For XGBoost the final champion is the n_iter=5 one (no longer n_iter=15):
+the marginal gain in internal kappa is small next to the risk of the search
+process itself overfitting one specific CV partition. MLP and SVM already
+used n_iter=5; logistic regression is also reported at n_iter=5 as its
+official budget.
 """
 from __future__ import annotations
 
@@ -35,7 +34,7 @@ from skopt import BayesSearchCV
 from skopt.space import Real, Integer, Categorical
 
 BASE_DIR = Path(__file__).parent
-OUT_DIR = BASE_DIR / "versao_G_outputs"
+OUT_DIR = BASE_DIR / "version_G_outputs"
 
 ckpt = joblib.load(OUT_DIR / "checkpoint_post_svmsmote_G.pkl")
 X_train_final = ckpt["X_train_final"]
@@ -50,9 +49,9 @@ mask = tracking_table["is_synthetic"] == False
 groups.loc[mask] = tracking_table.loc[mask, "original_row_id"]
 groups = groups.astype(int)
 
-mapeamento = {"Inativo": 0, "Ativo": 1}
-y_test_bin = np.array([mapeamento[c] for c in y_test["Atividade"]], dtype=np.int64)
-y_train_bin = np.array([mapeamento[c] for c in y_train_final], dtype=np.int64)
+LABEL_MAP = {"Inactive": 0, "Active": 1}
+y_test_bin = np.array([LABEL_MAP[c] for c in y_test["Activity"]], dtype=np.int64)
+y_train_bin = np.array([LABEL_MAP[c] for c in y_train_final], dtype=np.int64)
 
 kappa_scorer = make_scorer(cohen_kappa_score)
 cv = StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=21)
@@ -75,7 +74,7 @@ class RepeatedStratifiedGroupKFold:
         return self.n_splits * self.n_repeats
 
 
-cv_repetida = RepeatedStratifiedGroupKFold(n_splits=5, n_repeats=20, random_state=21)
+repeated_cv = RepeatedStratifiedGroupKFold(n_splits=5, n_repeats=20, random_state=21)
 
 
 def bootstrap_ci_of_mean(values, n_boot=5000, random_state=42):
@@ -150,7 +149,7 @@ for algo, (pipe, space) in PIPELINES.items():
                 "is_best": mean_score == bscv.best_score_,
             })
 
-        rep_scores = cross_validate(champion, X_resampled, y_train_bin, cv=cv_repetida, groups=groups,
+        rep_scores = cross_validate(champion, X_resampled, y_train_bin, cv=repeated_cv, groups=groups,
                                      scoring=kappa_scorer, n_jobs=-1)["test_score"]
         boot_mean, boot_lo, boot_hi = bootstrap_ci_of_mean(rep_scores)
 
@@ -161,17 +160,17 @@ for algo, (pipe, space) in PIPELINES.items():
 
         try:
             from sklearn.frozen import FrozenEstimator
-            calibrador = __import__("sklearn.calibration", fromlist=["CalibratedClassifierCV"]).CalibratedClassifierCV(
+            calibrator = __import__("sklearn.calibration", fromlist=["CalibratedClassifierCV"]).CalibratedClassifierCV(
                 estimator=FrozenEstimator(champion), method="sigmoid")
         except ImportError:
             from sklearn.calibration import CalibratedClassifierCV
-            calibrador = CalibratedClassifierCV(estimator=champion, method="sigmoid", cv="prefit")
+            calibrator = CalibratedClassifierCV(estimator=champion, method="sigmoid", cv="prefit")
 
         is_orig = (tracking_table["is_synthetic"] == False).to_numpy()
         X_orig = X_resampled.loc[is_orig].reset_index(drop=True)
         y_orig_bin = y_train_bin[is_orig]
-        calibrador.fit(X_orig, y_orig_bin)
-        y_test_score = calibrador.predict_proba(X_test)[:, 1]
+        calibrator.fit(X_orig, y_orig_bin)
+        y_test_score = calibrator.predict_proba(X_test)[:, 1]
         test_auc = roc_auc_score(y_test_bin, y_test_score)
 
         row = {
@@ -191,18 +190,18 @@ for algo, (pipe, space) in PIPELINES.items():
             champions[algo] = champion
 
 results_df = pd.DataFrame(all_results)
-results_df.to_csv(OUT_DIR / "tabela_niter_1_3_5_todos_algoritmos_G.csv", index=False)
+results_df.to_csv(OUT_DIR / "table_niter_1_3_5_all_algorithms_G.csv", index=False)
 dispersion_df = pd.DataFrame(dispersion_rows)
-dispersion_df.to_csv(OUT_DIR / "tabela_niter_1_3_5_dispersao_todos_G.csv", index=False)
-print(f"\n[tabela salva] {OUT_DIR / 'tabela_niter_1_3_5_todos_algoritmos_G.csv'}")
+dispersion_df.to_csv(OUT_DIR / "table_niter_1_3_5_dispersion_all_G.csv", index=False)
+print(f"\n[table saved] {OUT_DIR / 'table_niter_1_3_5_all_algorithms_G.csv'}")
 
 # Save the n_iter=5 champions (XGBoost's NEW official champion, others
 # should match the already-saved n_iter=5 champions from before)
 for algo, champion in champions.items():
-    joblib.dump(champion, OUT_DIR / f"modelo_final_{algo}_n_iter5_G.pkl")
-    print(f"Salvo: modelo_final_{algo}_n_iter5_G.pkl")
+    joblib.dump(champion, OUT_DIR / f"final_model_{algo}_n_iter5_G.pkl")
+    print(f"Saved: final_model_{algo}_n_iter5_G.pkl")
 
 print()
 print("=" * 70)
-print("CONCLUIDO: sensibilidade n_iter=1,3,5 para os 4 algoritmos")
+print("COMPLETE: n_iter=1,3,5 sensitivity for all 4 algorithms")
 print("=" * 70)

@@ -16,7 +16,7 @@ under `code/`.
 
 ## Why they are archived rather than included as champions
 
-Their hyperparameters do not match Table 1 of the published article (verified
+Their hyperparameters do not match Table 2 of the published article (verified
 directly via `get_params()`). They represent a different, earlier tuning run
 than the one reported in the manuscript, and are preserved here — rather than
 discarded — purely for transparency about the model-selection history behind
@@ -24,8 +24,8 @@ the article, per the authors' own note in Section 3.4.
 
 ## Files
 
-- `modelo_svc_descritores_F_sem_pipeline.pkl`
-- `modelo_xgb_descritores_F_sem_pipeline.pkl`
+- `model_svc_descriptors_F_no_pipeline.pkl`
+- `model_xgb_descriptors_F_no_pipeline.pkl`
 
 ## Hyperparameters of this round (verified via `get_params()`)
 
@@ -51,6 +51,6 @@ the article, per the authors' own note in Section 3.4.
 | `reg_lambda` | 4.999999999999999 |
 | `subsample` | 0.6 |
 
-Compare against Table 1 of the published article and against
-`models/modelo_final_SVM_G.pkl` / `models/modelo_final_XGBoost_G.pkl` — none
+Compare against Table 2 of the published article and against
+`models/final_model_SVM_G.pkl` / `models/final_model_XGBoost_G.pkl` — none
 of the values above match the published champions.

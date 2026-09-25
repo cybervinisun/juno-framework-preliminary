@@ -1,20 +1,15 @@
 """
-Pipeline G - Parte E (revisada): cenarios de calibracao Modelo A (treinado
-COM sinteticas SVMSMOTE, X_resampled) vs Modelo B (treinado SEM sinteticas,
-apenas X_orig), cada um comparado sem calibracao, calibrado em X_orig, e
-calibrado em X_resampled -- reproduzindo fielmente o design experimental
-do notebook RECONSTRUIDO (`build_scenarios`/`build_metrics_table`/
-`plot_calibration_flow`, secao "Extra a metodologia"), agora aplicado aos
-3 algoritmos da versao G (o notebook original so fazia isso para o MLP).
+Version-G pipeline, part E: calibration scenarios for Model A (trained WITH
+the SVMSMOTE synthetics, X_resampled) versus Model B (trained WITHOUT them,
+X_orig only), each compared uncalibrated, calibrated on X_orig, and
+calibrated on X_resampled -- the experimental design reported in Table 6 of
+Article 1, applied to all three retained algorithms.
 
-Substitui a comparacao anterior (calibracao leak-free via CV agrupada de
-5 folds pequenos) -- que o usuario corretamente apontou como
-metodologicamente fragil neste tamanho de amostra (cerca de 45-67
-instancias por fold de calibracao). Aqui, os conjuntos de calibracao sao
-muito maiores (224 ou 334 instancias, o conjunto inteiro), evitando esse
-problema de variancia, ao custo de reintroduzir alguma sobreposicao entre
-dados de ajuste e de calibracao em alguns cenarios -- exatamente o
-trade-off que este estudo foi desenhado para expor, nao esconder.
+The calibration sets here are the whole partitions (224 or 334 instances),
+which avoids the variance problem of calibrating on small held-out folds, at
+the cost of reintroducing some overlap between fitting and calibration data
+in some scenarios -- exactly the trade-off this study is designed to expose
+rather than hide.
 """
 from __future__ import annotations
 
@@ -33,9 +28,46 @@ from sklearn.pipeline import Pipeline
 from sklearn import svm
 from xgboost import XGBClassifier
 
+from sklearn.metrics import cohen_kappa_score, make_scorer
+from sklearn.model_selection import StratifiedGroupKFold
+from skopt import BayesSearchCV
+from skopt.space import Categorical, Integer, Real
+
+# Search spaces and protocol IDENTICAL to those in pipeline_G.py.
+# Budget: that of the RETAINED champion -- n_iter=5 for all three algorithms.
+# XGBoost uses 5, not the 15 that pipeline_G.py still carries, because the
+# n_iter=15 champion was superseded (see rebuild_xgb_niter5_cascade.py).
+PAIR_GRID = {
+    "MLP": {
+        "NN__hidden_layer_sizes": Integer(5, 15),
+        "NN__alpha": Real(1e-5, 1.0005965763586375e-05, "log-uniform"),
+        "NN__activation": Categorical(["tanh"]),
+        "NN__learning_rate_init": Real(1e-7, 1e-6, "log-uniform"),
+    },
+    "XGBoost": {
+        "xgb__learning_rate": Real(0.01, 0.2, prior="log-uniform"),
+        "xgb__n_estimators": Integer(50, 400),
+        "xgb__max_depth": Integer(5, 8),
+        "xgb__max_leaves": Integer(50, 100),
+        "xgb__min_child_weight": Real(1e-1, 10.0, prior="log-uniform"),
+        "xgb__subsample": Real(0.6, 0.9, prior="uniform"),
+        "xgb__colsample_bytree": Real(0.4, 0.8, prior="uniform"),
+        "xgb__gamma": Real(0.0, 5.0, prior="uniform"),
+        "xgb__reg_alpha": Real(1e-8, 1.0, prior="log-uniform"),
+        "xgb__reg_lambda": Real(1e-3, 5.0, prior="log-uniform"),
+    },
+    "SVM": {
+        "svm__C": Real(0.5, 1, prior="log-uniform"),
+        "svm__gamma": Real(0.01, 1, prior="log-uniform"),
+        "svm__kernel": Categorical(["rbf"]),
+    },
+}
+N_ITER_B = {"MLP": 5, "XGBoost": 5, "SVM": 5}
+KAPPA_SCORER = make_scorer(cohen_kappa_score)
+
 BASE_DIR = Path(__file__).parent
-OUT_DIR = BASE_DIR / "versao_G_outputs"
-FIG_DIR = OUT_DIR / "figuras_ingles_G"
+OUT_DIR = BASE_DIR / "version_G_outputs"
+FIG_DIR = OUT_DIR / "figures_G"
 FIG_DIR.mkdir(exist_ok=True)
 
 ckpt = joblib.load(OUT_DIR / "checkpoint_post_svmsmote_G.pkl")
@@ -46,16 +78,18 @@ y_test = ckpt["y_test"]
 tracking_table = ckpt["tracking_table"]
 
 X_resampled = X_train_final.copy()
-mapeamento = {"Inativo": 0, "Ativo": 1}
-y_train_bin = np.array([mapeamento[c] for c in y_train_final], dtype=np.int64)
-y_test_bin = np.array([mapeamento[c] for c in y_test["Atividade"]], dtype=np.int64)
+LABEL_MAP = {"Inactive": 0, "Active": 1}
+y_train_bin = np.array([LABEL_MAP[c] for c in y_train_final], dtype=np.int64)
+y_test_bin = np.array([LABEL_MAP[c] for c in y_test["Activity"]], dtype=np.int64)
 
 is_orig = (tracking_table["is_synthetic"] == False).to_numpy()
 X_orig = X_resampled.loc[is_orig].reset_index(drop=True)
 y_orig_bin = y_train_bin[is_orig]
-print(f"X_orig (sem sinteticas): {X_orig.shape}  |  X_resampled (com sinteticas): {X_resampled.shape}")
+print(f"X_orig (without synthetics): {X_orig.shape}  |  X_resampled (with synthetics): {X_resampled.shape}")
 
-hp = pd.read_csv(OUT_DIR / "tabela_hiperparametros_campeoes_G.csv").set_index("Model")
+groups_original = tracking_table.loc[is_orig, "original_row_id"].astype(int).to_numpy()
+
+hp = pd.read_csv(OUT_DIR / "table_champion_hyperparameters_G.csv").set_index("Model")
 
 
 def fresh_pipeline(label: str):
@@ -84,24 +118,23 @@ def fresh_pipeline(label: str):
     raise ValueError(label)
 
 
-def calibrar(modelo_ajustado, X_c, y_c):
+def fit_platt_calibration(fitted_model, X_c, y_c):
     try:
         from sklearn.frozen import FrozenEstimator
-        return CalibratedClassifierCV(estimator=FrozenEstimator(modelo_ajustado), method="sigmoid").fit(X_c, y_c)
+        return CalibratedClassifierCV(estimator=FrozenEstimator(fitted_model), method="sigmoid").fit(X_c, y_c)
     except ImportError:
-        return CalibratedClassifierCV(estimator=modelo_ajustado, method="sigmoid", cv="prefit").fit(X_c, y_c)
+        return CalibratedClassifierCV(estimator=fitted_model, method="sigmoid", cv="prefit").fit(X_c, y_c)
 
 
-def native_score(modelo_ajustado, X):
-    """Score nativo (sem calibracao). MLP/XGBoost: predict_proba (link
-    logistico nativo). SVM (probability=False): decision_function
-    min-max normalizada -- e um escore, NAO uma probabilidade; usado
-    apenas para completar o cenario "1" (sem calibracao) de forma
-    honesta e claramente identificada como tal."""
-    step = modelo_ajustado.steps[-1][1]
+def native_score(fitted_model, X):
+    """Native, uncalibrated score. MLP/XGBoost: predict_proba (their own
+    logistic link). SVM (probability=False): min-max normalised
+    decision_function -- that is a score, NOT a probability, and is used
+    only to complete the uncalibrated scenario, clearly flagged as such."""
+    step = fitted_model.steps[-1][1]
     if hasattr(step, "predict_proba"):
-        return modelo_ajustado.predict_proba(X)[:, 1]
-    raw = modelo_ajustado.decision_function(X)
+        return fitted_model.predict_proba(X)[:, 1]
+    raw = fitted_model.decision_function(X)
     return (raw - raw.min()) / (raw.max() - raw.min())
 
 
@@ -126,34 +159,43 @@ reliability_by_model = {}
 for label in ["MLP", "SVM", "XGBoost"]:
     print(f"\n{'='*70}\n{label}\n{'='*70}")
 
-    # Modelo A: ja treinado (campeao versao G), sobre X_resampled.
-    modelo_a = joblib.load(OUT_DIR / f"modelo_final_{label}_G.pkl")
+    # Model A: already trained (version-G champion) on X_resampled.
+    model_a = joblib.load(OUT_DIR / f"final_model_{label}_G.pkl")
 
-    # Modelo B: MESMOS hiperparametros vencedores, mas treinado SOMENTE
-    # em X_orig (sem sinteticas SVMSMOTE) -- novo fit necessario aqui.
-    modelo_b = fresh_pipeline(label)
-    modelo_b.fit(X_orig, y_orig_bin)
+    # Model B: RE-OPTIMISED in its own regime -- same Bayesian search, same
+    # space and same budget as the retained champion, but over X_orig (without
+    # the SVMSMOTE synthetics). Without synthetics each ligand is its own group,
+    # so StratifiedGroupKFold reduces to plain stratified CV.
+    search_b = BayesSearchCV(
+        estimator=fresh_pipeline(label), search_spaces=PAIR_GRID[label],
+        n_iter=N_ITER_B[label], n_jobs=-1,
+        cv=StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=21),
+        scoring=KAPPA_SCORER, error_score="raise", random_state=21, refit=True,
+    ).fit(X_orig, y_orig_bin, groups=groups_original)
+    model_b = search_b.best_estimator_
+    print(f"  Model B re-optimised on X_orig: CV kappa {search_b.best_score_:.4f} | "
+          f"{search_b.best_params_}")
 
     scenarios = {}
     is_svm = label == "SVM"
 
-    # A1 / B1: sem calibracao (score nativo)
-    scenarios["A1"] = {"model": "A", "label": "A1 (sem calibracao)",
-                        "scores": native_score(modelo_a, X_test), "is_probability": not is_svm}
-    scenarios["B1"] = {"model": "B", "label": "B1 (sem calibracao)",
-                        "scores": native_score(modelo_b, X_test), "is_probability": not is_svm}
+    # A1 / B1: uncalibrated (native score)
+    scenarios["A1"] = {"model": "A", "label": "A1 (uncalibrated)",
+                        "scores": native_score(model_a, X_test), "is_probability": not is_svm}
+    scenarios["B1"] = {"model": "B", "label": "B1 (uncalibrated)",
+                        "scores": native_score(model_b, X_test), "is_probability": not is_svm}
 
-    # A2 / A3: modelo A calibrado em X_orig / X_resampled
-    scenarios["A2"] = {"model": "A", "label": "A2 (calibrado em originais)",
-                        "scores": calibrar(modelo_a, X_orig, y_orig_bin).predict_proba(X_test)[:, 1], "is_probability": True}
-    scenarios["A3"] = {"model": "A", "label": "A3 (calibrado em balanceada)",
-                        "scores": calibrar(modelo_a, X_resampled, y_train_bin).predict_proba(X_test)[:, 1], "is_probability": True}
+    # A2 / A3: model A calibrated on X_orig / X_resampled
+    scenarios["A2"] = {"model": "A", "label": "A2 (calibrated on original)",
+                        "scores": fit_platt_calibration(model_a, X_orig, y_orig_bin).predict_proba(X_test)[:, 1], "is_probability": True}
+    scenarios["A3"] = {"model": "A", "label": "A3 (calibrated on balanced)",
+                        "scores": fit_platt_calibration(model_a, X_resampled, y_train_bin).predict_proba(X_test)[:, 1], "is_probability": True}
 
-    # B2 / B3: modelo B calibrado em X_resampled / X_orig
-    scenarios["B2"] = {"model": "B", "label": "B2 (calibrado em balanceada)",
-                        "scores": calibrar(modelo_b, X_resampled, y_train_bin).predict_proba(X_test)[:, 1], "is_probability": True}
-    scenarios["B3"] = {"model": "B", "label": "B3 (calibrado em originais)",
-                        "scores": calibrar(modelo_b, X_orig, y_orig_bin).predict_proba(X_test)[:, 1], "is_probability": True}
+    # B2 / B3: model B calibrated on X_resampled / X_orig
+    scenarios["B2"] = {"model": "B", "label": "B2 (calibrated on balanced)",
+                        "scores": fit_platt_calibration(model_b, X_resampled, y_train_bin).predict_proba(X_test)[:, 1], "is_probability": True}
+    scenarios["B3"] = {"model": "B", "label": "B3 (calibrated on original)",
+                        "scores": fit_platt_calibration(model_b, X_orig, y_orig_bin).predict_proba(X_test)[:, 1], "is_probability": True}
 
     for sid, item in scenarios.items():
         scores = np.asarray(item["scores"], dtype=float)
@@ -173,13 +215,12 @@ for label in ["MLP", "SVM", "XGBoost"]:
     reliability_by_model[label] = scenarios
 
 results_df = pd.DataFrame(all_rows)
-results_df.to_csv(OUT_DIR / "tabela_cenarios_calibracao_G.csv", index=False)
-print(f"\n[tabela salva] {OUT_DIR / 'tabela_cenarios_calibracao_G.csv'}")
+results_df.to_csv(OUT_DIR / "table_calibration_scenarios_G.csv", index=False)
+print(f"\n[table saved] {OUT_DIR / 'table_calibration_scenarios_G.csv'}")
 
 # ====================================================================
-# Figuras: reliability diagram, Modelo A (com sinteticas) vs Modelo B
-# (sem sinteticas), por algoritmo -- 1 figura por algoritmo, 2 paineis
-# (A, B) cada, replicando o design do notebook original.
+# Figures: reliability diagrams, Model A (with synthetics) vs Model B
+# (without synthetics), one figure per algorithm with two panels each.
 # ====================================================================
 COLORS = {"A1": "#d62728", "A2": "#1f77b4", "A3": "#ff7f0e",
           "B1": "#2ca02c", "B2": "#9467bd", "B3": "#8c564b"}
@@ -207,9 +248,9 @@ for label, scenarios in reliability_by_model.items():
     fname = f"figG20_calibration_scenarios_{label.lower()}.png"
     fig.savefig(FIG_DIR / fname, bbox_inches="tight")
     plt.close(fig)
-    print(f"Salvo: {FIG_DIR / fname}")
+    print(f"Saved: {FIG_DIR / fname}")
 
 print()
 print("=" * 70)
-print("CONCLUIDO: cenarios de calibracao Modelo A/B (3 algoritmos)")
+print("COMPLETE: Model A/B calibration scenarios (3 algorithms)")
 print("=" * 70)

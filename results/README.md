@@ -149,26 +149,40 @@ XGBoost 3.4.1, NumPy 2.5.2, pandas 3.0.5):
 
 Does **not** reproduce exactly across builds:
 
-- the three XGBoost **Model B** rows of Table 6 (B1, B2, B3). Model B is not a
-  refit of a fixed model: `code/06_calibration_scenarios.py` runs a
-  fresh Bayesian search over the 224 original ligands, and for XGBoost that
-  search settles on a different candidate on a different build. Its AUC came out
-  0.943 rather than the 0.950 reported, with Brier, ECE and LogLoss shifting by
-  up to 0.03. The MLP Model B rows reproduce exactly, so the sensitivity is
-  specific to the XGBoost search, not to the Model B design.
+- the three XGBoost **Model B** rows of Table 6 (B1, B2, B3). On the versions
+  pinned in `environment.yml`, a fresh run of `code/06_calibration_scenarios.py`
+  gives AUC 0.943 where the deposited table reports 0.950, with Brier, ECE and
+  LogLoss differing by up to 0.03. The MLP and SVM Model B rows reproduce
+  exactly, so whatever is going on is specific to the XGBoost search.
+
+  The cause has not been identified, and the honest statement is that these
+  three values are not reproducible from the deposited code as it stands. What
+  was ruled out: it is not thread-count non-determinism (identical at 1, 4 and
+  16 threads), and it is not a tie-break between the candidates this code
+  evaluates - none of the five candidates a fresh search proposes yields the
+  published numbers, and neither does refitting the Model A champion nor the
+  superseded wider-budget champion on the 224 originals. Model B is
+  re-optimized rather than refitted, so it depends on which points the search
+  proposes, and the deposited row appears to come from a search that proposed a
+  different set.
+
+  Worth knowing when reading those rows: among the candidates a fresh run does
+  evaluate, the best two are separated by 0.000117 in the internal CV kappa that
+  selects them, yet differ by 0.008 in held-out AUC. The selection criterion
+  cannot resolve candidates whose held-out behaviour differs materially, so the
+  identity of "the" Model B champion is not a stable quantity at this budget.
 
 This has a consequence worth stating, because it affects how Section 3.6 should
-be read. On the environment of `environment.yml`, every proper score favours the
-XGBoost Model B over Model A by a small margin. On the independent build above
-that ordering does not survive: Model B still wins on all three proper scores in
-the uncalibrated comparison (Brier 0.071 against 0.078, ECE 0.068 against 0.074,
-LogLoss 0.252 against 0.260), but Model A wins once calibration is fitted on the
-balanced partition, and AUC favours Model A in all three comparisons (0.948
-against 0.943). So the *direction* of the XGBoost Model A/B difference is itself
-within the noise of the re-optimisation, while its *magnitude* - small in every
-scenario, on both builds - is the robust observation. The qualitative reading
-that the choice between Model A and Model B is marginal for XGBoost holds on
-both builds; a stronger claim, that Model B is uniformly better, would not.
+be read. The deposited table has every proper score favouring the XGBoost Model
+B over Model A by a small margin. That ordering is not robust: on a fresh run
+Model A wins on AUC in all three comparisons (0.948 against 0.943) and on the
+proper scores once calibration is fitted on the balanced partition, while Model
+B still wins on all three proper scores in the uncalibrated comparison (Brier
+0.071 against 0.078, ECE 0.068 against 0.074, LogLoss 0.252 against 0.260). The
+robust observation is the *magnitude*: the Model A/B difference is small in
+every scenario and on both runs. The *direction*, for XGBoost, is not something
+this design pins down, and a claim that Model B is uniformly better should not
+be relied on.
 
 The published values are those obtained on the environment of
 `environment.yml`. A run that differs in those three rows is showing the build
@@ -200,9 +214,11 @@ that is by design rather than a defect:
 - `error_compounds_tanimoto_to_training.csv` drops two working columns that
   step 10 also emits (`error_type_by_model` and `smiles`); the SMILES of these
   compounds are already in `data/processed/smiles_320ligands_reference.xlsx`.
-- `champion_hyperparameters.csv` records the XGBoost internal CV kappa as
-  `0.868`, while a fresh run prints `0.868213`; the hyperparameters themselves,
-  which are what Table 2 reports, match exactly.
+- `champion_hyperparameters.csv` records the XGBoost internal CV kappa rounded
+  to `0.868`. That is a precision difference between two deposited files, not a
+  disagreement: the full-precision value `0.868213` that a fresh run prints is
+  itself deposited, in `search_budget_cv_kappa_all_algorithms.csv`. The
+  hyperparameters, which are what Table 2 reports, match exactly.
 
 And `calibration_scenarios.csv` differs in its three XGBoost Model B rows for
 the build reason explained in the previous section.

@@ -1,7 +1,7 @@
 # A multifaceted CADD architecture for GluN1–GluN2B NMDA receptor modulators
 
 [![Smoke test](https://github.com/cybervinisun/juno-framework-preliminary/actions/workflows/smoke-test.yml/badge.svg)](https://github.com/cybervinisun/juno-framework-preliminary/actions/workflows/smoke-test.yml)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22149634.svg)](https://doi.org/10.5281/zenodo.22149634)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22149633.svg)](https://doi.org/10.5281/zenodo.22149633)
 
 Companion data/code repository for:
 
@@ -12,8 +12,10 @@ Companion data/code repository for:
 > Cheminformatics* (2026, submitted). Article DOI: assigned by the journal
 > on acceptance/publication (not yet available).
 
-This exact code/data release is permanently archived on Zenodo:
-**[10.5281/zenodo.22149634](https://doi.org/10.5281/zenodo.22149634)**.
+This repository is archived on Zenodo. The concept DOI
+**[10.5281/zenodo.22149633](https://doi.org/10.5281/zenodo.22149633)** always resolves to the most
+recent archived version; each release also has its own version DOI, which is
+what to cite when an exact snapshot matters.
 
 This repository accompanies the article's data/code availability statement.
 It contains the curated training dataset, the published version-G modeling
@@ -216,12 +218,14 @@ with the open-source stack in `requirements.txt`/`environment.yml`.
 
 ## Reproducibility anchors
 
-- The exact commit corresponding to the published article is tagged
-  `v1.0-published`.
-- This repository is permanently archived on Zenodo:
-  **[10.5281/zenodo.22149634](https://doi.org/10.5281/zenodo.22149634)**
-  — cite this DOI for the code/data, not the GitHub URL, since GitHub
-  content can change but the Zenodo archive cannot.
+- Each archived state is tagged. `v1.0-published` is the first deposit;
+  `v2.0-submitted` is the state accompanying the submitted manuscript, after
+  the repository was scoped to the published study, translated to English and
+  reorganised for reproduction from scratch.
+- Every release is archived on Zenodo. Cite a DOI rather than the GitHub URL,
+  since GitHub content can change and a Zenodo archive cannot: the concept DOI
+  **[10.5281/zenodo.22149633](https://doi.org/10.5281/zenodo.22149633)** for the work as a whole,
+  or a release's own version DOI for an exact snapshot.
 
 ## License
 
@@ -234,7 +238,7 @@ with the open-source stack in `requirements.txt`/`environment.yml`.
 
 See `CITATION.cff` (author list: Vinícius Nunes da Rocha, corresponding
 author; Carlos Maurício Rabello de Sant'Anna). Cite this repository via
-its Zenodo DOI: **10.5281/zenodo.22149634**. The article's own DOI is a
+its Zenodo DOI: **10.5281/zenodo.22149633** (all versions). The article's own DOI is a
 separate identifier, assigned by the journal on acceptance, and is not
 yet known.
 

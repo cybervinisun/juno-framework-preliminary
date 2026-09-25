@@ -1,8 +1,9 @@
 # Author list confirmed (Vinícius Nunes da Rocha, corresponding/primary
 # author; Carlos Maurício Rabello de Sant'Anna, secondary author).
-# `doi` below is the Zenodo archival DOI for this exact code/data release
-# (v1.0-published), not the article's own DOI -- the journal assigns that
-# separately on acceptance and it is not yet known.
+# `doi` below is the Zenodo concept DOI, which always resolves to the most
+# recent archived version of this repository. Each release also receives its
+# own version DOI; cite that one when an exact snapshot matters. Neither is
+# the article's own DOI -- the journal assigns that on acceptance.
 #
 # Data (data/, results/) is separately licensed under CC-BY-4.0 -- see
 # LICENSE-DATA. The `license` field below covers the code (Apache-2.0)
@@ -21,8 +22,8 @@ authors:
     given-names: "Carlos Maurício"
     email: cmrsantanna@ufrrj.br
     affiliation: "Universidade Federal Rural do Rio de Janeiro (UFRRJ)"
-version: "1.0.0"
-date-released: "2026-08-28"
-doi: "10.5281/zenodo.22149634"
+version: "2.0.0"
+date-released: "2026-09-25"
+doi: "10.5281/zenodo.22149633"
 repository-code: "https://github.com/cybervinisun/juno-framework-preliminary"
 license: "Apache-2.0"

@@ -39,6 +39,7 @@ reordered; the LaTeX label in the third column is the stable reference.
 | `logreg_search_candidates.csv` | Logistic-regression Bayesian-search candidate dispersion | - |
 | `xgboost_champion_train_and_test_metrics.csv` | XGBoost champion, train+test metrics in one row | - |
 | `xgboost_champion_test_errors.csv` | XGBoost champion, held-out test misclassifications | - |
+| `search_budget_surrogate_experiment.csv` | Discussion (search budget and surrogate; 120 runs over 10 seeds, produced by `code/13_search_budget_and_surrogate_experiment.py`) | - |
 
 Redocking validation (Table 3 / Supplementary Figure S1) and
 native-contact-preservation tables are shipped under `data/raw/` instead of

@@ -170,7 +170,7 @@ the deposited copies, so a fresh run can be diffed against what was published.
 Paths can be redirected with the `DATA_DIR`, `MODEL_DIR` and `OUT_DIR`
 environment variables.
 
-Steps 01-10 need nothing but this repository and the pinned environment.
+Steps 01-10 and 13-14 need nothing but this repository and the pinned environment.
 Steps 11-12 and the PyMOL scripts additionally need the raw GOLD output, which
 is not redistributable (see the caveat below); their extracted results are
 already deposited under `data/raw/`, so skip them unless you hold that data.
@@ -190,6 +190,8 @@ already deposited under `data/raw/`, so skip them unless you hold that data.
 | 11 | `11_redocking_rmsd_from_gold.py` | raw GOLD populations | redocking RMSD statistics | Table 3, Fig. 4 |
 | 12 | `12_native_contact_preservation.py` | raw GOLD poses + PLIP | native vs. redocked contact counts | Table 3 |
 | -- | `pymol_scripts/render_*.pml` | raw GOLD `.mol2` | pose-overlay renderings (`pymol -cq render_3qel.pml`) | Fig. 4 |
+| 13 | `13_search_budget_and_surrogate_experiment.py` | step 01 | search budget and surrogate contrasted over 10 seeds (~40 min) | Discussion |
+| 14 | `14_summarise_search_experiment.py` | step 13 | the paired statistics quoted for that experiment | Discussion |
 
 Step 04 exists for provenance. `01_split_balance_and_train_champions.py`
 already searches at the retained budget (`n_iter=5`) for all three families, so

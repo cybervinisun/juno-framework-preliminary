@@ -1,8 +1,7 @@
 """
 Version-G pipeline -- faithful reconstruction of the reference notebook
 (Modelo_Classificacao_ML_QSAR_320_ligantes_GoldsScore_v_Tese_RECONSTRUIDO)
-run over the real 320-ligand dataset, for Article 1 (Journal of
-Cheminformatics).
+run over the real 320-ligand dataset, for Article 1.
 
 Reproduces, with no change in logic, exactly what was confirmed
 cell-by-cell in the original notebook:

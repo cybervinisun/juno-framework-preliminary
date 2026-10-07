@@ -11,7 +11,7 @@
 # with Zenodo's GitHub-integration parser) does not support multiple
 # licenses in a single field.
 cff-version: 1.1.0
-message: "If you use this code, data, or trained models, please cite the article: Nunes da Rocha, V. & Rabello de Sant'Anna, C. M. (2026), Journal of Cheminformatics (submitted)."
+message: "If you use this code, data, or trained models, please cite the article: Nunes da Rocha, V. & Rabello de Sant'Anna, C. M. (2026), manuscript under review."
 title: "A multifaceted CADD architecture integrating molecular docking, pharmacophore interaction fingerprints, and machine learning to classify negative allosteric modulators of the GluN1--GluN2B NMDA receptor site"
 authors:
   - family-names: "Nunes da Rocha"

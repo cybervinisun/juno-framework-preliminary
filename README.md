@@ -8,9 +8,9 @@ Companion data/code repository for:
 > Nunes da Rocha, V. & Rabello de Sant'Anna, C. M. "A multifaceted CADD
 > architecture integrating molecular docking, pharmacophore interaction
 > fingerprints, and machine learning to classify negative allosteric
-> modulators of the GluN1–GluN2B NMDA receptor site." *Journal of
-> Cheminformatics* (2026, submitted). Article DOI: assigned by the journal
-> on acceptance/publication (not yet available).
+> modulators of the GluN1–GluN2B NMDA receptor site." Manuscript under
+> review (2026). Article DOI: assigned by the journal on
+> acceptance/publication (not yet available).
 
 This repository is archived on Zenodo. The concept DOI
 **[10.5281/zenodo.22149633](https://doi.org/10.5281/zenodo.22149633)** always resolves to the most
@@ -218,7 +218,7 @@ with the open-source stack in `requirements.txt`/`environment.yml`.
 
 ## Reproducibility anchors
 
-- Each archived state is tagged. `v1.0-published` is the first deposit;
+- Each archived state is tagged. `v1.0-beta` is the first deposit;
   `v2.0-submitted` is the state accompanying the submitted manuscript, after
   the repository was scoped to the published study, translated to English and
   reorganised for reproduction from scratch.
